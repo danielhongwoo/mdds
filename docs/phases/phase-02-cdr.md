@@ -5,9 +5,11 @@
 [roadmap](../roadmap.md) | 이전: [Phase 01](phase-01-dcps-concepts.md) | 다음: [Phase 03](phase-03-rtps-messages.md)
 
 ## 읽을 규격
-- CORBA CDR 정렬 규칙 (CORBA 3.x Part 2 Sec. 9.3)
-- XTypes 1.3 Sec. 7.4 (XCDR1 부분)
+- CORBA 3.3 Part 2 Sec. 9.3 CDR Transfer Syntax, 특히 Sec. 9.3.1.1 Alignment (Table 9.1)
+- XTypes 1.3 Sec. 7.4.1.1 PLAIN_CDR (XCDR1), Sec. 7.4.3.2 스트림 상태와 MAXALIGN
+- XTypes 1.3 Sec. 7.6.3.1.2 캡슐화 식별자 (Table 60)
 - RTPS 2.5 Ch.10 (직렬화 페이로드 헤더)
+- 섹션 지도: [research/xtypes-cdr-idl-security.md](../research/xtypes-cdr-idl-security.md)
 
 ## 구현
 - `CdrWriter` / `CdrReader`
@@ -19,7 +21,7 @@
 - serde는 쓰지 않는다. serde 데이터 모델로는 정렬, DHEADER, key-only 직렬화를 표현할 수 없다.
 
 ## 완료 기준
-- ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 Phase 0 캡처 바이트와 일치한다.
+- ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 Phase 00 캡처 바이트와 일치한다.
 
 ## 진행 기록
 - (진행하면서 배운 점, 결정 사항, 막힌 점을 날짜와 함께 적는다)

@@ -1,8 +1,8 @@
-# Phase 14 - 기타 (선택)
+# Phase 15 - 기타 (선택)
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 13](phase-13-security.md)
+[roadmap](../roadmap.md) | 이전: [Phase 14](phase-14-security.md)
 
 ## 후보
 - ContentFilteredTopic / QueryCondition (DDS 1.4 Annex B SQL 서브셋)
