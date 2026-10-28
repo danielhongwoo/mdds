@@ -18,5 +18,10 @@
 - **XCDR1**(XTypes의 Extended CDR 버전 1): 고전 CDR 그대로(최대 정렬 8)에, 필드 추가/순서 변경이 가능한 mutable 타입용 "파라미터 리스트(PL_CDR, 멤버마다 ID+길이)" 형식을 더한 것. ROS 2가 쓰는 방식이다.
 - **XCDR2**(Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더(DHEADER)와 멤버별 헤더(EMHEADER)를 도입한 개선판. 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
 
+## 도구
+- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. 이 프로젝트는 Docker 안에서 소스로 빌드해 쓴다 (Phase 00). Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
+- **ShapesDemo**: 같은 ShapeType 토픽을 GUI로 보여 주는 각 벤더의 데모 프로그램 (RTI, eProsima 등). shape_main은 이것의 CLI판이라고 보면 된다.
+- **bridge 네트워크 (Docker)**: Docker가 호스트 안에 만드는 가상 L2 스위치. 컨테이너의 `eth0`가 여기에 꽂힌다. 같은 bridge 안에서는 유니캐스트와 멀티캐스트가 모두 통하고, 바깥으로는 NAT를 거친다. 사용자 정의 bridge는 기본 bridge와 달리 컨테이너 이름으로 서로를 찾을 수 있다.
+
 ## 설계
 - **I/O-free core**: 소켓, 시계, 스레드를 직접 쓰지 않고 입력을 받아 출력(보낼 패킷, 타이머, 이벤트)만 돌려주는 프로토콜 코어. 커뮤니티에서는 "sans-IO"라고도 부른다. 자세한 내용은 [roadmap 설계 원칙](roadmap.md#4-설계-원칙).

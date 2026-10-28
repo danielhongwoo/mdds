@@ -111,7 +111,7 @@
   - PID_METATRAFFIC_UNICAST_LOCATOR 0x32, PID_METATRAFFIC_MULTICAST_LOCATOR 0x33
   - PID_BUILTIN_ENDPOINT_SET 0x58
   - 그 밖에 PID_DOMAIN_ID 0x0f, PID_EXPECTS_INLINE_QOS 0x43, PID_USER_DATA 0x2c, PID_ENTITY_NAME 0x62, PID_PROPERTY_LIST 0x59
-  - 30초마다 공지 (9.6.2.4). lease가 끝나면 참가자를 잃은 것으로 본다. 흔한 기본 lease는 100초 [추정]
+  - 30초마다 공지 (9.6.2.4). lease가 끝나면 참가자를 잃은 것으로 본다. 실제 기본값은 구현마다 다르다: Cyclone `Discovery/LeaseDuration` 10초 (SPDP 주기는 그 80%인 8초), Fast DDS lease 20초, 공지 주기 3초 (2026-10-28 공식 문서 확인)
   - 키만 있는 DATA (K=1)는 PID_PARTICIPANT_GUID만 담는다. dispose에 쓴다.
 - **SEDP** (8.5.4): reliable, stateful, transient-local 내장 엔드포인트 (publications, subscriptions, topics). DiscoveredWriterData / DiscoveredReaderData를 ParameterList로 보낸다.
   - PID_ENDPOINT_GUID 0x5a, PID_TOPIC_NAME 0x05, PID_TYPE_NAME 0x07

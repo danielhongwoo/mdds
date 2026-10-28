@@ -3,16 +3,19 @@
 [roadmap](../roadmap.md) | [Phase 00](../phases/phase-00-setup.md)
 
 - 조사일: 2026-10-28
-- 환경 전제: Apple Silicon Mac (arm64) + Docker Desktop, GUI 없이 CLI 도구만 사용
+- 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 이후 실행 호스트를 별도 x86_64 Linux 머신으로 바꿨다 (2026-10-28). GUI 없이 CLI 도구만 사용
 - 표시: [확인] 페이지나 파일에서 직접 확인, [추정] 미확인
 
 ## 1. OMG 상호운용 테스트의 shape_main [확인]
 - 릴리스: https://github.com/omg-dds/dds-rtps/releases/tag/v2.1.2026 (2026-02-27)
 - 첨부: connext_dds-7.7.0, dust_dds-0.16.1, eclipse_cyclone-11.0.1, eprosima_fastdds-3.6.1, hdds-1.4.8, intercom_dds-4.3.1, opendds-3.35.0-dev, toc_coredx_dds-6.15.3, zzdds-0.3.2 (각각 `<이름>_shape_main_linux.zip`)
 - Cyclone, Fast DDS 실행 파일은 zip 하나에 파일 하나이고, `file` 결과는 **ELF 64-bit x86-64, 동적 링크** (2026-10-28 확인)
-  - Apple Silicon에서는 `--platform linux/amd64`로 실행한다.
+  - x86_64 Linux 머신에서는 네이티브로 돈다. Apple Silicon에서 돌리려면 `--platform linux/amd64` 에뮬레이션이 필요하다.
   - 동적 링크라 실행에 필요한 공유 라이브러리를 이미지에 맞춰야 한다. `ldd`로 확인한다 [추정].
-- 사용법 (플래그): -P / -S (발행 / 구독), -d (도메인), -t (토픽), -r / -b (reliable / best-effort), -D (durability), -x (1 = XCDR, 2 = XCDR2), -k (history depth). 자세한 사용법은 `-h`로 확인한다 [추정].
+- 사용법 (README 2026-10-28 확인): -P / -S (발행 / 구독), -d (도메인), -t (토픽), -c (색), -p (파티션), -r / -b (reliable / best-effort), -D [v|l|t|p] (durability), -k (history depth), -x [1|2] (XCDR / XCDR2), -z (도형 크기 값, 페이로드 크기 아님), `--additional-payload-size <bytes>` (샘플에 바이트 추가, 큰 샘플용), `--final-instance-state [u|d]` (종료 전 unregister / dispose), `--num-iterations <n>`, `--write-period <ms>` (기본 33), `--periodic-announcement <ms>`
+- 소스 `srcCxx/shape_main.cxx`는 SIGINT 핸들러만 설치한다. SIGTERM으로는 정리 없이 죽는다 (1회차 검토에서 확인).
+- 실행 파일 이름이 15자를 넘어 `pkill shape_main`이 걸리지 않는다. 15자 이하의 짧은 이름으로 복사하고 `pkill -x`를 쓴다.
+- Fast DDS 실행 파일 의존성: libstdc++ (GLIBCXX_3.4.30), zlib, bzip2, glibc 2.34 이상. Ubuntu 22.04에서 충족된다 (실행은 Phase 00에서 확인).
 - "eclipse_cyclone-11.0.1"의 버전 번호 의미는 확인하지 못했다 [추정].
 
 ## 2. Cyclone DDS
@@ -38,11 +41,19 @@
 ## 5. Docker 네트워크
 - 사용자 정의 bridge: 컨테이너 간 통신 기본 허용 [확인]. 멀티캐스트에 대한 언급은 문서에 없다.
 - 컨테이너 간 멀티캐스트: Linux에서는 보통 된다. Docker Desktop for Mac은 Linux VM 안에서 돌므로 직접 시험해야 한다 [추정].
-- `network_mode: host`는 Mac이 아니라 Docker Desktop의 VM에 붙는다 [추정].
+- `network_mode: host`는 Docker Desktop 4.34부터 설정으로 켜는 선택 기능이다 (https://docs.docker.com/engine/network/drivers/host/). Mac이 아니라 VM의 네트워크에 붙는지는 공식 문서에 명시가 없다 [추정].
 - 캡처: `nicolaka/netshoot` 같은 컨테이너를 `--net container:<이름>`으로 붙이고 `tcpdump -i any -w <파일>` [추정]
 
-## 6. 결론 (Phase 00 방식)
-1. Cyclone / Fast DDS 상호운용 관찰: amd64 Ubuntu 이미지 + OMG shape_main 두 개
-2. 큰 샘플 / 부하: arm64 Ubuntu 24.04 + `cyclonedds-tools` (`ddsperf`)
-3. ROS 2 (Phase 08): `ros:jazzy-ros-base` + Cyclone RMW
-4. 가장 먼저 확인할 것: 컨테이너 간 멀티캐스트, shape_main 실행에 필요한 라이브러리
+## 6. lease 기본값 [확인]
+- Cyclone: `Discovery/LeaseDuration` 10초, SPDP 주기는 lease의 약 80% (8초). 멀티캐스트 발견 시 `Discovery/ParticipantIndex`가 `none`과 같아 유니캐스트 포트를 임의로 고른다. https://cyclonedds.io/docs/cyclonedds/latest/config/config_file_reference.html
+- Fast DDS: lease 20초, 공지 주기 3초. https://fast-dds.docs.eprosima.com/en/latest/fastdds/discovery/general_disc_settings.html
+
+## 7. 결론 (Phase 00 방식)
+- 2026-10-28 변경: OMG 배포 실행 파일 대신 **Docker 안에서 소스로 빌드**한다. 위 1절의 실행 파일 조사 (x86-64, 의존 라이브러리)는 배경 정보로만 남긴다. 빌드 설계는 [environment/vendor-build.md](../environment/vendor-build.md).
+  - 빌드 파일 위치 (확인함): Cyclone은 `srcC/` (C판. 릴리스 태그 v2.1.2026에는 없고 2026-04 이후 master에만 있다), Fast DDS는 `srcCxx/fast-dds-cmake/CMakeLists.txt` (C++판, `fastddsgen`). 상세는 vendor-build.md
+  - 버전: Cyclone 11.0.1, Fast DDS v3.6.1 (Fast-CDR v2.3.5, foonathan_memory_vendor v1.4.1, Fast-DDS-Gen v4.3.0. Fast DDS의 `fastdds.repos` 기준)
+0. 실행 호스트는 별도 x86_64 Linux 머신 + Docker Engine이다 (빌드 부하 때문). Mac은 편집, 커밋, Wireshark 용도다. 같은 Dockerfile이 Mac (arm64)에서도 네이티브로 빌드된다.
+1. 모든 시나리오를 shape_main 이미지 하나 (Cyclone, Fast DDS 실행 파일 두 개)로 만든다. 큰 샘플은 `--additional-payload-size`로 만들므로 `ddsperf`와 arm64 이미지는 필요 없다.
+2. ROS 2 (Phase 08): `ros:jazzy-ros-base` + Cyclone RMW
+3. 가장 먼저 확인할 것: 컨테이너 간 멀티캐스트, shape_main 실행에 필요한 라이브러리
+4. 상세 계획: [phases/phase-00-setup.md](../phases/phase-00-setup.md)

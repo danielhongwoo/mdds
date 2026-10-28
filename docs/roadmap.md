@@ -79,12 +79,13 @@ mdds/
   tools/
     shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (Phase 10)
   tests/
-    fixtures/       # Phase 00에서 캡처한 pcapng (정답 바이트)
+    fixtures/       # Phase 00에서 캡처한 pcap (정답 바이트)
   docker/           # Cyclone DDS / Fast DDS 실행 환경 (Phase 00)
   docs/
     roadmap.md, glossary.md
     phases/         # 단계별 계획과 진행 기록
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
+    environment/    # 실행 환경 문서 (Cyclone DDS / Fast DDS / shape_main 빌드)
   omg-specs/        # OMG 규격 PDF와 텍스트 추출본 (git 제외: 재배포 조건 때문)
 ```
 

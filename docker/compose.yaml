@@ -1,0 +1,53 @@
+# Phase 00 상호운용 캡처 환경: Cyclone DDS 컨테이너와 Fast DDS 컨테이너 하나씩.
+# 설계: docs/phases/phase-00-setup.md "Docker 네트워크 구성"
+#
+#   docker compose up -d --build      # 빌드하고 두 컨테이너를 띄운다
+#   docker compose exec cyclone ...   # 명령은 exec 로 실행한다
+#   docker compose down
+#
+# 포트는 publish 하지 않는다 (ports: 없음). 통신은 dds-net 안의 두 컨테이너끼리만 한다.
+# network_mode: host 도 쓰지 않는다 (두 참가자가 "한 호스트"가 되어 관찰 목적과 멀어진다).
+
+# 프로젝트 이름. 없으면 디렉터리 이름 (docker) 이 붙는다.
+name: mdds
+
+networks:
+  dds-net:
+    # 이름을 고정한다. 없으면 compose 가 프로젝트 이름을 붙여 mdds_dds-net 이 된다.
+    name: dds-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+services:
+  cyclone:
+    build:
+      context: ./cyclone
+    # Cyclone 은 릴리스 태그가 아니라 master 커밋이라 커밋 앞 8자를 붙인다
+    image: mdds/cyclone-shape:11.0.1-f2aaccb4
+    # 호스트 이름은 일부 벤더가 참가자 정보에 실어 보낸다. 고정해 두면 캡처끼리 비교하기 쉽다.
+    hostname: cyclone
+    # PID 1 이 고아 프로세스를 거둔다 (좀비가 pgrep 에 잡히는 것 방지)
+    init: true
+    networks:
+      dds-net:
+        # 캡처에서 .10 = Cyclone, .11 = Fast DDS 로 바로 구분한다
+        ipv4_address: 172.28.0.10
+    # tcpdump 용. Docker 기본 권한에 포함되지만 의도를 남기려고 명시한다.
+    cap_add: [NET_RAW]
+    volumes:
+      - ../tests/fixtures/phase00:/captures
+
+  fastdds:
+    build:
+      context: ./fastdds
+    image: mdds/fastdds-shape:3.6.1
+    hostname: fastdds
+    init: true
+    networks:
+      dds-net:
+        ipv4_address: 172.28.0.11
+    cap_add: [NET_RAW]
+    volumes:
+      - ../tests/fixtures/phase00:/captures
