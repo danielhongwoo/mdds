@@ -1,5 +1,5 @@
-# Phase 00 상호운용 캡처 환경: Cyclone DDS 컨테이너와 Fast DDS 컨테이너 하나씩.
-# 설계: docs/phases/phase-00-setup.md "Docker 네트워크 구성"
+# 상호운용 캡처와 시험 환경: Cyclone DDS 컨테이너와 Fast DDS 컨테이너 하나씩.
+# 설계: docs/environment/docker-network.md (주소 배정 규칙 포함)
 #
 #   docker compose up -d --build      # 빌드하고 두 컨테이너를 띄운다
 #   docker compose exec cyclone ...   # 명령은 exec 로 실행한다
@@ -36,8 +36,9 @@ services:
         ipv4_address: 172.28.0.10
     # tcpdump 용. Docker 기본 권한에 포함되지만 의도를 남기려고 명시한다.
     cap_add: [NET_RAW]
+    # 단계에 묶지 않고 fixtures 전체를 붙인다. 시나리오는 /captures/<단계>/ 아래에 쓴다 (예: /captures/phase00).
     volumes:
-      - ../tests/fixtures/phase00:/captures
+      - ../tests/fixtures:/captures
 
   fastdds:
     build:
@@ -50,4 +51,15 @@ services:
         ipv4_address: 172.28.0.11
     cap_add: [NET_RAW]
     volumes:
-      - ../tests/fixtures/phase00:/captures
+      - ../tests/fixtures:/captures
+
+  # mdds 진단 도구 이미지. 빌드 전용이다: profile 이 있어서 docker compose up 으로는 뜨지 않는다.
+  # 실행은 mcast-check.sh 가 docker run --network container:<벤더 컨테이너> 로 한다.
+  #   docker compose build tools
+  tools:
+    profiles: [tools]
+    build:
+      context: ..
+      dockerfile: docker/tools/Dockerfile
+    image: mdds/tools
+    network_mode: none

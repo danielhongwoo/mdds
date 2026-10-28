@@ -1,0 +1,8 @@
+[package]
+name = "mdds-rtps"
+description = "RTPS 메시지와 상태 머신, I/O-free core (Phase 03부터)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true

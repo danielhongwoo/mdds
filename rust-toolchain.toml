@@ -1,0 +1,4 @@
+# stable 버전을 고정하고 이 버전을 MSRV로 삼는다 (Phase 00 "프로젝트 규약").
+# docker/tools/Dockerfile 의 Rust 이미지 버전과 같아야 한다. 바꿀 때는 함께 고친다.
+[toolchain]
+channel = "1.99.1"

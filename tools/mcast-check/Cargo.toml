@@ -1,0 +1,8 @@
+[package]
+name = "mcast-check"
+description = "컨테이너 사이에 UDP 멀티캐스트가 전달되는지 확인하는 도구"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true

@@ -1,0 +1,9 @@
+# 저장소 루트를 빌드 컨텍스트로 쓰는 이미지 (docker/tools) 용.
+# Rust 워크스페이스에 필요한 것만 보낸다. 캡처, 규격 PDF, target/ 은 보내지 않는다.
+*
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain.toml
+!crates/
+!tools/
+**/target
