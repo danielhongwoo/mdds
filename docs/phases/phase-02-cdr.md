@@ -24,4 +24,4 @@
 - ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 Phase 00 캡처 바이트와 일치한다.
 
 ## 진행 기록
-- (진행하면서 배운 점, 결정 사항, 막힌 점을 날짜와 함께 적는다)
+- (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

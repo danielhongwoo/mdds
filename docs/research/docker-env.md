@@ -3,7 +3,7 @@
 [roadmap](../roadmap.md) | [Phase 00](../phases/phase-00-setup.md)
 
 - 조사일: 2026-10-28
-- 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 이후 실행 호스트를 별도 x86_64 Linux 머신으로 바꿨다 (2026-10-28). GUI 없이 CLI 도구만 사용
+- 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 현재 실행 환경은 [environment/docker-network.md](../environment/docker-network.md)를 본다. GUI 없이 CLI 도구만 사용
 - 표시: [확인] 페이지나 파일에서 직접 확인, [추정] 미확인
 
 ## 1. OMG 상호운용 테스트의 shape_main [확인]

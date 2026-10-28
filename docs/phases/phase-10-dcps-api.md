@@ -21,4 +21,4 @@
 - `tools/shape_main`이 `omg-dds/dds-rtps`의 `interoperability_report.py`로 주요 시나리오를 Cyclone / Fast DDS와 양방향 통과한다.
 
 ## 진행 기록
-- (진행하면서 배운 점, 결정 사항, 막힌 점을 날짜와 함께 적는다)
+- (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

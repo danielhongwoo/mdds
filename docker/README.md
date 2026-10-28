@@ -1,8 +1,8 @@
 # docker/ - Cyclone DDS / Fast DDS 상호운용 캡처 환경
 
-[roadmap](../docs/roadmap.md) | [Phase 00](../docs/phases/phase-00-setup.md) | [빌드 설계](../docs/environment/vendor-build.md)
+[roadmap](../docs/roadmap.md) | [네트워크 설계](../docs/environment/docker-network.md) | [빌드 설계](../docs/environment/vendor-build.md) | [Phase 00](../docs/phases/phase-00-setup.md)
 
-OMG 상호운용 테스트 프로그램 shape_main을 Cyclone DDS와 Fast DDS로 각각 소스에서 빌드하고, 컨테이너 두 개에서 서로 통신시켜 그 패킷을 캡처한다. 캡처는 이후 단계에서 정답 바이트 (테스트 데이터)로 쓴다.
+OMG 상호운용 테스트 프로그램 shape_main을 Cyclone DDS와 Fast DDS로 각각 소스에서 빌드하고, 컨테이너 두 개에서 서로 통신시켜 그 패킷을 캡처한다. 캡처는 이후 단계에서 정답 바이트 (테스트 데이터)로 쓴다. Phase 00에서 만들었고, 이후 mdds의 상호운용 시험에도 같은 환경을 쓴다.
 
 ## 구성
 ```
@@ -10,6 +10,8 @@ docker/
   compose.yaml          네트워크 dds-net 과 서비스 두 개
   cyclone/Dockerfile    -> 이미지 mdds/cyclone-shape:11.0.1-f2aaccb4   (/usr/local/bin/cyclone_shape)
   fastdds/Dockerfile    -> 이미지 mdds/fastdds-shape:3.6.1             (/usr/local/bin/fastdds_shape)
+  tools/Dockerfile      -> 이미지 mdds/tools   (/usr/local/bin/mcast-check, 저장소 루트를 컨텍스트로 빌드)
+  mcast-check.sh        벤더 컨테이너의 네트워크 네임스페이스에서 mcast-check 실행
   run-scenario.sh       시나리오 실행 (아직 없음, Phase 00 Step 3)
 ```
 - 벤더마다 이미지와 컨테이너가 따로 있다. `cyclone` 컨테이너에는 `cyclone_shape`만, `fastdds` 컨테이너에는 `fastdds_shape`만 있다.
@@ -26,53 +28,43 @@ docker/
 ```
 - SPDP 멀티캐스트 239.255.0.1:7400 (도메인 0)과 유니캐스트 모두 이 bridge 안에서만 돈다. 포트를 publish하지 않으며 호스트는 DDS에 참여하지 않는다.
 - IP와 호스트 이름을 고정해서 캡처에서 .10이 Cyclone, .11이 Fast DDS임을 바로 알 수 있다.
-- 왜 이렇게 구성했는지, 멀티캐스트가 넘어가는 원리, 문제 대응은 [Phase 00 "Docker 네트워크 구성"](../docs/phases/phase-00-setup.md#docker-네트워크-구성)에 있다.
+- 왜 이렇게 구성했는지, 주소 배정 규칙, 멀티캐스트가 넘어가는 원리, 문제 대응은 [docker-network.md](../docs/environment/docker-network.md)에 있다.
 
 ## 실행 호스트
 - 기본은 **Mac (Apple Silicon)의 Docker Desktop**이다. 이미지는 arm64로 네이티브 빌드된다 (에뮬레이션 없음). 빌드, 실행, 캡처, Wireshark 분석이 모두 Mac 한 곳에서 끝난다.
 - Docker Desktop 메모리는 8 GB 이상 (16 GB 권장). Fast DDS C++ 빌드가 메모리를 많이 쓴다.
 - 저장소가 Docker Desktop의 파일 공유 목록 (기본 `/Users`) 안에 있어야 캡처 디렉터리 바인드 마운트가 된다.
-- 별도 x86_64 Linux 머신에서도 같은 파일로 돈다. 차이점 (ssh, rsync, root 소유 pcap)은 [Phase 00 "실행 호스트"](../docs/phases/phase-00-setup.md#실행-호스트-mac-docker-desktop)의 "선택: 별도 x86_64 Linux 머신"을 본다.
+- 별도 x86_64 Linux 머신에서도 같은 파일로 돈다. 차이점 (ssh, rsync, root 소유 pcap)은 [docker-network.md](../docs/environment/docker-network.md#선택-별도-x86_64-linux-머신)를 본다.
 
 ## 사용법
 명령은 모두 `~/work/mdds/docker`에서 실행한다.
 
 ### 1. 빌드와 실행
 ```
-mkdir -p ../tests/fixtures/phase00        # 없으면 Docker가 root 소유로 만든다
+mkdir -p ../tests/fixtures/phase00        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/fixtures 전체가 /captures 로 붙는다
 docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 3분. 두 번째부터는 바뀐 단계만
 docker compose up -d
 docker compose ps                         # cyclone, fastdds 두 개가 running
 ```
 - 병렬 수 기본값은 CPU 수다. 메모리 부족으로 컴파일러가 죽거나 Docker Desktop이 재시작되면: `docker compose build --build-arg JOBS=4` (8 GB면 4, 그래도 죽으면 2)
 - 한쪽만 다시 빌드: `docker compose build cyclone` 또는 `docker compose build fastdds`
+- Dockerfile이나 버전을 바꿨으면 [vendor-build.md "빌드 후 확인"](../docs/environment/vendor-build.md#빌드-후-확인)을 따른다. 그대로 쓰는 경우에는 필요 없다.
 
-### 2. 빌드 확인
+### 2. 네트워크 확인 (DDS를 띄우기 전에)
 ```
-docker compose exec cyclone ldd /usr/local/bin/cyclone_shape    # not found 가 없고 libddsc.so 가 /opt/cyclone/lib 에서 온다
-docker compose exec fastdds ldd /usr/local/bin/fastdds_shape    # not found 가 없다
-docker compose exec cyclone cyclone_shape -h
-docker compose exec fastdds fastdds_shape -h
-docker compose exec fastdds cat /usr/local/share/fastdds_shape.origname   # eprosima_fastdds-3.6.1_shape_main_linux
-docker image inspect mdds/cyclone-shape:11.0.1-f2aaccb4 --format '{{json .Config.Labels}}'
-docker image inspect mdds/fastdds-shape:3.6.1  --format '{{json .Config.Labels}}'
-```
-빌드 시간, 이미지 크기 (`docker image ls mdds/*`), 확인 결과는 Phase 00 진행 기록에 적는다.
-
-### 3. 네트워크 확인 (DDS를 띄우기 전에)
-```
+docker compose build tools                # 처음 한 번. tools 는 profile 이 있어 up 으로는 뜨지 않는다
 docker compose exec cyclone ping -c1 fastdds
 
-# 터미널 1: fastdds 에서 멀티캐스트 수신
-docker compose exec fastdds socat -u UDP4-RECV:7400,ip-add-membership=239.255.0.1:172.28.0.11,reuseaddr STDOUT
-# 터미널 2: 가입 확인 후 cyclone 에서 송신
+# 터미널 1: fastdds 컨테이너의 eth0 에서 239.255.0.1:7400 수신 (Ctrl+C로 끝낸다)
+./mcast-check.sh fastdds recv
+# 터미널 2: 가입 확인 후 cyclone 컨테이너의 eth0 에서 3번 송신
 docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여야 한다
-docker compose exec cyclone sh -c 'echo hello | socat -u STDIN UDP4-DATAGRAM:239.255.0.1:7400'
+./mcast-check.sh cyclone send
 ```
-터미널 1에 `hello`가 찍히면 bridge가 멀티캐스트를 전달하는 것이다.
+터미널 1에 `hello 1/3 from 172.28.0.10` 등이 찍히면 bridge가 멀티캐스트를 전달하는 것이다. 옵션은 `./mcast-check.sh fastdds --help`. 동작 원리와 socat 대안은 [docker-network.md "검증 명령"](../docs/environment/docker-network.md#검증-명령).
 
-### 4. 시나리오 캡처
-`run-scenario.sh`는 아직 없다. 실행 흐름과 시나리오 표는 [Phase 00](../docs/phases/phase-00-setup.md#시나리오-실행-흐름-run-scenariosh)에 있다. 결과는 `../tests/fixtures/phase00/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다.
+### 3. 시나리오 캡처
+`run-scenario.sh`는 아직 없다. 실행 흐름과 시나리오 표는 [Phase 00](../docs/phases/phase-00-setup.md#시나리오-실행-흐름-run-scenariosh)에 있다. 결과는 `../tests/fixtures/phase00/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/phase00/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.
 
 ### 정리
@@ -83,7 +75,7 @@ docker compose down                       # 컨테이너와 dds-net 제거. 이�
 ## 빌드 소스와 버전
 태그로 clone한 뒤 커밋 해시를 검사하므로, 태그가 옮겨지면 빌드가 멈춘다. 해시는 2026-10-28 `git ls-remote`로 확인했다 (모두 lightweight 태그라 태그 해시가 곧 커밋 해시다).
 
-Cyclone만 릴리스 태그가 아니라 master 커밋이다. dds-rtps의 C판 shape_main이 11.0.1 이후에 추가된 API (`dds_read_next_instance`, `dds_take_next_instance`)를 쓰기 때문이다. 자세한 근거는 [vendor-build.md](../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유-2026-10-28-첫-빌드에서-확인).
+Cyclone만 릴리스 태그가 아니라 master 커밋이다. dds-rtps의 C판 shape_main이 11.0.1 이후에 추가된 API (`dds_read_next_instance`, `dds_take_next_instance`)를 쓰기 때문이다. 자세한 근거는 [vendor-build.md](../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유).
 
 | 구성 요소 | 이미지 | 태그 / 커밋 |
 |---|---|---|
@@ -96,5 +88,5 @@ Cyclone만 릴리스 태그가 아니라 master 커밋이다. dds-rtps의 C판 s
 | eProsima/Fast-DDS-Gen | fastdds | `v4.3.0` / `cc0072b8849b35c67bd7e187990efad58e2871ae` |
 
 - 빌드 중 네트워크가 필요한 곳: 각 저장소 clone, foonathan_memory_vendor가 받는 foonathan/memory 소스, Fast-DDS-Gen의 Gradle 배포본과 Maven 의존성.
-- 버전을 올릴 때: Dockerfile의 `ARG` (태그와 해시를 함께), compose의 `image:` 태그, 이 표를 같이 고친다. Cyclone이 next_instance API를 포함한 릴리스 태그를 내면 그 태그로 옮기는 것을 검토한다.
+- 버전을 올릴 때: Dockerfile의 `ARG` (태그와 해시를 함께), compose의 `image:` 태그, 이 표를 같이 고친다. 다시 빌드한 뒤 [vendor-build.md "빌드 후 확인"](../docs/environment/vendor-build.md#빌드-후-확인)을 하고, 결과가 달라졌으면 "빌드 결과"를 고친다. Cyclone이 next_instance API를 포함한 릴리스 태그를 내면 그 태그로 옮기는 것을 검토한다.
 - 빌드 문제 대응은 [vendor-build.md "빌드 문제와 대응"](../docs/environment/vendor-build.md#빌드-문제와-대응)을 본다.

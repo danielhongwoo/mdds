@@ -77,15 +77,16 @@ mdds/
     mdds-rtps       # RTPS 타입, 메시지 파서/인코더, Writer/Reader 상태 머신, 디스커버리 - I/O-free core
     mdds            # 사용자 API + UDP transport (드라이버)
   tools/
+    mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (Phase 00)
     shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (Phase 10)
   tests/
     fixtures/       # Phase 00에서 캡처한 pcap (정답 바이트)
-  docker/           # Cyclone DDS / Fast DDS 실행 환경 (Phase 00)
+  docker/           # Cyclone DDS / Fast DDS 실행 환경 (Phase 00에서 만들고 이후 계속 사용)
   docs/
     roadmap.md, glossary.md
     phases/         # 단계별 계획과 진행 기록
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
-    environment/    # 실행 환경 문서 (Cyclone DDS / Fast DDS / shape_main 빌드)
+    environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
   omg-specs/        # OMG 규격 PDF와 텍스트 추출본 (git 제외: 재배포 조건 때문)
 ```
 
