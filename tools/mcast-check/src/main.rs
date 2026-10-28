@@ -13,17 +13,22 @@
 //!     (socket(AF_INET, SOCK_DGRAM, 0) + bind)           (socket + bind, sin_port = 0)
 //!   join_multicast_v4(239.255.0.1, eth0 주소)         set_multicast_ttl_v4(1)
 //!     (setsockopt IP_ADD_MEMBERSHIP)                    (setsockopt IP_MULTICAST_TTL)
-//!     -> 커널: eth0 그룹 목록에 추가 (ip maddr)
-//!     -> eth0 으로 IGMP Membership Report
-//!     -> bridge: 이 포트가 그룹을 원한다고 학습
+//!     -> 커널: eth0 그룹 목록에 추가 (ip maddr),
+//!        이후 이 그룹의 패킷을 소켓으로 올린다
+//!     -> eth0 으로 IGMP Membership Report (x2)
 //!   recv_from() 에서 대기 (recvfrom)                  send_to("hello ...", 239.255.0.1:7400) (sendto)
 //!                                                       -> eth0 으로 나가 bridge 에 도착
-//!                                                       -> bridge 가 가입한 포트로 전달
+//!                                                       -> bridge 가 모든 포트로 전달 (아래 참고)
 //!   <- 패킷 수신, 출발 주소와 내용 출력
 //!   (끝나면 소켓이 drop 되며 close)                    (끝나면 close)
 //!
 //! 받는 쪽이 하는 일 (bind -> 그룹 가입 -> 수신)은 DDS 참가자가 SPDP를 받을 때와 같다.
 //! 보내는 쪽은 그룹에 가입하지 않는다. 멀티캐스트는 그룹 주소로 보내기만 하면 된다.
+//!
+//! 가입이 필요한 이유는 받는 쪽 커널에 있다. 가입하지 않은 그룹의 패킷은 eth0에 도착해도 커널이
+//! 버린다. bridge 쪽은 환경에 따라 다르다. 스누핑과 IGMP querier가 모두 있으면 bridge가 보고를
+//! 보고 가입한 포트로만 전달하지만, Docker Desktop VM의 bridge는 querier가 없어서 가입과 무관하게
+//! 모든 포트로 흘려보낸다 (캡처로 확인, docs/environment/docker-network.md "멀티캐스트가 ... 원리").
 //!
 //! C에 익숙한 사람을 위한 Rust 읽는 법:
 //! - `UdpSocket`은 소켓 fd 하나를 감싼 값이다. 변수가 범위를 벗어나면 (drop) 자동으로 close(fd)된다.
@@ -211,8 +216,10 @@ fn recv(opts: &Options) -> io::Result<()> {
     //   setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &m, sizeof m);
     // 두 번째 인자 (imr_interface)는 소켓의 bind 주소가 아니라 "어느 인터페이스에서 듣는가"를 정한다.
     // 이 호출로 커널이
-    //   1. 그 인터페이스의 그룹 목록에 그룹을 올리고 (`ip maddr show eth0`에 보인다),
-    //   2. IGMP Membership Report를 내보낸다 (bridge의 멀티캐스트 스누핑이 이것을 보고 전달할 포트를 정한다).
+    //   1. 그 인터페이스의 그룹 목록에 그룹을 올리고 (`ip maddr show eth0`에 보인다), 이후 이 그룹으로 온
+    //      패킷을 소켓까지 올린다 (가입 전에는 버린다),
+    //   2. IGMP Membership Report를 내보낸다 (스누핑하는 스위치가 전달할 포트를 정하는 데 쓴다.
+    //      IGMPv3는 RFC 3376 Robustness Variable 기본값 2에 따라 두 번 보낸다).
     // 가입은 bind와 별개다. bind는 포트를 정하고, 가입은 어떤 그룹 주소의 패킷을 받을지 정한다.
     socket.join_multicast_v4(&opts.group, &iface)?;
     println!(

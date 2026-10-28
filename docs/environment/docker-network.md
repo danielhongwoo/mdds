@@ -60,7 +60,7 @@ Legend
 ### 주의
 - `~/work/mdds`가 Docker Desktop의 파일 공유 목록 (기본: `/Users`) 안에 있어야 바인드 마운트가 된다.
 - 첫 빌드는 Fast DDS C++ 빌드 때문에 메모리를 많이 쓴다. 메모리 16 GB를 권장하고, 8 GB면 `--build-arg JOBS=4`로 병렬 수를 줄인다 ([vendor-build.md](vendor-build.md#빌드-결과)).
-- 컨테이너 안 tcpdump는 root로 파일을 쓰지만, Docker Desktop의 파일 공유를 거치면 Mac에서는 Mac 사용자 소유로 보인다 [미확인, 첫 캡처 때 확인].
+- 컨테이너 안 tcpdump는 root로 파일을 쓰지만, Docker Desktop의 파일 공유를 거치면 Mac에서는 Mac 사용자 소유로 보인다 (첫 캡처에서 확인. 따로 chown할 필요 없다).
 - 호스트에서 bridge를 직접 캡처할 수 없다 (VM 안에 있다). 캡처는 항상 컨테이너 안 tcpdump로 한다.
 
 ### 선택: 별도 x86_64 Linux 머신
@@ -121,8 +121,16 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 
 ## 멀티캐스트가 컨테이너 사이를 넘어가는 원리
 - 사용자 정의 bridge 네트워크는 호스트 커널 (Mac이면 VM 안)의 Linux bridge (가상 L2 스위치)다. 각 컨테이너의 `eth0`은 veth 쌍으로 이 스위치의 포트에 꽂혀 있다.
-- DDS 구현이 239.255.0.1 그룹에 가입하면 커널이 IGMP Membership Report를 `eth0`으로 내보낸다. Linux bridge는 멀티캐스트 스누핑(multicast snooping)이 켜져 있으면 이 보고를 보고 그 포트로만 전달하고 (학습이 만료되면 다시 모든 포트로 흘려보낸다), 꺼져 있으면 처음부터 모든 포트로 흘려보낸다. 어느 쪽이든 두 컨테이너 사이에서는 전달된다.
+- DDS 구현이 239.255.0.1 그룹에 가입하면 커널이 IGMP Membership Report를 `eth0`으로 내보낸다. 가입은 두 곳에 영향을 준다.
+  - **받는 쪽 커널**: 가입한 그룹의 패킷만 소켓으로 올린다. 가입하지 않으면 `eth0`에 도착해도 (tcpdump에는 보여도) 버린다. 이것이 가입이 꼭 필요한 이유다.
+  - **bridge**: 멀티캐스트 스누핑 (multicast snooping)이 켜져 있고 IGMP querier가 있으면 보고를 보고 그 포트로만 전달한다. querier가 없으면 Linux bridge는 가입과 무관하게 모든 포트로 흘려보낸다 (`multicast_flood` 기본 켜짐).
+- **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`tests/fixtures/phase00/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
 - 멀티캐스트 TTL 기본값이 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다.
+- 캡처로 본 것 (`tests/fixtures/phase00/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
+  - 가입 직후 IGMPv3 Membership Report (목적지 224.0.0.22)가 두 번 나간다 (0초, 0.65초 뒤). RFC 3376의 Robustness Variable 기본값 2 때문이다. 종료 때 Leave도 두 번이다.
+  - 상대 컨테이너의 `eth0`에서도 이 보고가 보인다. 224.0.0.0/24 (link-local)는 bridge가 항상 모든 포트로 흘려보내기 때문이다.
+  - 보낸 쪽 캡처에는 자기 패킷이 두 개씩 잡힌다 (나가는 것과 `IP_MULTICAST_LOOP` 기본값 1로 되돌아온 것. 두 개는 IP id까지 같은 바이트이고 수십에서 수백 마이크로초 차이다). 받는 쪽에는 하나씩이다. 발행자 쪽에서 캡처하면 멀티캐스트가 두 배로 보이는 이유다. 자기가 만든 IGMP 보고도 같아서, 가입한 쪽 캡처에는 IGMPv3 보고가 2회 전송 x 2 = 4개로 보인다. 방향을 나눠 보려면 `tcpdump -Q out` / `-Q in`을 쓴다 (확인: 2개 송신 시 out 2, in 2).
+  - 목적지 MAC은 01:00:5e:7f:00:01이다 (239.255.0.1의 하위 23비트를 01:00:5e 뒤에 붙인 것). IGMP는 01:00:5e:00:00:16 (224.0.0.22). IP TTL은 1.
 - 다른 bridge 네트워크, 호스트의 물리 NIC 바깥, (Mac의 경우) VM 바깥으로는 넘어가지 않는다. 그래서 캡처는 반드시 같은 네트워크 안에서 한다.
 - 디버깅 순서: (1) `ip maddr show eth0`로 가입 여부, (2) tcpdump에서 `igmp` 패킷, (3) `mcast-check`로 전달 여부. 이 셋이 되면 네트워크는 정상이고 문제는 DDS 쪽이다.
 
@@ -133,7 +141,7 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
   - Fast DDS는 규격 기본 공식대로 7410 (메타트래픽), 7411 (사용자 데이터)을 쓴다.
   - Cyclone은 멀티캐스트 발견을 쓸 때 `Discovery/ParticipantIndex`가 `none`과 같아져 **유니캐스트 포트를 임의로** 고른다. SPDP의 PID_METATRAFFIC_UNICAST_LOCATOR / PID_DEFAULT_UNICAST_LOCATOR 값으로 확인한다.
 - **공유 메모리 로케이터**: Fast DDS는 SPDP에 공유 메모리 로케이터 (벤더 전용 kind)를 실을 수 있다. 캡처에서 모르는 kind의 로케이터가 보이면 이것이다. 실제 통신은 UDP로만 한다.
-- **어느 쪽에서 캡처해도 RTPS는 전부 보인다.** 참가자가 둘뿐이라 한 컨테이너의 `eth0`에서 캡처하면 양방향 유니캐스트와 양쪽 멀티캐스트가 모두 잡힌다. 기본은 **구독자 쪽**에서 캡처한다 (발행자 프로세스를 죽이는 시나리오에서도 캡처가 살아 있어야 하므로). 예외: 상대 컨테이너의 IGMP 가입 보고는 bridge 스누핑이 켜져 있으면 전달되지 않아 안 보일 수 있다.
+- **어느 쪽에서 캡처해도 RTPS는 전부 보인다.** 참가자가 둘뿐이라 한 컨테이너의 `eth0`에서 캡처하면 양방향 유니캐스트와 양쪽 멀티캐스트가 모두 잡힌다. 기본은 **구독자 쪽**에서 캡처한다 (발행자 프로세스를 죽이는 시나리오에서도 캡처가 살아 있어야 하므로). 상대 컨테이너의 IGMPv3 가입 보고도 보인다 (위 "캡처로 본 것"). 단 자기 쪽이 보낸 멀티캐스트는 두 개씩 잡히므로 (loopback), 멀티캐스트 패킷 수를 셀 때는 받는 쪽 캡처를 기준으로 한다.
 
 ## 검증 명령
 DDS를 띄우기 전에 네트워크만 확인한다. 실패하면 원인이 네트워크에 있다고 확정할 수 있다. 명령은 `docker/`에서 친다.
@@ -152,6 +160,13 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 ./mcast-check.sh cyclone send
 ```
 터미널 1에 `26 bytes from 172.28.0.10:<포트>: hello 1/3 from 172.28.0.10`이 세 번 찍히면 bridge가 멀티캐스트를 전달하는 것이다.
+
+캡처까지 함께 확인하려면 터미널 1을 띄우기 전에 받는 쪽에서 tcpdump를 켜 둔다. IGMP 가입과 탈퇴, hello 세 건이 잡힌다.
+```
+docker compose exec -T fastdds tcpdump -i eth0 -U -w /captures/phase00/mcast-check.fastdds.pcap 'igmp or udp port 7400'
+# 끝낼 때: docker compose exec fastdds pkill -INT tcpdump
+tshark -r ../tests/fixtures/phase00/mcast-check.fastdds.pcap          # Mac 에서
+```
 
 ### 도구를 벤더 컨테이너 밖에서 돌리는 방법
 `mcast-check.sh`는 `docker run --network container:<벤더 컨테이너 id>`로 도구 컨테이너를 띄운다. 도구 컨테이너는 따로 있지만 벤더 컨테이너의 네트워크 네임스페이스를 빌려 쓰므로 같은 `eth0`, 같은 IP에서 돈다 (위 "검토한 다른 방식"의 네임스페이스 공유).

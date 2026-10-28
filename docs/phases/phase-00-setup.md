@@ -58,7 +58,7 @@
 ### Step 4. 네트워크 검증 (DDS를 띄우기 전에)
 - [x] 컨테이너 두 개가 서로 ping 된다 (`docker compose exec cyclone ping -c1 fastdds`). 이후 명령은 모두 `docker/`에서 친다.
 - [x] 멀티캐스트가 컨테이너 사이를 넘어간다. `mcast-check`로 239.255.0.1:7400에 보내고 받는다 ([검증 명령](../environment/docker-network.md#검증-명령)). 받는 쪽에서 `ip maddr show eth0`에 239.255.0.1이 보이는 것도 확인한다.
-- [ ] 캡처가 된다. `tcpdump`가 위 mcast-check 패킷과 IGMP 가입 패킷을 잡고, pcap 파일이 Mac에서 열린다.
+- [x] 캡처가 된다. `tcpdump`가 위 mcast-check 패킷과 IGMP 가입 패킷을 잡고, pcap 파일이 Mac에서 열린다 (`tests/fixtures/phase00/mcast-check.*.pcap`).
 - 여기서 실패하면 [docker-network.md "문제와 대응"](../environment/docker-network.md#문제와-대응)을 본다. DDS를 띄우기 전에 해결한다.
 
 ### Step 5. 첫 통신
@@ -194,6 +194,7 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-28: Cyclone을 태그 11.0.1이 아닌 master `f2aaccb4`로 고정 (11.0.1로는 C판 shape_main 링크 실패) -> [vendor-build.md](../environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유)
 - 2026-10-28: Step 3 이미지 빌드 완료 (Mac에서 약 3분) -> [vendor-build.md "빌드 결과"](../environment/vendor-build.md#빌드-결과)
 - 2026-10-28: 실행 환경 문서를 Phase 00에서 `docs/environment/`로 분리 (이후 단계에서도 계속 쓰므로). 검토 기록 절을 없애고 진행 기록을 한 줄 색인으로 줄임
+- 2026-10-28: Step 4 완료. 이 환경의 bridge는 querier가 없어 IGMP 가입과 무관하게 멀티캐스트를 모든 포트로 흘려보냄 (전달 여부는 받는 쪽 커널의 가입이 결정) -> [docker-network.md](../environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
 - 2026-10-28: 캡처 볼륨을 `tests/fixtures` 전체로 바꿈 (단계에 묶지 않음). 시나리오는 `/captures/phase00/`에 쓴다 -> [docker-network.md "compose 설계"](../environment/docker-network.md#compose-설계)
 - 2026-10-28: 멀티캐스트 확인 도구를 socat 대신 Rust로 만듦 (`tools/mcast-check`, 이미지 `mdds/tools`, 벤더 컨테이너의 네트워크 네임스페이스를 빌려 실행). 이를 위해 Step 2 워크스페이스 뼈대를 함께 만듦 -> [docker-network.md "검증 명령"](../environment/docker-network.md#검증-명령)
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 컨테이너 사이 멀티캐스트를 전달함을 확인 (fastdds 가입, cyclone 송신 3건 모두 수신)
