@@ -76,7 +76,9 @@
 - [ ] xcdr2
 
 ### Step 7. 캡처 분석 메모
-- [ ] `tests/captures/phase00/README.md`에 시나리오마다: 실행 명령, 벤더와 버전, 캡처한 컨테이너, 주목할 프레임 번호 (첫 SPDP, 첫 SEDP, 첫 DATA, HEARTBEAT / ACKNACK 왕복, dispose, 첫 DATA_FRAG)를 적는다.
+- [ ] `tests/captures/phase00/README.md`에 시나리오마다: 실행 명령, 벤더와 버전, 캡처한 컨테이너, 흐름을 Mermaid 시퀀스 다이어그램 (`mermaid` 코드 블록)으로 적는다. 반복은 `loop`로 줄이고 메시지마다 프레임 번호와 시각을 붙인다 (첫 SPDP, SEDP 교환, 매칭, HEARTBEAT / ACKNACK 왕복, dispose, 첫 DATA_FRAG). 다이어그램 아래에 "이 캡처에서 볼 것"을 적는다. 형식은 rel-cyclone-pub 절을 따른다.
+  - 왜: 프레임 번호 표만으로는 무엇이 무엇에 대한 응답인지 보이지 않는다. 캡처 한 개에 프레임이 수백 개이고 대부분 같은 일의 반복이다. Mermaid는 GitHub과 VS Code에서 그림으로 그려지고, 원문도 메시지 한 줄씩이라 터미널에서 읽힌다. 문법이 ASCII라 전역 문자 규칙도 지킨다.
+  - 버린 대안: ASCII 그림. 한글이 두 칸을 차지해 오른쪽 세로선을 표시 폭으로 맞춰야 하고, 한 줄만 고쳐도 다시 맞춰야 한다.
 - [ ] 두 벤더의 차이를 메모한다: 벤더 ID, 프로토콜 버전, 벤더 전용 PID, 데이터 표현 ID, SPDP의 lease 기간 값, 유니캐스트 포트 (Fast DDS 7410 / 7411, Cyclone은 임의 포트), Fast DDS SPDP에 실리는 공유 메모리 로케이터 (벤더 전용 kind).
 
 ### Step 8. 규약 확정
