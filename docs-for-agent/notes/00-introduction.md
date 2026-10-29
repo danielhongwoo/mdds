@@ -96,3 +96,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 2026-10-30: 비교 대상 선정 기준과 분야별 (임베디드, 미션크리티컬, 로보틱스) 비교 기준을 정함. 노트 이름을 book 디렉터리와 같게 바꿈 (`00-introduction.md`) -> [비교 대상과 기준](#비교-대상과-기준), [book.md](../conventions/book.md)
 - 2026-10-30: 비교 조사 완료. 핵심 근거 (RTPS 2.5 Sec. 7.2, 8.5.1, Zenoh 디스커버리 측정, ROS 2 alternative middleware report, Kilted Tier 1)는 원문으로 재확인. 남은 빈칸은 조사 노트 7절 -> [middleware-comparison.md](../research/middleware-comparison.md)
 - 2026-10-30: 분야 이름 "임베디드"를 "MCU" (펌웨어 / RTOS)로 좁힘. Linux edge 기기는 빠짐 -> [비교 대상과 기준](#비교-대상과-기준)
+- 2026-10-30: 조사 노트의 MCU 표에 DDS 구현 열과 미션크리티컬 표의 DDS 안전 인증 칸을 채움. MCU와 안전 에디션은 정적 endpoint 디스커버리를 정식 기능으로 둔다 (Connext Micro DPSE) -> [middleware-comparison.md](../research/middleware-comparison.md#4-디스커버리-관점-chapter-00의-핵심-근거)

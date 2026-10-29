@@ -44,13 +44,15 @@
 Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범위는 [chapter 00 노트](../notes/00-introduction.md#비교-대상과-기준)에 있다.
 
 
-| 기준 | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
-|---|---|---|---|---|---|
-| 지원 RTOS / 플랫폼 | 공식 지원 없음. contiki-zmtp는 오래됨 | zenoh-pico: Zephyr, FreeRTOS, ESP-IDF, Arduino, RPi Pico 등 | 경량 client 많음. Zephyr, RIOT에 MQTT-SN API | AUTOSAR Classic (MCU) BSW 모듈로 구현 | FreeRTOS, Zephyr, NuttX |
-| 크기 | 수치 없음 | RPi Pico W 기본 구성 flash 약 80 KB, RAM 약 12 KB [벤더 주장] | 공식 수치 없음 | 공식 수치 없음 | 규격 목표 코드 100 KB 미만. 구현 문서: RAM 2 kB 미만 (단순 pub/sub) [벤더 주장] |
-| 동적 할당 | 근거 없음 | 확인 못 함 | 구현마다 다름 (coreMQTT는 없음 [추정]) | 정적 설정 중심 [추정] | Client는 동적 / 정적 할당을 쓰지 않음 [벤더 주장] |
-| 비IP 전송 | 없음 | serial | MQTT-SN (ZigBee 등 센서망) | 직접 지원 없음 (gateway) | serial, CAN FD (Agent) |
-| 끊기는 링크 | TCP 재연결, heartbeat. 재전송 없음 | link lease, keep alive | TCP 의존. MQTT-SN sleeping client | UDP / TCP 선택, SD TTL로 상태 갱신 | session과 reliable stream. sleep / 간헐 연결을 전제로 설계 (규격 8.1) |
+DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구현 (MCU, 안전 인증)".
+
+| 기준 | DDS (구현) | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
+|---|---|---|---|---|---|---|
+| 지원 RTOS / 플랫폼 | 구현마다 다름. RTI Connext Micro: FreeRTOS (Armv7E-M), MicroSAR (TC397) (재확인). embeddedRTPS: FreeRTOS + lwIP (STM32F7 등). Cyclone DDS, Fast DDS: 공식 MCU 지원 없음 | 공식 지원 없음. contiki-zmtp는 오래됨 | zenoh-pico: Zephyr, FreeRTOS, ESP-IDF, Arduino, RPi Pico 등 | 경량 client 많음. Zephyr, RIOT에 MQTT-SN API | AUTOSAR Classic (MCU) BSW 모듈로 구현 | FreeRTOS, Zephyr, NuttX |
+| 크기 | Connext Micro의 MCU 수치는 공개 안 됨 (참조 설정 FreeRTOS heap 400 KB). Cyclone DDS를 ESP32-S3 + Zephyr에 올린 커뮤니티 실측: flash 약 0.9 MB, heap 피크 약 100 kB [3rd] | 수치 없음 | RPi Pico W 기본 구성 flash 약 80 KB, RAM 약 12 KB [벤더 주장] | 공식 수치 없음 | 공식 수치 없음 | 규격 목표 코드 100 KB 미만. 구현 문서: RAM 2 kB 미만 (단순 pub/sub) [벤더 주장] |
+| 동적 할당 | Connext Micro: 초기값 = 최대값으로 설정하면 런타임 할당 없음. Cyclone DDS: heap 사용 | 근거 없음 | 확인 못 함 | 구현마다 다름 (coreMQTT는 없음 [추정]) | 정적 설정 중심 [추정] | Client는 동적 / 정적 할당을 쓰지 않음 [벤더 주장] |
+| 비IP 전송 | 없음 (규격 PSM이 UDP/IP. MCU 구현도 lwIP UDP) | 없음 | serial | MQTT-SN (ZigBee 등 센서망) | 직접 지원 없음 (gateway) | serial, CAN FD (Agent) |
+| 끊기는 링크 | reliable 프로토콜 (HEARTBEAT / ACKNACK)과 lease로 참가자 정리. MCU에서는 endpoint를 정적으로 선언해 SEDP를 생략하기도 함 (Connext Micro DPSE) | TCP 재연결, heartbeat. 재전송 없음 | link lease, keep alive | TCP 의존. MQTT-SN sleeping client | UDP / TCP 선택, SD TTL로 상태 갱신 | session과 reliable stream. sleep / 간헐 연결을 전제로 설계 (규격 8.1) |
 
 ### 미션크리티컬
 
@@ -59,7 +61,7 @@ Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범�
 | 단일 장애점 | 규격이 금지 (RTPS 2.5 Sec. 7.2) | 기본은 없음. proxy를 쓰면 생김 | peer는 없음. client 모드는 router | broker | 없음 (provider 자신은 예외) | Agent |
 | 시간 제약 표현 | deadline, latency budget, liveliness QoS | 없음 (응용이 처리) | 없음 [추정] | 없음 | SD 타이머, request timeout 정도 | 없음 |
 | 보안 | DDS-Security (OMG 규격) | CURVE (인증 + 암호화), ZAP | TLS / mTLS, 인증, 접근 제어 설정 | TLS, 5.0 enhanced auth | 프로토콜에 없음. IPsec, MACsec, TLS, DTLS, SecOC에 맡김 | 규격 범위 밖, 전송 계층 (DTLS / TLS)에 맡김 |
-| 안전 인증 | 이번 조사 범위 밖 (확인 필요) | 찾지 못함 | Zenoh 자체는 없음. ASIL-D 제품은 계획 단계 [벤더 주장] | 찾지 못함 | 벤더 스택 단위 (예: ASIL-D 개발 프로세스 주장) [벤더 주장] | 없음. 안전 표준으로 개발하지 않았다고 명시 |
+| 안전 인증 | 상용 안전 에디션만. RTI Connext Cert: ISO 26262 ASIL D, TUV SUD, SEooC (재확인). eProsima Safe DDS: ASIL D [벤더 주장]. 오픈소스 Cyclone DDS, Fast DDS는 없음 | 찾지 못함 | Zenoh 자체는 없음. ASIL-D 제품은 계획 단계 [벤더 주장] | 찾지 못함 | 벤더 스택 단위 (예: ASIL-D 개발 프로세스 주장) [벤더 주장] | 없음. 안전 표준으로 개발하지 않았다고 명시 |
 | 공급자 | 여러 벤더 | 단일 커뮤니티. libzmq 마지막 릴리스 4.3.5 (2023-10-09) | ZettaScale 주도 | 여러 벤더 | 여러 벤더 | eProsima |
 
 ### 로보틱스
@@ -83,6 +85,8 @@ Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범�
   - 출처: https://www.openrobotics.org/blog/2025/5/23/ros-2-kilted-kaiju-released
 - rmw_zenoh는 multicast scouting을 기본으로 끄고 router로 디스커버리를 한다. 잘못 설정된 네트워크 문제와 같은 LAN 안 로봇끼리의 통제되지 않은 통신을 막기 위해서라고 설계 문서가 적는다. [확인]
   - 출처: https://github.com/ros2/rmw_zenoh/blob/rolling/docs/design.md
+- 자원이 적거나 안전 인증이 필요한 곳에서는 동적 엔드포인트 디스커버리를 빼는 선택이 정식 기능으로 있다. RTI Connext Micro의 DPSE (Dynamic Participant, Static Endpoint)는 참가자만 SPDP로 찾고, 상대 endpoint와 그 QoS는 응용이 미리 선언한다. 이때 DataWriter와 DataReader의 QoS 일치를 런타임에 검사하지 않는다고 문서가 경고한다. (재확인) 안전 에디션들도 정적 디스커버리를 지원한다 (6절). 디스커버리가 DDS의 장점이자 비용이라는 점을 보여 주는 예다.
+  - 출처: https://community.rti.com/static/documentation/connext-micro/4.1.0/doc/html/usersmanual/discovery.html
 - 무선 환경의 디스커버리 트래픽 문제는 저장소 루트의 int2DDS 논문도 제기한다 (인용 여부는 [chapter 00 노트](../notes/00-introduction.md#확인할-것)에서 결정).
 
 ## 5. 대상별 한 줄 요약 (DDS와 다른 설계 선택)
@@ -93,6 +97,25 @@ Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범�
 - **DDS-XRCE**: 제약 기기가 RTPS 디스커버리와 상태를 감당하지 않도록 Agent에게 맡긴 DDS 계열. 대가는 Agent 단일 장애점과 비표준 Client API다.
 
 ## 6. 대상별 상세와 출처
+
+### DDS 구현 (MCU, 안전 인증)
+MCU 위에서 agent 없이 RTPS 노드로 도는 구현
+- RTI Connext Micro (상용): 지원 플랫폼 표에 FreeRTOS 10.0.0 (Armv7E-M), MicroSAR 4.2.2 (TC397). https://community.rti.com/static/documentation/connext-micro/4.3.0/doc/html/release/supported_platforms.html (재확인). FreeRTOS 참조 보드는 STM32F769I-DISC0, lwIP, FreeRTOS heap 400 KB. https://community.rti.com/static/documentation/connext-micro/4.1.0/doc/html/platformnotes/freertos.html [확인]. MCU용 flash / RAM 수치는 공개 문서에서 찾지 못함
+- 디스커버리 플러그인 DPDE (SPDP + SEDP)와 DPSE (SPDP + 정적 endpoint) 중 선택. (재확인, 위 discovery 문서)
+- 런타임 할당 없이 쓰려면 자원 한도의 초기값과 최대값을 같게 두고, participant를 disabled 상태로 만들어 endpoint를 모두 만든 뒤 enable한다. https://community.rti.com/kb/how-do-i-minimize-memory-footprint-and-avoid-dynamic-memory-allocation [확인]
+- embeddedRTPS (RWTH Aachen, 학술): FreeRTOS + lwIP, STM32F767ZI, Aurix, Cortex-R5. SPDP와 SEDP 구현, QoS는 기초 수준이고 스스로 "far from a complete RTPS implementation"이라 적음. Fast DDS와 시험. https://github.com/embedded-software-laboratory/embeddedRTPS [확인]
+- Dust DDS (Rust): no_std 대상과 Embassy runtime 지원을 주장. 보드 목록과 크기 수치 없음. https://github.com/s2e-systems/dust-dds [확인]
+- Cyclone DDS: `ports/freertos-posix`는 FreeRTOS 시뮬레이터용이고 lwIP 통합이 아직 없다. https://github.com/eclipse-cyclonedds/cyclonedds/tree/master/ports/freertos-posix (재확인). Zephyr 포트 갱신 PR은 최소 구성에 RAM 약 1 MB가 필요하다고 적음. https://github.com/eclipse-cyclonedds/cyclonedds/pull/2461 [확인]. ESP32-S3 + Zephyr 커뮤니티 실측: flash 913,700 B, heap 피크 약 100 kB, best-effort만. https://fj-blanco.github.io/notes/ros2-zephyr/ [3rd]
+- Fast DDS, OpenDDS, GurumDDS, CoreDX: MCU 직접 지원 근거를 찾지 못함 [추정]. eProsima의 MCU 답은 Micro XRCE-DDS다.
+
+안전 인증
+- RTI Connext Cert for Connext Drive: TUV SUD가 ISO 26262 ASIL D로 인증한 SEooC. 모든 메모리를 시작할 때 할당한다. https://www.rti.com/hubfs/_Collateral/Datasheets/rti-datasheet-connext-cert-for-connext-drive.pdf (재확인). 인증 대상 버전과 인증서 번호는 데이터시트에 없음
+- RTI Connext DDS Cert: DO-178C Level A 인증 증거 패키지 (2015, Verocel 제작). 항공은 제품 인증이 아니라 고객이 당국에 내는 증거 방식. https://www.rti.com/news/do-178c-cert-data-package [확인]
+- eProsima Safe DDS: Fast DDS와 별개로 새로 작성한 상용 제품. 포럼 공지는 ASIL D 인증을 주장하지만 인증 기관이 없고, 공식 문서는 "designed for compliance"라고만 씀. https://safe-dds.docs.eprosima.com/main/ [확인], https://discourse.openrobotics.org/t/announcement-safe-dds-3-0-is-iso-26262-asil-d-certified-ros-2-tutorial-field-deployment/50361 [벤더 주장]
+- Apex.AI: 2021 발표에서 Apex.OS (ROS 2 상용 fork, 당시 DDS는 Connext Micro)가 TUV NORD 감사로 ASIL D. 현재 Apex.Grace 페이지는 ASIL B로 표기. https://www.apex.ai/apexgrace [확인]. ROS 2 (rclcpp) 자체는 인증되지 않음
+- TTTech Auto MotionWise Cyclone DDS: ASIL D 인증 진행 중. 완료는 확인 못 함. https://www.trustmotion.com/knowledge-platform/motionwise-cyclone-dds-unleashed [확인]
+- 오픈소스 Cyclone DDS, Fast DDS: 인증 주장 없음 [추정]
+- 공통점: 안전 에디션은 DDS API의 부분 집합이고, 시작 시 메모리 할당, 정적 디스커버리 지원을 갖는다.
 
 ### ZeroMQ
 - 브로커 없음이 기본, proxy / broker 패턴은 선택. https://zeromq.org/get-started/ , https://zguide.zeromq.org/docs/chapter5/ [확인]
@@ -139,8 +162,9 @@ Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범�
 - PX4가 비행 컨트롤러와 ROS 2 사이에 uXRCE-DDS를 쓴다. https://docs.px4.io/main/en/middleware/uxrce_dds.html [확인]
 
 ## 7. 확인하지 못한 것
-- MCU 표의 DDS 열. 규격이 아니라 구현 (RTI Connext Micro, 경량 RTPS 구현 등)의 성질이라 따로 조사한다.
-- DDS 구현의 안전 인증 현황 (상용 벤더의 인증 제품). 미션크리티컬 표의 DDS 칸이 비어 있다.
+- DDS 안전 에디션의 인증서 원문 (어느 제품도 TUV 인증서나 인증 DB 항목을 보지 못함). Safe DDS의 인증 기관, Apex.Grace의 ASIL 수준 (B / D).
+- IEC 61508, IEC 62304, EN 50128 인증을 받은 DDS 제품 (찾지 못함).
+- Connext Micro의 MCU용 flash / RAM 수치.
 - ROS 2 alternative middleware report PDF 본문 (요구 사항과 점수).
 - zenoh-pico의 동적 할당 여부와 손실 링크 동작 (소스로 확인).
 - Zenoh 1.10.2 릴리스 연도 표기.
