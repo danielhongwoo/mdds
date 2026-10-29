@@ -68,12 +68,12 @@
 
 ### Step 6. 시나리오 캡처
 - 아래 시나리오 표의 각 항목을 `phase00-capture.ts`로 실행해 `tests/captures/phase00/`에 저장한다.
-- [ ] be-cyclone-pub, be-fastdds-pub
+- [x] be-cyclone-pub, be-fastdds-pub
 - [x] rel-cyclone-pub, rel-fastdds-pub (Step 5에서 캡처)
-- [ ] dispose-on-exit
-- [ ] lease-expiry
-- [ ] large-sample
-- [ ] xcdr2
+- [x] dispose-on-exit
+- [x] lease-expiry
+- [x] large-sample
+- [x] xcdr2
 
 ### Step 7. 캡처 분석 메모
 - [ ] `tests/captures/phase00/README.md`에 시나리오마다: 실행 명령, 벤더와 버전, 캡처한 컨테이너, 흐름을 Mermaid 시퀀스 다이어그램 (`mermaid` 코드 블록)으로 적는다. 반복은 `loop`로 줄이고 메시지마다 프레임 번호와 시각을 붙인다 (첫 SPDP, SEDP 교환, 매칭, HEARTBEAT / ACKNACK 왕복, dispose, 첫 DATA_FRAG). 다이어그램 아래에 "이 캡처에서 볼 것"을 적는다. 형식은 rel-cyclone-pub 절을 따른다.
@@ -216,3 +216,4 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 컨테이너 사이 멀티캐스트를 전달함을 확인 (fastdds 가입, cyclone 송신 3건 모두 수신)
 - 2026-10-28: Step 5 완료. 시나리오 스크립트 작성, rel 두 시나리오 캡처. shape_main `-c`를 발행 전용으로 바꿈 (구독자에게는 내용 필터가 됨) -> [시나리오 표](#시나리오-표), [캡처 README](../../tests/captures/phase00/README.md)
 - 2026-10-29: 시나리오 스크립트를 POSIX sh에서 TypeScript + Deno로 바꿈 (가독성) -> [시나리오 실행 흐름](#시나리오-실행-흐름-phase00-capturets)
+- 2026-10-29: Step 6 완료. 나머지 6개 시나리오 캡처 (large-sample은 2.9MB라 자르지 않음). 시나리오별 다이어그램은 Step 7 -> [캡처 README](../../tests/captures/phase00/README.md#파일)

@@ -1,0 +1,34 @@
+Create topic: Square
+Create reader for topic: Square
+on_subscription_matched() topic: 'Square'  type: 'ShapeType' : matched writers 1 (change = 1)
+Square     BLUE       045 042 [20] {255}
+Square     BLUE       046 043 [20] {255}
+Square     BLUE       047 044 [20] {255}
+Square     BLUE       048 045 [20] {255}
+Square     BLUE       049 046 [20] {255}
+Square     BLUE       050 047 [20] {255}
+Square     BLUE       051 048 [20] {255}
+Square     BLUE       052 049 [20] {255}
+Square     BLUE       053 050 [20] {255}
+Square     BLUE       054 051 [20] {255}
+Square     BLUE       055 052 [20] {255}
+Square     BLUE       056 053 [20] {255}
+Square     BLUE       057 054 [20] {255}
+Square     BLUE       058 055 [20] {255}
+Square     BLUE       059 056 [20] {255}
+Square     BLUE       060 057 [20] {255}
+Square     BLUE       061 058 [20] {255}
+Square     BLUE       062 059 [20] {255}
+Square     BLUE       063 060 [20] {255}
+Square     BLUE       064 061 [20] {255}
+Square     BLUE       065 062 [20] {255}
+Square     BLUE       066 063 [20] {255}
+Square     BLUE       067 064 [20] {255}
+Square     BLUE       068 065 [20] {255}
+Square     BLUE       069 066 [20] {255}
+Square     BLUE       070 067 [20] {255}
+Square     BLUE       071 068 [20] {255}
+Square     BLUE       072 069 [20] {255}
+on_subscription_matched() topic: 'Square'  type: 'ShapeType' : matched writers 0 (change = -1)
+Square     BLUE       NOT_ALIVE_NO_WRITERS_INSTANCE_STATE
+Done.
