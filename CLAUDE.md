@@ -22,4 +22,4 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
 - 그 밖의 규약 (라이선스, 툴체인, 테스트 배치)은 `docs/phases/phase-00-setup.md`의 "프로젝트 규약"을 따른다.
 
 ## 실행 환경
-- Cyclone DDS / Fast DDS는 Docker로 실행한다 (`docker/`). shape_main과 두 벤더 라이브러리는 이미지 안에서 소스로 빌드한다 (버전과 Dockerfile 설계는 `docs/environment/vendor-build.md`, 실행 호스트와 네트워크는 `docs/environment/docker-network.md`). **Mac (arm64)의 Docker Desktop**에서 빌드, 실행, 캡처를 모두 하는 것이 기본이다 (네이티브 arm64 빌드). 벤더마다 이미지와 컨테이너가 따로 있다 (`docker/cyclone/`, `docker/fastdds/`). 캡처는 바인드 마운트로 `tests/fixtures/`에 바로 생긴다. DDS 트래픽은 Docker Desktop VM 안의 bridge에서만 돌고 Mac 호스트는 DDS 통신에 참여하지 않는다. 별도 x86_64 Linux 머신은 선택 사항이다.
+- Cyclone DDS / Fast DDS는 Docker로 실행한다 (`docker/`). shape_main과 두 벤더 라이브러리는 이미지 안에서 소스로 빌드한다 (버전과 Dockerfile 설계는 `docs/environment/vendor-build.md`, 실행 호스트와 네트워크는 `docs/environment/docker-network.md`). **Mac (arm64)의 Docker Desktop**에서 빌드, 실행, 캡처를 모두 하는 것이 기본이다 (네이티브 arm64 빌드). 벤더마다 이미지와 컨테이너가 따로 있다 (`docker/cyclone/`, `docker/fastdds/`). 캡처는 바인드 마운트로 `tests/captures/`에 바로 생긴다. DDS 트래픽은 Docker Desktop VM 안의 bridge에서만 돌고 Mac 호스트는 DDS 통신에 참여하지 않는다. 별도 x86_64 Linux 머신은 선택 사항이다.

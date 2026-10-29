@@ -12,7 +12,8 @@ docker/
   fastdds/Dockerfile    -> 이미지 mdds/fastdds-shape:3.6.1             (/usr/local/bin/fastdds_shape)
   tools/Dockerfile      -> 이미지 mdds/tools   (/usr/local/bin/mcast-check, 저장소 루트를 컨텍스트로 빌드)
   mcast-check.sh        벤더 컨테이너의 네트워크 네임스페이스에서 mcast-check 실행
-  run-scenario.sh       시나리오 실행 (아직 없음, Phase 00 Step 3)
+  phase00-capture.ts    시나리오 하나 실행: 캡처, 구독, 발행, 정리 (Phase 00, Deno 2로 실행)
+  deno.json             Deno fmt / lint 설정 (줄 폭 100, 함수 반환 타입 필수)
 ```
 - 벤더마다 이미지와 컨테이너가 따로 있다. `cyclone` 컨테이너에는 `cyclone_shape`만, `fastdds` 컨테이너에는 `fastdds_shape`만 있다.
 - 두 이미지 모두 같은 베이스 이미지와 같은 shape_main 소스 커밋을 쓴다. 이 두 값은 두 Dockerfile에 각각 적혀 있으므로 **바꿀 때는 함께 고친다.**
@@ -41,7 +42,7 @@ docker/
 
 ### 1. 빌드와 실행
 ```
-mkdir -p ../tests/fixtures/phase00        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/fixtures 전체가 /captures 로 붙는다
+mkdir -p ../tests/captures/phase00        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/captures 전체가 /captures 로 붙는다
 docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 3분. 두 번째부터는 바뀐 단계만
 docker compose up -d
 docker compose ps                         # cyclone, fastdds 두 개가 running
@@ -64,7 +65,12 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 터미널 1에 `hello 1/3 from 172.28.0.10` 등이 찍히면 bridge가 멀티캐스트를 전달하는 것이다. 옵션은 `./mcast-check.sh fastdds --help`. 동작 원리와 socat 대안은 [docker-network.md "검증 명령"](../docs/environment/docker-network.md#검증-명령).
 
 ### 3. 시나리오 캡처
-`run-scenario.sh`는 아직 없다. 실행 흐름과 시나리오 표는 [Phase 00](../docs/phases/phase-00-setup.md#시나리오-실행-흐름-run-scenariosh)에 있다. 결과는 `../tests/fixtures/phase00/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/phase00/`).
+```
+brew install deno                         # 처음 한 번. 외부 모듈은 쓰지 않는다
+./phase00-capture.ts --list                  # 시나리오 이름
+./phase00-capture.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
+```
+실행 흐름과 시나리오 표는 [Phase 00](../docs/phases/phase-00-setup.md#시나리오-실행-흐름-phase00-capturets)에, 캡처별 관찰은 [tests/captures/phase00/README.md](../tests/captures/phase00/README.md)에 있다. 결과는 `../tests/captures/phase00/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/phase00/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.
 
 ### 정리

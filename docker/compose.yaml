@@ -36,9 +36,9 @@ services:
         ipv4_address: 172.28.0.10
     # tcpdump 용. Docker 기본 권한에 포함되지만 의도를 남기려고 명시한다.
     cap_add: [NET_RAW]
-    # 단계에 묶지 않고 fixtures 전체를 붙인다. 시나리오는 /captures/<단계>/ 아래에 쓴다 (예: /captures/phase00).
+    # 단계에 묶지 않고 captures 전체를 붙인다. 시나리오는 /captures/<단계>/ 아래에 쓴다 (예: /captures/phase00).
     volumes:
-      - ../tests/fixtures:/captures
+      - ../tests/captures:/captures
 
   fastdds:
     build:
@@ -51,7 +51,7 @@ services:
         ipv4_address: 172.28.0.11
     cap_add: [NET_RAW]
     volumes:
-      - ../tests/fixtures:/captures
+      - ../tests/captures:/captures
 
   # mdds 진단 도구 이미지. 빌드 전용이다: profile 이 있어서 docker compose up 으로는 뜨지 않는다.
   # 실행은 mcast-check.sh 가 docker run --network container:<벤더 컨테이너> 로 한다.

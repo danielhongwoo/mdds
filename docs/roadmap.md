@@ -80,7 +80,7 @@ mdds/
     mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (Phase 00)
     shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (Phase 10)
   tests/
-    fixtures/       # Phase 00에서 캡처한 pcap (정답 바이트)
+    captures/       # Phase 00에서 캡처한 pcap과 로그 (테스트의 정답 바이트)
   docker/           # Cyclone DDS / Fast DDS 실행 환경 (Phase 00에서 만들고 이후 계속 사용)
   docs/
     roadmap.md, glossary.md

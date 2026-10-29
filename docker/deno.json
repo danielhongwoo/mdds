@@ -1,0 +1,13 @@
+{
+  "fmt": {
+    "include": ["*.ts", "deno.json"],
+    "lineWidth": 100
+  },
+  "lint": {
+    "include": ["*.ts"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["explicit-function-return-type"]
+    }
+  }
+}
