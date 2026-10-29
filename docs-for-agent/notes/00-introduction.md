@@ -42,9 +42,9 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 
 | 대상 | 대표하는 것 | 주로 거론되는 분야 (조사로 확인) |
 |---|---|---|
-| ZeroMQ | 브로커 없는 메시지 라이브러리. 통신 패턴만 주고 디스커버리, 데이터 모델, QoS는 응용이 만든다 | 범용, 로보틱스 일부 |
+| ZeroMQ | 브로커 없는 메시지 라이브러리. 통신 패턴만 주고 디스커버리, 데이터 모델, QoS는 응용이 만든다 | 범용. 분야별 공식 사례는 찾지 못함 |
 | Zenoh | 브로커 없는 pub/sub + 저장 + 질의. 무선, 대규모, 마이크로컨트롤러까지 겨냥 | 로보틱스 (ROS 2 rmw), 임베디드 (zenoh-pico) |
-| MQTT | 브로커 방식의 대조군. 표준 (OASIS)이고 제약 기기에 맞춤 | 임베디드, IoT |
+| MQTT | 브로커 방식의 대조군. 표준 (OASIS)이고 제약 기기에 맞춤 | 임베디드, IoT (MQTT-SN은 센서망) |
 | SOME/IP | 서비스 지향 통신. 차량 안 ECU 사이의 표준 (AUTOSAR) | 미션크리티컬 (자동차) |
 | DDS-XRCE (micro-ROS) | DDS 쪽의 제약 기기 답. 에이전트를 거쳐 DDS에 붙는다 | 임베디드, 로보틱스 |
 
@@ -65,7 +65,7 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 비교 대상의 공식 문서: ZeroMQ (zguide), Zenoh (zenoh.io), MQTT 5.0 (OASIS 규격), SOME/IP (AUTOSAR 규격), DDS-XRCE 1.0 (OMG 규격)과 micro-ROS
 
 ## 작업 순서
-- [ ] 비교 조사: "비교 대상과 기준"의 대상을 공통 기준과 분야별 기준으로 정리해 `research/middleware-comparison.md`에 둔다. 표의 "주로 거론되는 분야"도 출처로 확인한다. 원문으로 확인한 것과 추정을 구분하고 확인 날짜를 적는다.
+- [x] 비교 조사: "비교 대상과 기준"의 대상을 공통 기준과 분야별 기준으로 정리해 `research/middleware-comparison.md`에 둔다. 표의 "주로 거론되는 분야"도 출처로 확인한다. 원문으로 확인한 것과 추정을 구분하고 확인 날짜를 적는다. -> [research/middleware-comparison.md](../research/middleware-comparison.md)
 - [ ] 디스커버리 비용 근거: 캡처에서 디스커버리 패킷 비중을 세고, 규모가 커질 때 문제가 되는 이유 (참가자 수에 따른 SEDP 교환, 멀티캐스트 부담)와 알려진 대안 (Fast DDS Discovery Server, Zenoh의 방식 등)을 출처와 함께 정리한다.
 - [ ] 규격 사실 확인: 규격 이름, 판, 계층 관계를 `omg-specs/` 원문으로 확인한다.
 - [ ] 본문 초안 (`book/00-introduction/README.md`), 목차 상태를 "초안"으로.
@@ -91,3 +91,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 ## 진행 기록
 - 2026-10-30: 노트 작성. chapter 00은 기능 chapter 틀을 쓰지 않고 위 "틀"의 절을 쓴다 -> [book.md](../conventions/book.md#chapter)
 - 2026-10-30: 비교 대상 선정 기준과 분야별 (임베디드, 미션크리티컬, 로보틱스) 비교 기준을 정함. 노트 이름을 book 디렉터리와 같게 바꿈 (`00-introduction.md`) -> [비교 대상과 기준](#비교-대상과-기준), [book.md](../conventions/book.md)
+- 2026-10-30: 비교 조사 완료. 핵심 근거 (RTPS 2.5 Sec. 7.2, 8.5.1, Zenoh 디스커버리 측정, ROS 2 alternative middleware report, Kilted Tier 1)는 원문으로 재확인. 남은 빈칸은 조사 노트 7절 -> [middleware-comparison.md](../research/middleware-comparison.md)
