@@ -40,11 +40,13 @@
 
 ## 3. 분야별 기준
 
-### 임베디드
+### MCU (펌웨어 / RTOS)
+Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범위는 [chapter 00 노트](../notes/00-introduction.md#비교-대상과-기준)에 있다.
+
 
 | 기준 | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
 |---|---|---|---|---|---|
-| MCU / RTOS | 공식 지원 없음. contiki-zmtp는 오래됨 | zenoh-pico: Zephyr, FreeRTOS, ESP-IDF, Arduino, RPi Pico 등 | 경량 client 많음. Zephyr, RIOT에 MQTT-SN API | AUTOSAR Classic (MCU) BSW 모듈로 구현 | FreeRTOS, Zephyr, NuttX |
+| 지원 RTOS / 플랫폼 | 공식 지원 없음. contiki-zmtp는 오래됨 | zenoh-pico: Zephyr, FreeRTOS, ESP-IDF, Arduino, RPi Pico 등 | 경량 client 많음. Zephyr, RIOT에 MQTT-SN API | AUTOSAR Classic (MCU) BSW 모듈로 구현 | FreeRTOS, Zephyr, NuttX |
 | 크기 | 수치 없음 | RPi Pico W 기본 구성 flash 약 80 KB, RAM 약 12 KB [벤더 주장] | 공식 수치 없음 | 공식 수치 없음 | 규격 목표 코드 100 KB 미만. 구현 문서: RAM 2 kB 미만 (단순 pub/sub) [벤더 주장] |
 | 동적 할당 | 근거 없음 | 확인 못 함 | 구현마다 다름 (coreMQTT는 없음 [추정]) | 정적 설정 중심 [추정] | Client는 동적 / 정적 할당을 쓰지 않음 [벤더 주장] |
 | 비IP 전송 | 없음 | serial | MQTT-SN (ZigBee 등 센서망) | 직접 지원 없음 (gateway) | serial, CAN FD (Agent) |
@@ -137,6 +139,7 @@
 - PX4가 비행 컨트롤러와 ROS 2 사이에 uXRCE-DDS를 쓴다. https://docs.px4.io/main/en/middleware/uxrce_dds.html [확인]
 
 ## 7. 확인하지 못한 것
+- MCU 표의 DDS 열. 규격이 아니라 구현 (RTI Connext Micro, 경량 RTPS 구현 등)의 성질이라 따로 조사한다.
 - DDS 구현의 안전 인증 현황 (상용 벤더의 인증 제품). 미션크리티컬 표의 DDS 칸이 비어 있다.
 - ROS 2 alternative middleware report PDF 본문 (요구 사항과 점수).
 - zenoh-pico의 동적 할당 여부와 손실 링크 동작 (소스로 확인).
