@@ -16,7 +16,7 @@ Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환�
 ```
 +-- Mac (Apple Silicon, macOS) --------------------------------------------------------------------------------+
 |                                                                                                              |
-|  ~/work/mdds/tests/captures/                                                                                 |
+|  ~/work/mdds/captures/                                                                                       |
 |        :                                                                                                     |
 |        :  bind mount (Docker Desktop file sharing)                                                           |
 |        :                                                                                                     |
@@ -55,7 +55,7 @@ Legend
 - **Docker container**: 이미지로 띄운 실행 인스턴스다. 벤더마다 하나씩, 이미지도 따로다. 각 컨테이너는 자기 네트워크 네임스페이스 (`eth0` 하나)를 가지므로 DDS 입장에서는 서로 다른 호스트 두 대다.
 - **tcpdump**: 두 컨테이너에 모두 있고, 캡처는 구독자 쪽 컨테이너에서 한다 (아래 "어느 쪽에서 캡처해도 RTPS는 전부 보인다").
 - **bridge 구간 (VM 안)**: 두 컨테이너의 `eth0`은 veth 쌍으로 bridge에 꽂혀 있다. SPDP 멀티캐스트와 유니캐스트가 모두 이 안에서만 돈다. Mac의 네트워크 인터페이스에는 DDS 패킷이 나오지 않는다. 바깥으로 나가는 것은 이미지 빌드 때의 GitHub clone, apt, Gradle 다운로드뿐이다.
-- **캡처 경로**: 구독자 컨테이너 안의 tcpdump -> `/captures/<누가-누구>/` (바인드 마운트) -> Mac의 `~/work/mdds/tests/captures/<누가-누구>/` -> Wireshark. 예: cyclone-fastdds 캡처는 `/captures/cyclone-fastdds/` -> `tests/captures/cyclone-fastdds/`.
+- **캡처 경로**: 구독자 컨테이너 안의 tcpdump -> `/captures/<누가-누구>/` (바인드 마운트) -> Mac의 `~/work/mdds/captures/<누가-누구>/` -> Wireshark. 예: cyclone-fastdds 캡처는 `/captures/cyclone-fastdds/` -> `captures/cyclone-fastdds/`.
 
 ### 주의
 - `~/work/mdds`가 Docker Desktop의 파일 공유 목록 (기본: `/Users`) 안에 있어야 바인드 마운트가 된다.
@@ -66,7 +66,7 @@ Legend
 ### 선택: 별도 x86_64 Linux 머신
 Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그대로다. 다른 점만 적는다.
 - Docker Engine과 compose 플러그인을 설치하고 (`https://docs.docker.com/engine/install/ubuntu/`), 사용자를 `docker` 그룹에 넣는다. 저장소는 원격 git에서 clone하거나 Mac에서 `rsync -a`로 보낸다.
-- ssh로 들어가 `~/work/mdds/docker`에서 같은 명령을 친다. 캡처는 머신에서 커밋하거나 `rsync -av <머신>:~/work/mdds/tests/captures/ tests/captures/`로 Mac에 가져온다. 한 시나리오는 한 곳에서만 커밋한다.
+- ssh로 들어가 `~/work/mdds/docker`에서 같은 명령을 친다. 캡처는 머신에서 커밋하거나 `rsync -av <머신>:~/work/mdds/captures/ captures/`로 Mac에 가져온다. 한 시나리오는 한 곳에서만 커밋한다.
 - pcap 파일은 머신에서 root 소유가 된다 (지울 때 `sudo`).
 - Linux에서는 bridge가 호스트 커널에 바로 있어서, 디버깅 보조로 호스트에서 `br-<id>` 인터페이스를 캡처할 수 있다 (`docker network inspect dds-net`의 Id 앞 12자). 공식 절차는 어느 호스트에서나 "컨테이너 안 tcpdump"로 통일한다.
 - `docker context`로 Mac에서 원격 데몬을 조작하는 방식은 쓰지 않는다. compose가 바인드 마운트 경로를 Mac 쪽 절대 경로로 풀어 보내기 때문이다.
@@ -116,7 +116,7 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 - 서비스 이름과 `hostname`을 같게 고정한다. 호스트 이름은 일부 벤더가 참가자 정보에 실어 보낸다.
 - `init: true`: PID 1이 고아 프로세스를 거둬 좀비가 `pgrep`에 잡히지 않게 한다.
 - `cap_add: [NET_RAW]`: tcpdump용. 기본 권한에 포함되지만 의도를 남긴다.
-- 바인드 마운트 `../tests/captures:/captures`. captures 전체를 붙이며, 스크립트가 `/captures/<누가-누구>/` 아래에 쓴다 (예: `/captures/cyclone-fastdds/`). 그 디렉터리는 호스트에서 미리 `mkdir -p`로 만든다. Linux 호스트에서 컨테이너가 만들면 root 소유가 된다.
+- 바인드 마운트 `../captures:/captures`. captures 전체를 붙이며, 스크립트가 `/captures/<누가-누구>/` 아래에 쓴다 (예: `/captures/cyclone-fastdds/`). 그 디렉터리는 호스트에서 미리 `mkdir -p`로 만든다. Linux 호스트에서 컨테이너가 만들면 root 소유가 된다.
 - 컨테이너는 이미지의 `CMD ["sleep", "infinity"]`로 떠 있고, 실제 명령은 `docker compose exec`로 실행한다. 그래야 **캡처를 먼저 켜고 나서 DDS를 시작**할 수 있어 첫 IGMP 가입과 첫 SPDP 패킷부터 잡힌다. 발행자 프로세스만 죽이고 컨테이너는 살려 둘 수도 있다.
 
 ## 멀티캐스트가 컨테이너 사이를 넘어가는 원리
@@ -124,9 +124,9 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 - DDS 구현이 239.255.0.1 그룹에 가입하면 커널이 IGMP Membership Report를 `eth0`으로 내보낸다. 가입은 두 곳에 영향을 준다.
   - **받는 쪽 커널**: 가입한 그룹의 패킷만 소켓으로 올린다. 가입하지 않으면 `eth0`에 도착해도 (tcpdump에는 보여도) 버린다. 이것이 가입이 꼭 필요한 이유다.
   - **bridge**: 멀티캐스트 스누핑 (multicast snooping)이 켜져 있고 IGMP querier가 있으면 보고를 보고 그 포트로만 전달한다. querier가 없으면 Linux bridge는 가입과 무관하게 모든 포트로 흘려보낸다 (`multicast_flood` 기본 켜짐).
-- **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`tests/captures/mcast-check/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
+- **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`captures/mcast-check/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
 - 멀티캐스트 TTL 기본값이 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다.
-- 캡처로 본 것 (`tests/captures/cyclone-fastdds/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
+- 캡처로 본 것 (`captures/mcast-check/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
   - 가입 직후 IGMPv3 Membership Report (목적지 224.0.0.22)가 두 번 나간다 (0초, 0.65초 뒤). RFC 3376의 Robustness Variable 기본값 2 때문이다. 종료 때 Leave도 두 번이다.
   - 상대 컨테이너의 `eth0`에서도 이 보고가 보인다. 224.0.0.0/24 (link-local)는 bridge가 항상 모든 포트로 흘려보내기 때문이다.
   - 보낸 쪽 캡처에는 자기 패킷이 두 개씩 잡힌다 (나가는 것과 `IP_MULTICAST_LOOP` 기본값 1로 되돌아온 것. 두 개는 IP id까지 같은 바이트이고 수십에서 수백 마이크로초 차이다). 받는 쪽에는 하나씩이다. 발행자 쪽에서 캡처하면 멀티캐스트가 두 배로 보이는 이유다. 자기가 만든 IGMP 보고도 같아서, 가입한 쪽 캡처에는 IGMPv3 보고가 2회 전송 x 2 = 4개로 보인다. 방향을 나눠 보려면 `tcpdump -Q out` / `-Q in`을 쓴다 (확인: 2개 송신 시 out 2, in 2).
@@ -163,9 +163,9 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 
 캡처까지 함께 확인하려면 터미널 1을 띄우기 전에 받는 쪽에서 tcpdump를 켜 둔다. IGMP 가입과 탈퇴, hello 세 건이 잡힌다.
 ```
-docker compose exec -T fastdds tcpdump -i eth0 -U -w /captures/cyclone-fastdds/mcast-check.fastdds.pcap 'igmp or udp port 7400'
+docker compose exec -T fastdds tcpdump -i eth0 -U -w /captures/mcast-check/mcast-check.fastdds.pcap 'igmp or udp port 7400'
 # 끝낼 때: docker compose exec fastdds pkill -INT tcpdump
-tshark -r ../tests/captures/cyclone-fastdds/mcast-check.fastdds.pcap          # Mac 에서
+tshark -r ../captures/mcast-check/mcast-check.fastdds.pcap          # Mac 에서
 ```
 
 ### 도구를 벤더 컨테이너 밖에서 돌리는 방법

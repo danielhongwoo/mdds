@@ -42,7 +42,7 @@ docker/
 
 ### 1. 빌드와 실행
 ```
-mkdir -p ../tests/captures/cyclone-fastdds        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/captures 전체가 /captures 로 붙는다
+mkdir -p ../captures/cyclone-fastdds        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 captures 전체가 /captures 로 붙는다
 docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 3분. 두 번째부터는 바뀐 단계만
 docker compose up -d
 docker compose ps                         # cyclone, fastdds 두 개가 running
@@ -70,7 +70,7 @@ brew install deno                         # 처음 한 번. 외부 모듈은 쓰
 ./capture-shape-scenario.ts --list                  # 시나리오 이름
 ./capture-shape-scenario.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
 ```
-실행 흐름과 시나리오 표는 [chapter 1-4 노트](../docs-for-agent/notes/environment-and-captures.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [tests/captures/cyclone-fastdds/README.md](../tests/captures/cyclone-fastdds/README.md)에 있다. 결과는 `../tests/captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
+실행 흐름과 시나리오 표는 [chapter 1-4 노트](../docs-for-agent/notes/environment-and-captures.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [captures/cyclone-fastdds/README.md](../captures/cyclone-fastdds/README.md)에 있다. 결과는 `../captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.
 
 ### 정리

@@ -15,7 +15,7 @@
 
 ## 확인할 것
 cyclone-fastdds 캡처에서 나온 관찰과 가설이다. 이 chapter에서 규격으로 확인하고, 맞으면 구현이나 규칙으로 옮기고 지운다.
-- Cyclone은 새 참가자를 발견하면 SPDP를 유니캐스트로 1초 간격 4번 보내고, 이후 8초 주기에 맞춘다. Fast DDS는 3초 주기 멀티캐스트마다 유니캐스트도 보낸다 ([벤더 차이](../../tests/captures/cyclone-fastdds/README.md#두-벤더의-차이-지금까지-확인한-것)). 규격이 정한 부분과 벤더 선택을 나눈다.
+- Cyclone은 새 참가자를 발견하면 SPDP를 유니캐스트로 1초 간격 4번 보내고, 이후 8초 주기에 맞춘다. Fast DDS는 3초 주기 멀티캐스트마다 유니캐스트도 보낸다 ([벤더 차이](../../captures/cyclone-fastdds/README.md#두-벤더의-차이-지금까지-확인한-것)). 규격이 정한 부분과 벤더 선택을 나눈다.
 - Cyclone은 상대가 떠난 뒤 종료할 때 SPDP `DATA(p[UD])`를 보내지 않았다 (rel-fastdds-pub). 상대가 살아 있을 때는 보냈다 (rel-cyclone-pub). 알려진 참가자가 없으면 보내지 않는 것으로 보인다 [추정].
 - lease 만료 (lease-expiry 캡처): Cyclone이 SIGKILL로 죽은 뒤 (마지막 패킷 14.26초, 마지막 SPDP 11.22초, lease 10초) Fast DDS는 21.53초까지 유니캐스트 SPDP를 보내고 24.53초부터 멈춘다. 마지막 패킷 기준으로 10초 뒤에 지운 것으로 보인다 [추정]. lease를 무엇이 갱신하는지 (SPDP만인지, 모든 메시지인지) 확인한다.
 

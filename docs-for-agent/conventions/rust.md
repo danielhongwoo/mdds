@@ -17,7 +17,7 @@ cargo test --workspace
 
 ## 테스트 배치
 - 단위 테스트: 모듈 안 `#[cfg(test)]`.
-- pcap 기반 골든 테스트와 상호운용 테스트: 크레이트의 `tests/`. 입력 캡처는 저장소 루트의 `tests/captures/` ([captures.md](captures.md)).
+- pcap 기반 골든 테스트와 상호운용 테스트: 크레이트의 `tests/`. 입력 캡처는 저장소 루트의 `captures/` ([captures.md](captures.md)).
 
 ## 설계 제약
 - 프로토콜 코어는 I/O-free core로 만든다. 소켓, 시계, 스레드를 직접 쓰지 않는다 ([roadmap 설계 원칙](../roadmap.md#4-설계-원칙)).

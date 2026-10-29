@@ -38,7 +38,7 @@ services:
     cap_add: [NET_RAW]
     # captures 전체를 붙인다. 스크립트는 /captures/<누가-누구>/ 아래에 쓴다 (예: /captures/cyclone-fastdds).
     volumes:
-      - ../tests/captures:/captures
+      - ../captures:/captures
 
   fastdds:
     build:
@@ -51,7 +51,7 @@ services:
         ipv4_address: 172.28.0.11
     cap_add: [NET_RAW]
     volumes:
-      - ../tests/captures:/captures
+      - ../captures:/captures
 
   # mdds 진단 도구 이미지. 빌드 전용이다: profile 이 있어서 docker compose up 으로는 뜨지 않는다.
   # 실행은 mcast-check.sh 가 docker run --network container:<벤더 컨테이너> 로 한다.

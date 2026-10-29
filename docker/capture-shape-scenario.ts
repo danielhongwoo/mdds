@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-run=docker --allow-read --allow-write
 /**
- * shape_main 시나리오 하나를 두 벤더 컨테이너에서 실행하고 캡처와 로그를 tests/captures/cyclone-fastdds/ 에 남긴다.
+ * shape_main 시나리오 하나를 두 벤더 컨테이너에서 실행하고 캡처와 로그를 captures/cyclone-fastdds/ 에 남긴다.
  *
  *   ./capture-shape-scenario.ts <이름>           예: ./capture-shape-scenario.ts rel-cyclone-pub
  *   ./capture-shape-scenario.ts --list          시나리오 이름 목록
@@ -10,9 +10,9 @@
  * 표를 바꾸면 아래 SCENARIOS 도 함께 고친다.
  *
  * 결과 (호스트 경로. 컨테이너 안에서는 /captures/cyclone-fastdds/):
- *   tests/captures/cyclone-fastdds/<이름>.pcap      구독자 컨테이너 eth0 의 udp, igmp
- *   tests/captures/cyclone-fastdds/<이름>.sub.log   구독자 stdout/stderr
- *   tests/captures/cyclone-fastdds/<이름>.pub.log   발행자 stdout/stderr
+ *   captures/cyclone-fastdds/<이름>.pcap      구독자 컨테이너 eth0 의 udp, igmp
+ *   captures/cyclone-fastdds/<이름>.sub.log   구독자 stdout/stderr
+ *   captures/cyclone-fastdds/<이름>.pub.log   발행자 stdout/stderr
  *
  * 전제: docker/ 에서 docker compose up -d 로 cyclone, fastdds 컨테이너가 떠 있다.
  * 런타임: Deno 2 (외부 모듈 없음). 권한은 docker 실행과 파일 읽기/쓰기뿐이다.
@@ -124,7 +124,7 @@ function plan(name: string, s: Scenario): Plan {
 // ---------------------------------------------------------------------------
 
 const DOCKER_DIR = import.meta.dirname!; // compose.yaml 이 있는 곳
-const HOST_OUT = `${DOCKER_DIR}/../tests/captures/cyclone-fastdds`;
+const HOST_OUT = `${DOCKER_DIR}/../captures/cyclone-fastdds`;
 const OUT = "/captures/cyclone-fastdds"; // 컨테이너 안 경로 (바인드 마운트)
 
 /** docker 명령 결과. ok 는 종료 코드 0 여부, stdout 은 앞뒤 공백을 지운 표준 출력이다. */
@@ -259,7 +259,7 @@ async function main(args: string[]): Promise<void> {
   if (!force) {
     for (const ext of ["pcap", "sub.log", "pub.log"]) {
       if (await exists(`${HOST_OUT}/${file(ext)}`)) {
-        fail(`tests/captures/cyclone-fastdds/${file(ext)} exists. Use --force to overwrite.`);
+        fail(`captures/cyclone-fastdds/${file(ext)} exists. Use --force to overwrite.`);
       }
     }
   }
@@ -326,7 +326,7 @@ async function main(args: string[]): Promise<void> {
   for (const ext of ["pcap", "pub.log", "sub.log"]) {
     const path = `${HOST_OUT}/${file(ext)}`;
     const size = (await exists(path)) ? `${(await Deno.stat(path)).size} bytes` : "missing";
-    console.log(`  tests/captures/cyclone-fastdds/${file(ext).padEnd(28)} ${size}`);
+    console.log(`  captures/cyclone-fastdds/${file(ext).padEnd(28)} ${size}`);
   }
   log("done");
 }

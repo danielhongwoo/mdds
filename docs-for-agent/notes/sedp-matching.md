@@ -17,7 +17,7 @@
 
 ## 확인할 것
 cyclone-fastdds 캡처에서 나온 관찰과 가설이다. 이 chapter에서 규격으로 확인하고, 맞으면 구현이나 규칙으로 옮기고 지운다.
-- 매칭은 양쪽이 상대의 SEDP 데이터를 받는 시점에 각자 하는 것으로 보인다. rel-cyclone-pub에서는 Fast DDS 쪽 (22)과 Cyclone 쪽 (47)이 1.1초 차이가 났고, rel-fastdds-pub에서는 10ms였다 ([rel-cyclone-pub](../../tests/captures/cyclone-fastdds/README.md#rel-cyclone-pub)).
+- 매칭은 양쪽이 상대의 SEDP 데이터를 받는 시점에 각자 하는 것으로 보인다. rel-cyclone-pub에서는 Fast DDS 쪽 (22)과 Cyclone 쪽 (47)이 1.1초 차이가 났고, rel-fastdds-pub에서는 10ms였다 ([rel-cyclone-pub](../../captures/cyclone-fastdds/README.md#rel-cyclone-pub)).
 - rel-cyclone-pub에서 Cyclone은 Fast DDS의 첫 SEDP HEARTBEAT (21)에 답하지 않고 1초 뒤의 HB (42)에 답했다. lease-expiry에서도 같았고, Cyclone이 발행한 나머지 4개 캡처에서는 첫 HB에 바로 답했다. 21이 SPDP (18) 바로 뒤에 도착해 Cyclone이 아직 상대 참가자를 등록하기 전이었던 것으로 보인다 [추정]. mdds는 같은 상황에서 어떻게 할지 정한다.
 - 발행자 종료 순서: SEDP `DATA(w[UD])` (status_info Unregistered + Disposed) 다음에 SPDP `DATA(p[UD])`. 구독자의 `NOT_ALIVE_NO_WRITERS`가 어느 메시지로 정해지는지.
 

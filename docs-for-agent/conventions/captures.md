@@ -2,15 +2,19 @@
 
 [규약 목록](README.md)
 
-벤더 DDS끼리 통신시켜 잡은 패킷 캡처는 이후 chapter에서 파서와 상태 머신을 검증하는 정답 데이터다.
+벤더 DDS끼리 통신시켜 잡은 패킷 캡처는 교재의 lab에서 독자가 열어 보는 관찰 자료이고, 이후 chapter에서 파서와 상태 머신을 검증하는 정답 데이터다.
 
 ## 위치와 파일
-- `tests/captures/<누가-누구>/` 아래에 (예: `cyclone-fastdds/`, 나중에 `mdds-cyclone/`) 시나리오마다 `<시나리오>.pcap` (구독자 컨테이너 `eth0`), `<시나리오>.pub.log`, `<시나리오>.sub.log` (양쪽 stdout/stderr)를 둔다. 같은 디렉터리의 `README.md`가 설명이다.
+- `captures/<누가-누구>/` 아래에 (예: `cyclone-fastdds/`, 나중에 `mdds-cyclone/`) 시나리오마다 `<시나리오>.pcap` (구독자 컨테이너 `eth0`), `<시나리오>.pub.log`, `<시나리오>.sub.log` (양쪽 stdout/stderr)를 둔다. 같은 디렉터리의 `README.md`가 설명이다.
 - 캡처는 스크립트로만 만든다 (예: [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)). 누구나 같은 명령으로 다시 만들 수 있어야 한다. 기존 파일은 명시적으로 덮어쓸 때만 바꾼다 (`--force`).
 
 **결정: 디렉터리 이름은 `captures`다.**
 - 왜: 내용이 전부 캡처와 그 로그다. 컨테이너 안 마운트 경로 `/captures`와 이름이 같다.
 - 버린 대안: `fixtures`. 테스트 준비 코드 (pytest fixture, rstest `#[fixture]`)와 이름이 겹쳐 헷갈린다.
+
+**결정: 캡처는 저장소 루트의 `captures/`에 둔다.**
+- 왜: 테스트 코드가 아니라 기록한 관찰 자료다. 같은 캡처를 여러 lab과 chapter가 함께 쓴다 (`rel-cyclone-pub`은 Lab 3-1, 3-2, 4-1과 chapter 7, 10, 11의 정답 바이트 테스트).
+- 버린 대안: `tests/captures/`. 관찰 자료가 테스트 디렉터리 아래에 있어 어색하다. `labs/<lab 이름>/`. 캡처와 lab이 일대일이 아니라 어느 lab에 둘지 정할 수 없고, lab 구성이 바뀔 때마다 캡처와 테스트 경로를 옮겨야 한다.
 
 ## 크기
 **결정: 파일 하나가 10MB를 넘으면 필요한 프레임만 `editcap`으로 잘라 저장한다.** 예: `editcap -r in.pcap out.pcap 1-500`. 자른 사실과 범위, 원래 명령은 README에 적는다.

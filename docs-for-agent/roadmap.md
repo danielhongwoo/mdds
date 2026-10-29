@@ -79,8 +79,7 @@ mdds/
   tools/
     mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (chapter 2)
     shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (chapter 14)
-  tests/
-    captures/       # 캡처한 pcap과 로그 (테스트의 정답 바이트). <누가-누구>/ 로 나눔 (cyclone-fastdds, mcast-check)
+  captures/         # 캡처한 pcap과 로그 (관찰 자료이자 테스트의 정답 바이트). <누가-누구>/ 로 나눔 (cyclone-fastdds, mcast-check)
   docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (chapter 1에서 만들고 이후 계속 사용)
   docs/             # 독자도 보는 공용 참고
     glossary.md

@@ -17,7 +17,7 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
   - 결정은 그 결정이 적용되는 문서에 "무엇을 / 왜 / 버린 대안과 이유"로 적는다. 버린 대안은 누군가 다시 시도할 만한 것만 적는다.
   - 저자 노트의 "진행 기록"은 한 줄짜리 색인이다: 날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 막힌 점은 해결되면 결정으로 옮기거나 지운다.
   - 검토 기록은 따로 두지 않는다. 반영한 지적은 문서에 녹이고, 반영하지 않기로 한 지적만 이유와 함께 결정으로 남긴다.
-- 산출물 (스크립트, 도구, 캡처, crate) 은 번호가 아니라 하는 일과 대상으로 이름 짓고, 종류별 디렉터리 (`docker/`, `tools/`, `tests/captures/`, `crates/`) 에 둔다. chapter는 그것을 링크한다.
+- 산출물 (스크립트, 도구, 캡처, crate) 은 번호가 아니라 하는 일과 대상으로 이름 짓고, 종류별 디렉터리 (`docker/`, `tools/`, `captures/`, `crates/`) 에 둔다. chapter는 그것을 링크한다.
 
 ## 코드
 - 프로토콜 코어는 I/O-free core로 만든다 (소켓, 시계, 스레드를 직접 쓰지 않는다). 자세한 내용은 `docs-for-agent/roadmap.md` 설계 원칙.
@@ -26,4 +26,4 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
 - 그 밖의 규약 (라이선스, 툴체인, 검사 명령, 테스트 배치, 보조 스크립트, 문서 형식, 캡처)은 `docs-for-agent/conventions/`를 따른다.
 
 ## 실행 환경
-- Cyclone DDS / Fast DDS는 Docker로 실행한다 (`docker/`). shape_main과 두 벤더 라이브러리는 이미지 안에서 소스로 빌드한다 (버전과 Dockerfile 설계는 `docs/environment/vendor-build.md`, 실행 호스트와 네트워크는 `docs/environment/docker-network.md`). **Mac (arm64)의 Docker Desktop**에서 빌드, 실행, 캡처를 모두 하는 것이 기본이다 (네이티브 arm64 빌드). 벤더마다 이미지와 컨테이너가 따로 있다 (`docker/cyclone/`, `docker/fastdds/`). 캡처는 바인드 마운트로 `tests/captures/`에 바로 생긴다. DDS 트래픽은 Docker Desktop VM 안의 bridge에서만 돌고 Mac 호스트는 DDS 통신에 참여하지 않는다. 별도 x86_64 Linux 머신은 선택 사항이다.
+- Cyclone DDS / Fast DDS는 Docker로 실행한다 (`docker/`). shape_main과 두 벤더 라이브러리는 이미지 안에서 소스로 빌드한다 (버전과 Dockerfile 설계는 `docs/environment/vendor-build.md`, 실행 호스트와 네트워크는 `docs/environment/docker-network.md`). **Mac (arm64)의 Docker Desktop**에서 빌드, 실행, 캡처를 모두 하는 것이 기본이다 (네이티브 arm64 빌드). 벤더마다 이미지와 컨테이너가 따로 있다 (`docker/cyclone/`, `docker/fastdds/`). 캡처는 바인드 마운트로 `captures/`에 바로 생긴다. DDS 트래픽은 Docker Desktop VM 안의 bridge에서만 돌고 Mac 호스트는 DDS 통신에 참여하지 않는다. 별도 x86_64 Linux 머신은 선택 사항이다.
