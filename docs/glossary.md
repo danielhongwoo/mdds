@@ -12,9 +12,10 @@
 - **RTPS**(Real-Time Publish-Subscribe): 서로 다른 벤더의 DDS 구현이 통신할 수 있게 정한 와이어 프로토콜. 메시지 형식, 신뢰성(HEARTBEAT/ACKNACK), 디스커버리(SPDP/SEDP)를 정의한다. 규격 이름 **DDSI-RTPS**의 DDSI는 "DDS Interoperability"다. DCPS가 응용에 보이는 API라면, RTPS는 그 아래에서 실제로 네트워크에 흐르는 바이트를 정한다.
 - **SPDP**(Simple Participant Discovery Protocol): 같은 도메인의 참가자(DomainParticipant)끼리 서로를 찾는 프로토콜. 각 참가자가 멀티캐스트로 "나는 누구이고 어느 주소로 연락하면 된다"를 주기적으로 알린다(best-effort).
 - **SEDP**(Simple Endpoint Discovery Protocol): SPDP로 찾은 참가자끼리 각자의 DataWriter/DataReader(엔드포인트)의 토픽/타입/QoS 정보를 교환하고, 서로 맞는 쌍을 매칭하는 프로토콜(reliable). 이름의 "Simple"은 RTPS가 기본 제공하는 방식이라는 뜻으로, 벤더가 다른 디스커버리 방식을 쓸 수도 있다.
-- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff. 해석은 메시지 헤더의 vendorId에 따른다. 모르는 것은 건너뛰고 다음 것을 읽어야 한다 (RTPS 2.5 Sec. 8.3.4.1, Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙이고, SPDP에 제품 버전 PID 0x8000을 싣는다.
-- **미리 보내는 ACKNACK (pre-emptive ACKNACK)**: reader가 writer를 발견하자마자 HEARTBEAT를 기다리지 않고 보내는 ACKNACK. "아직 받은 것이 없다"를 알려 writer가 HEARTBEAT를 빨리 보내게 하는 최적화다. writer는 답하지 않아도 된다 (RTPS 2.5 Sec. 8.4.2.3).
-- **HEARTBEAT 얹어 보내기 (piggyback)**: writer가 DATA 서브메시지 바로 뒤에 HEARTBEAT를 같은 메시지에 넣어 보내는 것. 따로 보내지 않고도 reader에게 ACKNACK를 요청할 수 있다 (RTPS 2.5 Sec. 8.4.15.4).
+- **매칭 (matching)**: 상대의 writer 또는 reader를 SEDP로 알게 된 뒤, 자기 쪽 엔드포인트와 짝이 맞는지 판정해 통신 상대로 등록하는 일. 조건 (토픽, 타입, partition, RxO QoS)과 동작은 [Phase 07](phases/phase-07-sedp-matching.md). shape_main은 매칭되면 `on_publication_matched` / `on_subscription_matched`를 찍는다.
+- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff (RTPS 2.5 Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 해석 규칙은 [Phase 03](phases/phase-03-rtps-messages.md). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙인다.
+- **미리 보내는 ACKNACK (pre-emptive ACKNACK)**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK (RTPS 2.5 Sec. 8.4.2.3). 동작은 [Phase 06](phases/phase-06-reliable.md).
+- **HEARTBEAT 얹어 보내기 (piggyback)**: writer가 DATA 서브메시지 바로 뒤에 HEARTBEAT를 같은 메시지에 넣어 보내는 것 (RTPS 2.5 Sec. 8.4.15.4).
 - **ContentFilteredTopic (내용 필터 토픽)**: 기존 토픽에 SQL 비슷한 조건식 (예: `color = %0`)을 붙여 조건에 맞는 샘플만 받는 DCPS 토픽. 구독자가 SEDP에 `PID_CONTENT_FILTER_PROPERTY`로 조건을 알리므로 발행자 쪽에서 미리 거를 수도 있다. shape_main은 구독자에게 `-c`를 주면 이것을 만든다.
 
 ## 직렬화

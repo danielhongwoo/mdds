@@ -15,6 +15,12 @@
 - 이 단계의 사용자 API는 최소한으로 둔다 (participant 생성, 토픽 하나의 writer / reader, 샘플 송수신). Square는 키가 있는 토픽이지만 이 단계에서는 키를 페이로드에만 싣고 인스턴스 관리는 하지 않는다 (Phase 09). 정식 API는 Phase 10에서 만든다.
 - 모르는 벤더 PID와 XTypes PID (예: PID_TYPE_INFORMATION 0x75)를 안전하게 건너뛴다.
 
+## 확인할 것
+Phase 00 캡처에서 나온 관찰과 가설이다. 이 단계에서 규격으로 확인하고, 맞으면 구현이나 규칙으로 옮기고 지운다.
+- 매칭은 양쪽이 상대의 SEDP 데이터를 받는 시점에 각자 하는 것으로 보인다. rel-cyclone-pub에서는 Fast DDS 쪽 (22)과 Cyclone 쪽 (47)이 1.1초 차이가 났고, rel-fastdds-pub에서는 10ms였다 ([rel-cyclone-pub](../../tests/captures/phase00/README.md#rel-cyclone-pub)).
+- rel-cyclone-pub에서 Cyclone은 Fast DDS의 첫 SEDP HEARTBEAT (21)에 답하지 않고 1초 뒤의 HB (42)에 답했다. 21이 SPDP (18) 바로 뒤에 도착해 Cyclone이 아직 상대 참가자를 등록하기 전이었던 것으로 보인다 [추정]. mdds는 같은 상황에서 어떻게 할지 정한다.
+- 발행자 종료 순서: SEDP `DATA(w[UD])` (status_info Unregistered + Disposed) 다음에 SPDP `DATA(p[UD])`. 구독자의 `NOT_ALIVE_NO_WRITERS`가 어느 메시지로 정해지는지.
+
 ## 완료 기준
 - **Fast DDS / Cyclone ShapesDemo의 Square 토픽을 mdds가 구독/발행**한다 (best-effort, reliable 둘 다).
 

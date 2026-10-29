@@ -21,6 +21,11 @@
 - 최대 크기가 16B 이하면 0으로 채우고, 그 외에는 MD5를 쓴다.
 - 수신 측은 KeyHash를 믿지 말고 페이로드에서 다시 계산하는 편이 안전하다. 구버전 구현과 계산 방식이 다를 수 있다.
 
+## 확인할 것
+Phase 00 캡처에서 나온 관찰과 가설이다. 이 단계에서 규격으로 확인하고, 맞으면 구현이나 규칙으로 옮기고 지운다.
+- 구독 로그의 샘플 수가 전달된 DATA 수보다 적다 (rel-cyclone-pub 84 / 89). shape_main 구독자의 history (KEEP_LAST)와 읽기 주기 때문으로 보인다 [추정] ([rel-cyclone-pub](../../tests/captures/phase00/README.md#rel-cyclone-pub)).
+- dispose-on-exit 캡처: 마지막 사용자 DATA에 `PID_STATUS_INFO` Disposed와 키만 실린다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`.
+
 ## 완료 기준
 - ShapesDemo에서 도형을 dispose / 삭제하면 mdds reader의 instance_state가 맞게 바뀐다.
 - mdds reader를 늦게 띄워도 Cyclone writer의 TRANSIENT_LOCAL 이력을 받는다. 반대 방향도 확인한다.
