@@ -15,6 +15,7 @@
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
+| 00 | 들어가며 (구현 없음) | [introduction](notes/introduction.md) | 진행 중 |
 | 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [environment-and-captures](notes/environment-and-captures.md) | 완료 |
 | 05 | DCPS 개념 모델 | [dcps-concepts](notes/dcps-concepts.md) | 대기 |
 | 06 | CDR 직렬화 (XCDR1) | [cdr](notes/cdr.md) | 대기 |
