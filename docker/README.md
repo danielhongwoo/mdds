@@ -1,8 +1,8 @@
 # docker/ - Cyclone DDS / Fast DDS 상호운용 캡처 환경
 
-[roadmap](../docs/roadmap.md) | [네트워크 설계](../docs/environment/docker-network.md) | [빌드 설계](../docs/environment/vendor-build.md) | [Phase 00](../docs/phases/phase-00-setup.md)
+[roadmap](../docs-for-agent/roadmap.md) | [네트워크 설계](../docs/environment/docker-network.md) | [빌드 설계](../docs/environment/vendor-build.md) | [1-4장 노트](../docs-for-agent/notes/lab-setup.md)
 
-OMG 상호운용 테스트 프로그램 shape_main을 Cyclone DDS와 Fast DDS로 각각 소스에서 빌드하고, 컨테이너 두 개에서 서로 통신시켜 그 패킷을 캡처한다. 캡처는 이후 단계에서 정답 바이트 (테스트 데이터)로 쓴다. Phase 00에서 만들었고, 이후 mdds의 상호운용 시험에도 같은 환경을 쓴다.
+OMG 상호운용 테스트 프로그램 shape_main을 Cyclone DDS와 Fast DDS로 각각 소스에서 빌드하고, 컨테이너 두 개에서 서로 통신시켜 그 패킷을 캡처한다. 캡처는 이후 장에서 정답 바이트 (테스트 데이터)로 쓴다. 1장에서 만들었고, 이후 mdds의 상호운용 시험에도 같은 환경을 쓴다.
 
 ## 구성
 ```
@@ -12,8 +12,8 @@ docker/
   fastdds/Dockerfile    -> 이미지 mdds/fastdds-shape:3.6.1             (/usr/local/bin/fastdds_shape)
   tools/Dockerfile      -> 이미지 mdds/tools   (/usr/local/bin/mcast-check, 저장소 루트를 컨텍스트로 빌드)
   mcast-check.sh        벤더 컨테이너의 네트워크 네임스페이스에서 mcast-check 실행
-  phase00-capture.ts    시나리오 하나 실행: 캡처, 구독, 발행, 정리 (Phase 00, Deno 2로 실행)
-  deno.json             Deno fmt / lint 설정 (규약: docs/conventions/typescript.md)
+  capture-shape-scenario.ts  shape_main 시나리오 하나 실행: 캡처, 구독, 발행, 정리 (Deno 2)
+  deno.json             Deno fmt / lint 설정 (규약: docs-for-agent/conventions/typescript.md)
 ```
 - 벤더마다 이미지와 컨테이너가 따로 있다. `cyclone` 컨테이너에는 `cyclone_shape`만, `fastdds` 컨테이너에는 `fastdds_shape`만 있다.
 - 두 이미지 모두 같은 베이스 이미지와 같은 shape_main 소스 커밋을 쓴다. 이 두 값은 두 Dockerfile에 각각 적혀 있으므로 **바꿀 때는 함께 고친다.**
@@ -42,7 +42,7 @@ docker/
 
 ### 1. 빌드와 실행
 ```
-mkdir -p ../tests/captures/phase00        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/captures 전체가 /captures 로 붙는다
+mkdir -p ../tests/captures/cyclone-fastdds        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 tests/captures 전체가 /captures 로 붙는다
 docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 3분. 두 번째부터는 바뀐 단계만
 docker compose up -d
 docker compose ps                         # cyclone, fastdds 두 개가 running
@@ -67,10 +67,10 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 ### 3. 시나리오 캡처
 ```
 brew install deno                         # 처음 한 번. 외부 모듈은 쓰지 않는다
-./phase00-capture.ts --list                  # 시나리오 이름
-./phase00-capture.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
+./capture-shape-scenario.ts --list                  # 시나리오 이름
+./capture-shape-scenario.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
 ```
-실행 흐름과 시나리오 표는 [Phase 00](../docs/phases/phase-00-setup.md#시나리오-실행-흐름-phase00-capturets)에, 캡처별 관찰은 [tests/captures/phase00/README.md](../tests/captures/phase00/README.md)에 있다. 결과는 `../tests/captures/phase00/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/phase00/`).
+실행 흐름과 시나리오 표는 [1-4장 노트](../docs-for-agent/notes/lab-setup.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [tests/captures/cyclone-fastdds/README.md](../tests/captures/cyclone-fastdds/README.md)에 있다. 결과는 `../tests/captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.
 
 ### 정리

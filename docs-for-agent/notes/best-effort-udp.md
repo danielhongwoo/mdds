@@ -1,8 +1,8 @@
-# Phase 04 - Best-effort 전송 + UDP
+# 저자 노트: Best-effort 전송 + UDP
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 03](phase-03-rtps-messages.md) | 다음: [Phase 05](phase-05-spdp.md)
+[roadmap](../roadmap.md) | 장: 08 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.4.1 ~ 8.4.8 (행동 모듈 개요, **8.4.2 상호운용 요구사항 먼저**), StatelessWriter/Reader, 9.6.2 (포트, 기본 로케이터)

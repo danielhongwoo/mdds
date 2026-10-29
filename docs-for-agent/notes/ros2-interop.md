@@ -1,11 +1,11 @@
-# Phase 08 - ROS 2 상호운용 (권장)
+# 저자 노트: ROS 2 상호운용 (권장)
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 07](phase-07-sedp-matching.md) | 다음: [Phase 09](phase-09-instances.md)
+[roadmap](../roadmap.md) | 장: 12 ([목차](../../book/README.md#목차))
 
 ## 내용
-- Phase 07까지 만든 최소 API만으로 가능한, XTypes 없이 도달할 수 있는 가장 쉬운 실사용 상호운용 목표다.
+- 11장까지 만든 최소 API만으로 가능한, XTypes 없이 도달할 수 있는 가장 쉬운 실사용 상호운용 목표다.
 - ROS 2 메시지는 모두 FINAL 타입이라 XCDR1 CDR_LE로 충분하다.
 - 토픽 이름 `rt/<name>`, 타입 이름 `pkg::msg::dds_::Name_` (예: `std_msgs::msg::dds_::String_`)
 - ROS 2 기본 QoS: RELIABLE, VOLATILE, KEEP_LAST(10)

@@ -1,8 +1,8 @@
-# Phase 12 - DDS-XTypes
+# 저자 노트: DDS-XTypes
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 11](phase-11-fragmentation-perf.md) | 다음: [Phase 13](phase-13-idl-compiler.md)
+[roadmap](../roadmap.md) | 장: 16 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - XTypes 1.3 (섹션은 원문 확인함, 상세 지도: [research/xtypes-cdr-idl-security.md](../research/xtypes-cdr-idl-security.md))

@@ -1,8 +1,8 @@
 # Cyclone DDS / Fast DDS / shape_main 빌드
 
-[roadmap](../roadmap.md) | 사용처: [Phase 00](../phases/phase-00-setup.md) (이후 캡처 추가와 상호운용 시험에도 같은 이미지를 쓴다)
+[roadmap](../../docs-for-agent/roadmap.md) | 사용처: [1-4장 노트](../../docs-for-agent/notes/lab-setup.md) (이후 캡처 추가와 상호운용 시험에도 같은 이미지를 쓴다)
 
-OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 두 벤더의 DDS 라이브러리를 Docker 이미지 안에서 소스로 빌드하는 방법을 정리한다. 실행 호스트와 네트워크는 [docker-network.md](docker-network.md), 시나리오 실행은 [Phase 00](../phases/phase-00-setup.md)에 있다.
+OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 두 벤더의 DDS 라이브러리를 Docker 이미지 안에서 소스로 빌드하는 방법을 정리한다. 실행 호스트와 네트워크는 [docker-network.md](docker-network.md), 시나리오 실행은 [1-4장 노트](../../docs-for-agent/notes/lab-setup.md)에 있다.
 
 ## 왜 소스에서 빌드하는가
 - OMG 릴리스의 실행 파일은 x86-64 Linux용뿐이고, 빌드 환경과 정확한 소스 커밋이 드러나지 않는다 (zip 안 파일 날짜가 릴리스일보다 늦어 자산이 교체된 흔적도 있다).
@@ -123,7 +123,7 @@ docker image ls 'mdds/*'
 | 확인 | 잡으려는 문제 |
 |---|---|
 | `ldd` | runtime 단계는 빌드 결과의 일부만 복사하고 apt 패키지 이름도 배포판마다 다르다. 빠진 공유 라이브러리가 있으면 이미지 빌드는 성공해도 실행할 때 죽는다 |
-| `-h` | 실행되는지, 옵션이 dds-rtps README와 같은지. Phase 00 시나리오 표가 그 옵션을 전제로 한다 |
+| `-h` | 실행되는지, 옵션이 dds-rtps README와 같은지. lab-setup 노트의 시나리오 표가 그 옵션을 전제로 한다 |
 | `fastdds_shape.origname` | 실제로 링크된 Fast DDS 버전. 실행 파일 이름을 짧게 바꿔서 원래 이름에 든 버전을 여기서만 볼 수 있다 |
 | 이미지 라벨 | 소스 커밋. Cyclone은 직접 컴파일해서 실행 파일 이름에 버전이 없다 |
 | `image ls` | 이미지 크기. "빌드 결과"와 크게 다르면 원인을 본다 |

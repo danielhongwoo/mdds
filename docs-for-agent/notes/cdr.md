@@ -1,8 +1,8 @@
-# Phase 02 - CDR 직렬화 (XCDR1)
+# 저자 노트: CDR 직렬화 (XCDR1)
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 01](phase-01-dcps-concepts.md) | 다음: [Phase 03](phase-03-rtps-messages.md)
+[roadmap](../roadmap.md) | 장: 06 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - CORBA 3.3 Part 2 Sec. 9.3 CDR Transfer Syntax, 특히 Sec. 9.3.1.1 Alignment (Table 9.1)
@@ -21,7 +21,7 @@
 - serde는 쓰지 않는다. serde 데이터 모델로는 정렬, DHEADER, key-only 직렬화를 표현할 수 없다.
 
 ## 완료 기준
-- ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 Phase 00 캡처 바이트와 일치한다.
+- ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 cyclone-fastdds 캡처 바이트와 일치한다.
 
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

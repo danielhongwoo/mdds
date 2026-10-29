@@ -1,8 +1,8 @@
-# Phase 03 - RTPS 메시지 계층
+# 저자 노트: RTPS 메시지 계층
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 02](phase-02-cdr.md) | 다음: [Phase 04](phase-04-best-effort-udp.md)
+[roadmap](../roadmap.md) | 장: 07 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.2 (구조), 8.3 (메시지, Receiver 규칙 8.3.4), 9.3 (타입 매핑), 9.4 (와이어 레이아웃), 9.6.2.2 / 9.4.2.11 (ParameterList)
@@ -26,10 +26,10 @@
 
 ## 확인할 것
 - 벤더 ID: Cyclone(Eclipse) 0x0110, Fast DDS(eProsima) 0x010F. OMG 벤더 목록에서 다시 확인한다.
-- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고 Cyclone은 붙이지 않는다 ([rel-fastdds-pub](../../tests/captures/phase00/README.md#rel-fastdds-pub)). 수신 측에서 INFO_DST가 바꾸는 상태 (destGuidPrefix)와, 없을 때의 기본값을 확인한다.
+- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고 Cyclone은 붙이지 않는다 ([rel-fastdds-pub](../../tests/captures/cyclone-fastdds/README.md#rel-fastdds-pub)). 수신 측에서 INFO_DST가 바꾸는 상태 (destGuidPrefix)와, 없을 때의 기본값을 확인한다.
 
 ## 완료 기준
-- Phase 00 캡처 전부를 파싱 -> 재인코딩해 바이트가 같다.
+- cyclone-fastdds 캡처 전부를 파싱 -> 재인코딩해 바이트가 같다.
 - 파서 fuzz 1시간 동안 패닉이 없다.
 
 ## 진행 기록

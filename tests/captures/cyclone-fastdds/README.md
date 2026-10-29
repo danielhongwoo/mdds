@@ -1,20 +1,20 @@
-# Phase 00 캡처
+# Cyclone DDS <-> Fast DDS 캡처
 
-[Phase 00](../../../docs/phases/phase-00-setup.md) | [시나리오 표](../../../docs/phases/phase-00-setup.md#시나리오-표) | [docker-network.md](../../../docs/environment/docker-network.md)
+[1-4장 노트](../../../docs-for-agent/notes/lab-setup.md) | [시나리오 표](../../../docs-for-agent/notes/lab-setup.md#시나리오-표) | [docker-network.md](../../../docs/environment/docker-network.md)
 
-Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다. 이후 단계에서 파서와 상태 머신을 검증하는 정답 데이터로 쓴다.
+Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다. 이후 장에서 파서와 상태 머신을 검증하는 정답 데이터로 쓴다.
 
 ## 공통 조건
 - 벤더와 빌드 소스: Cyclone DDS master `f2aaccb4` (11.0.1), Fast DDS 3.6.1, shape_main 소스 omg-dds/dds-rtps `526dc56`. 자세한 버전 표는 [docker/README.md](../../../docker/README.md#빌드-소스와-버전).
 - 주소: cyclone 172.28.0.10, fastdds 172.28.0.11 (bridge `dds-net`).
 - 캡처는 구독자 컨테이너의 `eth0`에서 `tcpdump "udp or igmp"`로 한다. 자기가 보낸 멀티캐스트는 loopback 복사본 때문에 두 번씩 잡힌다 ([docker-network.md](../../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)).
-- 다시 만들기: `docker/`에서 `./phase00-capture.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호, 시각, 임의 포트가 바뀌므로 아래 그림도 고친다.
+- 다시 만들기: `docker/`에서 `./capture-shape-scenario.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호, 시각, 임의 포트가 바뀌므로 아래 그림도 고친다.
 - Wireshark 4.6.9 기준. 필터 `rtps`.
 
 ## 파일
 | 파일 | 내용 |
 |---|---|
-| `mcast-check.{fastdds,cyclone,nojoin}.pcap` | Step 4 네트워크 검증. DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../../docs/environment/docker-network.md#검증-명령) |
+| [`../mcast-check/`](../mcast-check/) | 네트워크 검증 (lab-setup Step 4). DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../../docs/environment/docker-network.md#검증-명령) |
 | `rel-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, RELIABLE. 캡처는 fastdds |
 | `rel-fastdds-pub.*` | Fast DDS 발행 -> Cyclone 구독, RELIABLE. 캡처는 cyclone |
 | `be-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, BEST_EFFORT. 캡처는 fastdds |
@@ -78,20 +78,20 @@ sequenceDiagram
     Note left of F: 19.46s, 263-268: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
 ```
 
-- 표기: `HB a-b`는 HEARTBEAT의 firstAvailableSeqNumber a, lastSeqNumber b다. `ACKNACK b/n:bits`는 readerSNState의 bitmapBase/numBits:bitmap이다 (RTPS 2.5 Sec. 9.4.2.6의 표기). 값의 뜻은 Phase 06에서 다룬다.
+- 표기: `HB a-b`는 HEARTBEAT의 firstAvailableSeqNumber a, lastSeqNumber b다. `ACKNACK b/n:bits`는 readerSNState의 bitmapBase/numBits:bitmap이다 (RTPS 2.5 Sec. 9.4.2.6의 표기). 값의 뜻은 10장에서 다룬다.
 - 엔드포인트 (writerEntityId): SPDP `0x000100c2`, SEDP pub `0x000003c2` (DATA(w)), SEDP sub `0x000004c2` (DATA(r)), 참가자 메시지 `0x000200c2` (DATA(m), msg), 사용자 writer `0x00000202` (Cyclone의 Square). Fast DDS의 사용자 reader는 `0x00000107`이다 (RTPS 2.5 Sec. 9.3.1.3, 표 9.2).
 - 포트: 7400은 멀티캐스트 메타트래픽, 7410/7411은 Fast DDS의 유니캐스트 메타트래픽과 사용자 데이터, 44686은 Cyclone의 유니캐스트 (둘 다). Cyclone이 보내는 출발 포트 43993은 받는 포트와 다르다.
 - 1-16의 SPDP와 IGMP가 두 개씩인 것은 자기가 보낸 멀티캐스트의 loopback 복사본이다 ([공통 조건](#공통-조건)).
 
 ### 질문
-캡처에서 보이지만 Phase 00에서는 답하지 않는다. 화살표 뒤가 답을 찾을 단계다.
-- 사용자 seq가 12부터다. 1-11은 왜 오지 않았나? 48의 `HB 12-11`처럼 a > b인 HEARTBEAT는 무슨 뜻인가? -> Phase 06, 07
-- Fast DDS가 SEDP `HB sub 1-1`을 두 번 보냈다 (21, 42). Cyclone의 ACKNACK sub는 첫 번째 뒤에는 `1/0` (27), 두 번째 뒤에는 `1/1:1` (44)이다. 같은 HB에 왜 다르게 답했나? -> Phase 07
-- 양쪽은 언제 상대 엔드포인트와 매칭하나? 같은 순간인가? -> Phase 07
-- Fast DDS 사용자 reader의 ACKNACK (33, 36, 40, 46)는 Cyclone이 사용자 HB를 보내기 전에 나가고, Cyclone은 답하지 않는다. 무엇을 위한 ACKNACK인가? bitmapBase 0은 유효한 값인가? -> Phase 06
-- Cyclone은 사용자 DATA마다 HB를 붙인다. HB는 언제 보내야 하나? -> Phase 06
-- 종료 때 DATA(w[UD]) 다음 DATA(p[UD])가 온다. 구독 로그 끝의 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`는 어느 메시지로 정해지나? -> Phase 07, 09
-- 구독 로그의 샘플은 84건으로, 전달된 사용자 DATA 89건보다 적다. -> Phase 09 (history)
+캡처에서 보이지만 이 메모에서는 답하지 않는다. 화살표 뒤가 답을 찾을 장이다.
+- 사용자 seq가 12부터다. 1-11은 왜 오지 않았나? 48의 `HB 12-11`처럼 a > b인 HEARTBEAT는 무슨 뜻인가? -> 10장, 11장
+- Fast DDS가 SEDP `HB sub 1-1`을 두 번 보냈다 (21, 42). Cyclone의 ACKNACK sub는 첫 번째 뒤에는 `1/0` (27), 두 번째 뒤에는 `1/1:1` (44)이다. 같은 HB에 왜 다르게 답했나? -> 11장
+- 양쪽은 언제 상대 엔드포인트와 매칭하나? 같은 순간인가? -> 11장
+- Fast DDS 사용자 reader의 ACKNACK (33, 36, 40, 46)는 Cyclone이 사용자 HB를 보내기 전에 나가고, Cyclone은 답하지 않는다. 무엇을 위한 ACKNACK인가? bitmapBase 0은 유효한 값인가? -> 10장
+- Cyclone은 사용자 DATA마다 HB를 붙인다. HB는 언제 보내야 하나? -> 10장
+- 종료 때 DATA(w[UD]) 다음 DATA(p[UD])가 온다. 구독 로그 끝의 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`는 어느 메시지로 정해지나? -> 11장, 13장
+- 구독 로그의 샘플은 84건으로, 전달된 사용자 DATA 89건보다 적다. -> 13장 (history)
 
 ### 요약
 | 항목 | 값 |
@@ -162,11 +162,11 @@ sequenceDiagram
 - 12-16은 HB와 ACKNACK가 섞여 오갔다 (HB 12, 13, 15와 ACKNACK 14, 16). 18은 readerId가 0 (지정 안 함)인 HB 세 개를 한 메시지에 넣었다.
 
 ### 질문
-- 이번에는 SEDP DATA(w)에서 DATA(r)까지 10ms 걸렸다 (rel-cyclone-pub은 1.1초). 차이는 어디서 오나? -> Phase 07
-- seq 1이 오지 않았다. 24의 `HB 2-1`은 무엇을 알리나? -> Phase 06
-- Fast DDS는 HB를 사용자 DATA 두 번에 한 번 붙인다 (Cyclone은 매번). -> Phase 06
-- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고, Cyclone은 붙이지 않는다 (rel-cyclone-pub의 50). INFO_DST가 있고 없음은 무엇을 바꾸나? -> Phase 03
-- 종료 때 Cyclone은 SPDP `DATA(p[UD])`를 보내지 않았다. rel-cyclone-pub에서는 보냈다. -> Phase 05
+- 이번에는 SEDP DATA(w)에서 DATA(r)까지 10ms 걸렸다 (rel-cyclone-pub은 1.1초). 차이는 어디서 오나? -> 11장
+- seq 1이 오지 않았다. 24의 `HB 2-1`은 무엇을 알리나? -> 10장
+- Fast DDS는 HB를 사용자 DATA 두 번에 한 번 붙인다 (Cyclone은 매번). -> 10장
+- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고, Cyclone은 붙이지 않는다 (rel-cyclone-pub의 50). INFO_DST가 있고 없음은 무엇을 바꾸나? -> 7장
+- 종료 때 Cyclone은 SPDP `DATA(p[UD])`를 보내지 않았다. rel-cyclone-pub에서는 보냈다. -> 9장
 
 ### 요약
 | 항목 | 값 |
@@ -222,11 +222,11 @@ sequenceDiagram
 ```
 
 ### 질문
-- BEST_EFFORT에서는 사용자 writer / reader 사이에 HEARTBEAT와 ACKNACK가 하나도 없다. SEDP 쪽은 RELIABLE 때와 같이 주고받는다. -> Phase 04, 06
-- 사용자 seq가 3부터다 (1-2 없음). -> Phase 06, 07
-- Cyclone이 이번에는 Fast DDS의 첫 SEDP `HB sub 1-1` (21)에 `ACKNACK sub 1/1:1` (22)로 답했다. rel-cyclone-pub과 lease-expiry에서는 `1/0`이었다. -> Phase 07
-- Fast DDS가 `ACKNACK sub 1/1:1` (22)을 받고 DATA(r) (32)를 보내기까지 100ms가 걸렸다. rel-fastdds-pub에서 Cyclone은 0.2ms 만에 보냈다. -> Phase 06
-- 구독 로그 샘플 88건, 캡처된 사용자 DATA 98건. -> Phase 09
+- BEST_EFFORT에서는 사용자 writer / reader 사이에 HEARTBEAT와 ACKNACK가 하나도 없다. SEDP 쪽은 RELIABLE 때와 같이 주고받는다. -> 8장, 10장
+- 사용자 seq가 3부터다 (1-2 없음). -> 10장, 11장
+- Cyclone이 이번에는 Fast DDS의 첫 SEDP `HB sub 1-1` (21)에 `ACKNACK sub 1/1:1` (22)로 답했다. rel-cyclone-pub과 lease-expiry에서는 `1/0`이었다. -> 11장
+- Fast DDS가 `ACKNACK sub 1/1:1` (22)을 받고 DATA(r) (32)를 보내기까지 100ms가 걸렸다. rel-fastdds-pub에서 Cyclone은 0.2ms 만에 보냈다. -> 10장
+- 구독 로그 샘플 88건, 캡처된 사용자 DATA 98건. -> 13장
 
 ## be-fastdds-pub
 ```
@@ -273,9 +273,9 @@ sequenceDiagram
 ```
 
 ### 질문
-- 사용자 seq가 2부터다 (rel-fastdds-pub과 같다). -> Phase 06, 07
-- SEDP pub writer는 ACKNACK `2/0`을 받은 뒤에도 1초 뒤 `HB 1-1`을 다시 보낸다 (47). -> Phase 06
-- Cyclone은 종료 때 이번에도 SPDP `DATA(p[UD])`를 보내지 않았다. -> Phase 05
+- 사용자 seq가 2부터다 (rel-fastdds-pub과 같다). -> 10장, 11장
+- SEDP pub writer는 ACKNACK `2/0`을 받은 뒤에도 1초 뒤 `HB 1-1`을 다시 보낸다 (47). -> 10장
+- Cyclone은 종료 때 이번에도 SPDP `DATA(p[UD])`를 보내지 않았다. -> 9장
 
 ## dispose-on-exit
 ```
@@ -317,9 +317,9 @@ sequenceDiagram
 ```
 
 ### 질문
-- 마지막 사용자 DATA (268)는 seq 101을 쓰고, 페이로드 대신 키만 싣고 `PID_STATUS_INFO` 0x1을 단다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`다. rel-cyclone-pub의 끝 (`NOT_ALIVE_NO_WRITERS`)과 무엇이 다른가? -> Phase 09
-- dispose 뒤에 오는 `DATA(w[UD])` (270)는 rel-cyclone-pub의 끝과 같다. 두 상태는 어떻게 함께 정해지나? -> Phase 07, 09
-- 구독 로그 샘플 92건, 캡처된 사용자 DATA 99건 (dispose 포함). -> Phase 09
+- 마지막 사용자 DATA (268)는 seq 101을 쓰고, 페이로드 대신 키만 싣고 `PID_STATUS_INFO` 0x1을 단다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`다. rel-cyclone-pub의 끝 (`NOT_ALIVE_NO_WRITERS`)과 무엇이 다른가? -> 13장
+- dispose 뒤에 오는 `DATA(w[UD])` (270)는 rel-cyclone-pub의 끝과 같다. 두 상태는 어떻게 함께 정해지나? -> 11장, 13장
+- 구독 로그 샘플 92건, 캡처된 사용자 DATA 99건 (dispose 포함). -> 13장
 
 ## lease-expiry
 ```
@@ -361,10 +361,10 @@ sequenceDiagram
 ```
 
 ### 질문
-- 사용자 seq가 12부터다. rel-cyclone-pub과 같이 Cyclone이 첫 SEDP `HB sub 1-1` (21)에 `1/0` (28)으로 답했고, 1초 뒤 HB (43)에 `1/1:1` (45)로 답했다. Cyclone이 발행한 캡처 6개 중 2개 (rel-cyclone-pub, lease-expiry)가 이렇다. -> Phase 07
-- SIGKILL로 프로세스가 죽었는데 IGMP 탈퇴 (272-273)가 나간다. 누가 보내나? -> Phase 04
-- Fast DDS는 21.53초까지 Cyclone에 유니캐스트 SPDP를 보내고, 24.53초부터는 보내지 않는다. Cyclone의 마지막 SPDP는 11.22초, 마지막 패킷은 14.26초, Cyclone이 알린 lease는 10초다. Fast DDS는 언제, 무엇을 기준으로 Cyclone을 지웠나? -> Phase 05
-- 구독 로그 끝은 정상 종료와 같은 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`다. 캡처에는 이 판정을 알리는 패킷이 없다. -> Phase 05, 07
+- 사용자 seq가 12부터다. rel-cyclone-pub과 같이 Cyclone이 첫 SEDP `HB sub 1-1` (21)에 `1/0` (28)으로 답했고, 1초 뒤 HB (43)에 `1/1:1` (45)로 답했다. Cyclone이 발행한 캡처 6개 중 2개 (rel-cyclone-pub, lease-expiry)가 이렇다. -> 11장
+- SIGKILL로 프로세스가 죽었는데 IGMP 탈퇴 (272-273)가 나간다. 누가 보내나? -> 8장
+- Fast DDS는 21.53초까지 Cyclone에 유니캐스트 SPDP를 보내고, 24.53초부터는 보내지 않는다. Cyclone의 마지막 SPDP는 11.22초, 마지막 패킷은 14.26초, Cyclone이 알린 lease는 10초다. Fast DDS는 언제, 무엇을 기준으로 Cyclone을 지웠나? -> 9장
+- 구독 로그 끝은 정상 종료와 같은 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`다. 캡처에는 이 판정을 알리는 패킷이 없다. -> 9장, 11장
 
 ## large-sample
 ```
@@ -406,10 +406,10 @@ sequenceDiagram
 ```
 
 ### 질문
-- 샘플 하나 (100032바이트)를 1344바이트 조각 75개로 나누고, RTPS 메시지 하나에 조각 10개씩 싣는다. 조각 크기와 메시지당 조각 수는 누가 어떻게 정하나? -> Phase 11
-- 메시지마다 HEARTBEAT_FRAG가 붙고, 샘플의 마지막 메시지에는 HEARTBEAT가 붙는다. 137의 `HB 4-3`은 seq 4의 조각을 보내는 도중에 나간다. -> Phase 11
-- NACK_FRAG는 없다 (조각 손실이 없었다). -> Phase 11
-- 사용자 seq가 3부터다. 구독 로그 샘플 28건 (seq 3-30과 같은 수). -> Phase 06, 07
+- 샘플 하나 (100032바이트)를 1344바이트 조각 75개로 나누고, RTPS 메시지 하나에 조각 10개씩 싣는다. 조각 크기와 메시지당 조각 수는 누가 어떻게 정하나? -> 15장
+- 메시지마다 HEARTBEAT_FRAG가 붙고, 샘플의 마지막 메시지에는 HEARTBEAT가 붙는다. 137의 `HB 4-3`은 seq 4의 조각을 보내는 도중에 나간다. -> 15장
+- NACK_FRAG는 없다 (조각 손실이 없었다). -> 15장
+- 사용자 seq가 3부터다. 구독 로그 샘플 28건 (seq 3-30과 같은 수). -> 10장, 11장
 
 ## xcdr2
 ```
@@ -427,9 +427,9 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 | Cyclone SEDP DATA(w)의 PID_DATA_REPRESENTATION | Wireshark가 Malformed로 끊겨 보이지 않음 | XCDR2 (2) |
 
 ### 질문
-- `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나 (예: DHEADER)? -> Phase 02, 12
-- 양쪽의 PID_DATA_REPRESENTATION이 다르면 매칭되나? -> Phase 12
-- 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> Phase 09
+- `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나 (예: DHEADER)? -> 6장, 16장
+- 양쪽의 PID_DATA_REPRESENTATION이 다르면 매칭되나? -> 16장
+- 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> 13장
 
 ## 두 벤더의 차이 (지금까지 확인한 것)
 | 항목 | Cyclone DDS | Fast DDS |
@@ -448,7 +448,7 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 | 사용자 DATA 앞의 INFO_DST | 없음 | 있음 |
 | SPDP를 상대 유니캐스트 주소로도 보냄 | 예. 새 참가자를 발견하면 1초 간격으로 4번, 이후 8초 주기에 맞춰 | 예. 3초 주기의 멀티캐스트마다 함께 |
 
-- 같은 벤더 전용 PID 번호가 벤더마다 다른 값을 싣는다. 0x8007이 Cyclone에서는 버전 문자열, Fast DDS에서는 4바이트 값이다. 해석 규칙은 [Phase 03 "규칙"](../../../docs/phases/phase-03-rtps-messages.md#규칙-rtps-25-원문으로-확인함).
+- 같은 벤더 전용 PID 번호가 벤더마다 다른 값을 싣는다. 0x8007이 Cyclone에서는 버전 문자열, Fast DDS에서는 4바이트 값이다. 해석 규칙은 [7장 "규칙"](../../../docs-for-agent/notes/rtps-messages.md#규칙-rtps-25-원문으로-확인함).
 - Fast DDS의 0x80 서브메시지 근거: Fast DDS 실행 파일에 `StatisticsSubmessageData`, `add_statistics_sent_submessage` 기호가 있다. 내용 배치는 바이트로 본 것이다: 목적지 로케이터 (24), 시각 (8), 메시지 순번 (8), 누적 바이트 수 (8), 0 (8). [필드 이름은 추정]
-- Wireshark 4.6.9는 Cyclone의 SEDP DATA를 Malformed로 표시한다 (rel-cyclone-pub 22, rel-fastdds-pub 23). `PID_TYPE_INFORMATION`의 해석에서 깨진다. Fast DDS는 이 SEDP를 받고 정상적으로 사용자 데이터를 주고받았다. -> Phase 12
+- Wireshark 4.6.9는 Cyclone의 SEDP DATA를 Malformed로 표시한다 (rel-cyclone-pub 22, rel-fastdds-pub 23). `PID_TYPE_INFORMATION`의 해석에서 깨진다. Fast DDS는 이 SEDP를 받고 정상적으로 사용자 데이터를 주고받았다. -> 16장
 - Fast DDS의 RTPS 헤더 버전 2.2는 SPDP의 `PID_PROTOCOL_VERSION`도 2.2다. Cyclone 2.5와 통신에 문제가 없었다.

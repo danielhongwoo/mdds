@@ -1,8 +1,8 @@
-# Phase 11 - 단편화 + 성능
+# 저자 노트: 단편화 + 성능
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 이전: [Phase 10](phase-10-dcps-api.md) | 다음: [Phase 12](phase-12-xtypes.md)
+[roadmap](../roadmap.md) | 장: 15 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.4.14 (단편화), DATA_FRAG / NACK_FRAG / HEARTBEAT_FRAG 레이아웃

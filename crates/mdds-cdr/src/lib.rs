@@ -1,1 +1,1 @@
-//! CDR / XCDR 직렬화 (Phase 02부터)
+//! CDR / XCDR 직렬화 (6장부터)
