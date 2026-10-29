@@ -8,7 +8,7 @@ Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다
 - 벤더와 빌드 소스: Cyclone DDS master `f2aaccb4` (11.0.1), Fast DDS 3.6.1, shape_main 소스 omg-dds/dds-rtps `526dc56`. 자세한 버전 표는 [docker/README.md](../../../docker/README.md#빌드-소스와-버전).
 - 주소: cyclone 172.28.0.10, fastdds 172.28.0.11 (bridge `dds-net`).
 - 캡처는 구독자 컨테이너의 `eth0`에서 `tcpdump "udp or igmp"`로 한다. 자기가 보낸 멀티캐스트는 loopback 복사본 때문에 두 번씩 잡힌다 ([docker-network.md](../../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)).
-- 다시 만들기: `docker/`에서 `./phase00-capture.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호와 임의 포트가 바뀌므로 아래 표도 고친다.
+- 다시 만들기: `docker/`에서 `./phase00-capture.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호, 시각, 임의 포트가 바뀌므로 아래 그림도 고친다.
 - Wireshark 4.6.9 기준. 필터 `rtps`.
 
 ## 파일
@@ -177,6 +177,259 @@ sequenceDiagram
 ### Wireshark에서 나눠 보기
 - 디스커버리만 (52개): `rtps && !(rtps.sm.wrEntityId == 0x00000102)`
 - 사용자 데이터만 (153개): `rtps.sm.wrEntityId == 0x00000102`
+
+## be-cyclone-pub
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -b
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -b -c BLUE --write-period 100 --num-iterations 100
+```
+
+### 흐름
+프레임 169개: 사용자 데이터 98개, 디스커버리 59개, IGMP 12개. 표기는 rel-cyclone-pub과 같다.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note left of F: 0.00s, 1-16: IGMP 가입, SPDP DATA(p) x6
+    Note over F,C: SPDP 교환
+    C-->>F: 17 (3.10s) SPDP DATA(p), 멀티캐스트 7400
+    F->>C: 18 (3.10s) SPDP DATA(p), 유니캐스트 38485
+
+    Note over F,C: SEDP 교환
+    F->>C: 19-21 (3.10s) HB x3: msg 1-0, pub 1-0, sub 1-1
+    C->>F: 22 (3.10s) ACKNACK x3: msg 1/0, pub 1/0, sub 1/1:1 + SPDP DATA(p)
+    C->>F: 24 (3.10s) HB x3: pub 1-1, sub 1-0, msg 1-1
+    F->>C: 25-26, 28 (3.11s) ACKNACK x3: sub 1/0, pub 1/1:1, msg 1/1:1
+    C->>F: 27 (3.11s) DATA(w) seq 1: Square writer
+    C->>F: 29 (3.11s) DATA(m) seq 1 + HB 1-1
+    F->>C: 30-31 (3.12s) ACKNACK x2: pub 2/0, msg 2/0
+    F->>C: 32 (3.20s) DATA(r) seq 1: Square reader
+
+    Note over F,C: 사용자 데이터 (BEST_EFFORT, 100ms마다, Fast DDS 7411로)
+    C->>F: 35 (3.30s) DATA seq 3
+    loop 36-154: seq 4-100
+        C->>F: DATA
+    end
+    Note over F,C: 사용자 writer / reader의 HB, ACKNACK는 없다
+
+    Note over F,C: 종료
+    C->>F: 155 (13.40s) DATA(w[UD]) status_info 0x3
+    C->>F: 156-157 (13.41s) SPDP DATA(p[UD]), 멀티캐스트와 유니캐스트
+    Note right of C: 158-159: IGMP 탈퇴
+    Note left of F: 19.56s, 164-168: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+```
+
+### 질문
+- BEST_EFFORT에서는 사용자 writer / reader 사이에 HEARTBEAT와 ACKNACK가 하나도 없다. SEDP 쪽은 RELIABLE 때와 같이 주고받는다. -> Phase 04, 06
+- 사용자 seq가 3부터다 (1-2 없음). -> Phase 06, 07
+- Cyclone이 이번에는 Fast DDS의 첫 SEDP `HB sub 1-1` (21)에 `ACKNACK sub 1/1:1` (22)로 답했다. rel-cyclone-pub과 lease-expiry에서는 `1/0`이었다. -> Phase 07
+- Fast DDS가 `ACKNACK sub 1/1:1` (22)을 받고 DATA(r) (32)를 보내기까지 100ms가 걸렸다. rel-fastdds-pub에서 Cyclone은 0.2ms 만에 보냈다. -> Phase 06
+- 구독 로그 샘플 88건, 캡처된 사용자 DATA 98건. -> Phase 09
+
+## be-fastdds-pub
+```
+cyclone: cyclone_shape -S -d 0 -t Square -x 1 -b
+fastdds: fastdds_shape -P -d 0 -t Square -x 1 -b -c BLUE --write-period 100 --num-iterations 100
+```
+
+### 흐름
+프레임 162개: 사용자 데이터 99개, 디스커버리 51개, IGMP 12개.
+
+```mermaid
+sequenceDiagram
+    participant C as Cyclone (구독, .10)
+    participant F as Fast DDS (발행, .11)
+
+    Note left of C: 0.00s, 1-8: IGMP 가입, SPDP DATA(p) x2
+    Note over C,F: SPDP 교환
+    F-->>C: 9 (3.15s) SPDP DATA(p), 멀티캐스트 7400
+    C->>F: 10 (3.15s) SPDP DATA(p), 유니캐스트 7410
+    F->>C: 12 (3.15s) SPDP DATA(p), 유니캐스트 52099
+
+    Note over C,F: SEDP 교환
+    F->>C: 13-15 (3.15s) HB x3: 모두 1-0
+    C->>F: 16 (3.15s) ACKNACK x3: 모두 1/0
+    F->>C: 17 (3.15s) DATA(w) seq 1: Square writer
+    C->>F: 18 (3.15s) HB x3: pub 1-0, sub 1-1, msg 1-1
+    F->>C: 19-20 (3.16s) ACKNACK x2: sub 1/1:1, pub 1/0
+    C->>F: 21 (3.16s) DATA(r) seq 1: Square reader
+    Note over C,F: 22-25: DATA(m)와 그 HB, ACKNACK
+
+    Note over C,F: 사용자 데이터 (BEST_EFFORT, 100ms마다, Cyclone 52099로)
+    F->>C: 28 (3.25s) DATA seq 2
+    loop 31-151: seq 3-100
+        F->>C: DATA
+    end
+    F->>C: 47 (4.15s) SEDP HB pub 1-1
+    C->>F: 48 (4.15s) ACKNACK pub 2/0
+
+    Note over C,F: 종료
+    F->>C: 152 (13.47s) DATA(w[UD]) status_info 0x3
+    F->>C: 153-154 (13.47s) SPDP DATA(p[UD]), 유니캐스트와 멀티캐스트
+    Note right of F: 155-156: IGMP 탈퇴
+    Note left of C: 19.48s, 159-162: IGMP 탈퇴 (구독자 SIGINT)<br/>DATA(p[UD])는 없다
+```
+
+### 질문
+- 사용자 seq가 2부터다 (rel-fastdds-pub과 같다). -> Phase 06, 07
+- SEDP pub writer는 ACKNACK `2/0`을 받은 뒤에도 1초 뒤 `HB 1-1`을 다시 보낸다 (47). -> Phase 06
+- Cyclone은 종료 때 이번에도 SPDP `DATA(p[UD])`를 보내지 않았다. -> Phase 05
+
+## dispose-on-exit
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -r
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -r -c BLUE --write-period 100 --num-iterations 100 --final-instance-state d
+```
+
+### 흐름
+프레임 288개: 사용자 데이터 201개, 디스커버리 75개, IGMP 12개. 시작부터 사용자 데이터까지는 be-cyclone-pub과 같은 순서라 줄였다. 이 캡처에서 볼 곳은 끝부분이다.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note over F,C: SPDP, SEDP 교환 (17-37)
+    F->>C: 21 (3.12s) HB sub 1-1
+    C->>F: 22 (3.12s) ACKNACK x2: pub 1/0, sub 1/1:1
+    C->>F: 29 (3.14s) DATA(w) seq 1: Square writer
+    F->>C: 34 (3.21s) ACKNACK 사용자 reader 0/0
+    F->>C: 37 (3.23s) DATA(r) seq 1: Square reader
+
+    Note over F,C: 사용자 데이터 (RELIABLE, 100ms마다)
+    C->>F: 38 (3.23s) HB 3-2
+    F->>C: 39 (3.24s) ACKNACK 3/0
+    C->>F: 40 (3.33s) DATA seq 3 + HB 3-3
+    loop 41-267: seq 4-100
+        C->>F: DATA + HB
+        F->>C: ACKNACK
+    end
+
+    Note over F,C: 종료 (dispose)
+    C->>F: 268 (13.41s) DATA seq 101, 키만, status_info 0x1 (Disposed) + HB 101-101
+    F->>C: 269 (13.41s) ACKNACK 102/0
+    C->>F: 270 (13.41s) DATA(w[UD]) status_info 0x3
+    C->>F: 271-272 (13.42s) SPDP DATA(p[UD]), 멀티캐스트와 유니캐스트
+    Note right of C: 273-274: IGMP 탈퇴
+    Note left of F: 24.59s, 283-288: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+```
+
+### 질문
+- 마지막 사용자 DATA (268)는 seq 101을 쓰고, 페이로드 대신 키만 싣고 `PID_STATUS_INFO` 0x1을 단다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`다. rel-cyclone-pub의 끝 (`NOT_ALIVE_NO_WRITERS`)과 무엇이 다른가? -> Phase 09
+- dispose 뒤에 오는 `DATA(w[UD])` (270)는 rel-cyclone-pub의 끝과 같다. 두 상태는 어떻게 함께 정해지나? -> Phase 07, 09
+- 구독 로그 샘플 92건, 캡처된 사용자 DATA 99건 (dispose 포함). -> Phase 09
+
+## lease-expiry
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -r
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -r -c BLUE --write-period 100    (11초 뒤 SIGKILL)
+```
+
+### 흐름
+프레임 298개: 사용자 데이터 202개, 디스커버리 84개, IGMP 12개.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note over F,C: SPDP, SEDP 교환 (17-33)
+    F->>C: 21 (3.12s) HB sub 1-1
+    C->>F: 23 (3.12s) DATA(w) seq 1: Square writer
+    C->>F: 28 (3.13s) ACKNACK x2: sub 1/0, msg 1/0
+    F->>C: 35, 38, 42, 47 (3.19s-4.18s) ACKNACK 사용자 reader 0/0
+    Note right of C: 35-47에 대한 응답 없음
+    F->>C: 43 (4.12s) HB sub 1-1
+    C->>F: 45 (4.12s) ACKNACK sub 1/1:1
+    F->>C: 48 (4.23s) DATA(r) seq 1: Square reader
+
+    Note over F,C: 사용자 데이터 (RELIABLE, 100ms마다)
+    C->>F: 49 (4.24s) HB 12-11
+    C->>F: 51 (4.24s) DATA seq 12 + HB 12-12
+    loop 52-270: seq 13-109
+        C->>F: DATA + HB
+        F->>C: ACKNACK
+    end
+
+    Note over F,C: Cyclone SIGKILL (14.26s 직후)
+    Note right of C: 270 (14.26s): 마지막 DATA seq 109<br/>DATA(w[UD]), DATA(p[UD])는 없다<br/>272-273 (14.30s, 15.09s): IGMP 탈퇴
+    F->>C: 274, 277, 280 (15.5s-21.5s) SPDP DATA(p), 유니캐스트 46914 (멀티캐스트도)
+    Note left of F: 24.53s-36.54s, 283-292:<br/>SPDP는 멀티캐스트로만 나간다
+    Note left of F: 39.46s, 293-298: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+```
+
+### 질문
+- 사용자 seq가 12부터다. rel-cyclone-pub과 같이 Cyclone이 첫 SEDP `HB sub 1-1` (21)에 `1/0` (28)으로 답했고, 1초 뒤 HB (43)에 `1/1:1` (45)로 답했다. Cyclone이 발행한 캡처 6개 중 2개 (rel-cyclone-pub, lease-expiry)가 이렇다. -> Phase 07
+- SIGKILL로 프로세스가 죽었는데 IGMP 탈퇴 (272-273)가 나간다. 누가 보내나? -> Phase 04
+- Fast DDS는 21.53초까지 Cyclone에 유니캐스트 SPDP를 보내고, 24.53초부터는 보내지 않는다. Cyclone의 마지막 SPDP는 11.22초, 마지막 패킷은 14.26초, Cyclone이 알린 lease는 10초다. Fast DDS는 언제, 무엇을 기준으로 Cyclone을 지웠나? -> Phase 05
+- 구독 로그 끝은 정상 종료와 같은 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`다. 캡처에는 이 판정을 알리는 패킷이 없다. -> Phase 05, 07
+
+## large-sample
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -r
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -r -c BLUE --write-period 100 --num-iterations 30 --additional-payload-size 100000
+```
+
+### 흐름
+프레임 2198개: RTPS 메시지 322개 (사용자 데이터 260개, 디스커버리 50개, IGMP 12개)와 IP 조각 1876개. 사용자 RTPS 메시지 하나가 약 13.5KB라 IP 층에서 10개 안팎의 프레임으로 나뉜다. Wireshark는 마지막 조각 프레임에서 다시 합친 RTPS 메시지를 보여 준다.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note over F,C: SPDP, SEDP 교환 (17-37)
+    F->>C: 21 (3.11s) HB sub 1-1
+    C->>F: 24 (3.11s) ACKNACK sub 1/1:1
+    F->>C: 37 (3.21s) DATA(r) seq 1: Square reader
+
+    Note over F,C: 사용자 데이터 (RELIABLE, 샘플 100032바이트, 100ms마다 30번)
+    C->>F: 38 (3.21s) HB 3-2
+    F->>C: 39 (3.22s) ACKNACK 3/0
+    C->>F: 50 (3.31s) DATA_FRAG seq 3, 조각 1-10 (조각 1344바이트) + HEARTBEAT_FRAG seq 3, 10까지
+    C->>F: 60-110 (3.31s) DATA_FRAG seq 3, 조각 11-70, 메시지마다 10개 + HEARTBEAT_FRAG
+    C->>F: 115 (3.31s) DATA_FRAG seq 3, 조각 71-75 + HB 3-3
+    F->>C: 116 (3.32s) ACKNACK 4/0
+    C->>F: 137 (3.42s) seq 4의 조각 사이에 HB 4-3
+    loop 126-2182: seq 4-30
+        C->>F: DATA_FRAG x8 (+ HEARTBEAT_FRAG x7, HB x1)
+        F->>C: ACKNACK
+    end
+
+    Note over F,C: 종료
+    C->>F: 2184 (6.25s) DATA(w[UD]) status_info 0x3
+    C->>F: 2185-2186 (6.25s) SPDP DATA(p[UD])
+    Note right of C: 2187, 2190: IGMP 탈퇴
+    Note left of F: 11.60s, 2193-2198: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+```
+
+### 질문
+- 샘플 하나 (100032바이트)를 1344바이트 조각 75개로 나누고, RTPS 메시지 하나에 조각 10개씩 싣는다. 조각 크기와 메시지당 조각 수는 누가 어떻게 정하나? -> Phase 11
+- 메시지마다 HEARTBEAT_FRAG가 붙고, 샘플의 마지막 메시지에는 HEARTBEAT가 붙는다. 137의 `HB 4-3`은 seq 4의 조각을 보내는 도중에 나간다. -> Phase 11
+- NACK_FRAG는 없다 (조각 손실이 없었다). -> Phase 11
+- 사용자 seq가 3부터다. 구독 로그 샘플 28건 (seq 3-30과 같은 수). -> Phase 06, 07
+
+## xcdr2
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 2 -r
+cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --num-iterations 100
+```
+
+### 흐름
+프레임 282개: 사용자 데이터 199개, 디스커버리 71개, IGMP 12개. 메시지 흐름은 dispose-on-exit의 사용자 데이터 구간까지와 같은 순서다 (SEDP 21-38, 사용자 DATA 41-266, seq 3-100). 다른 것은 바이트 안의 데이터 표현이다.
+
+| 위치 | rel-cyclone-pub (`-x 1`) | xcdr2 (`-x 2`) |
+|---|---|---|
+| 사용자 DATA의 encapsulation kind | `CDR_LE` (0x0001) | `D_CDR2_LE` (0x0009) |
+| Fast DDS SEDP DATA(r)의 PID_DATA_REPRESENTATION | XCDR (0) | XCDR2 (2) |
+| Cyclone SEDP DATA(w)의 PID_DATA_REPRESENTATION | Wireshark가 Malformed로 끊겨 보이지 않음 | XCDR2 (2) |
+
+### 질문
+- `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나 (예: DHEADER)? -> Phase 02, 12
+- 양쪽의 PID_DATA_REPRESENTATION이 다르면 매칭되나? -> Phase 12
+- 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> Phase 09
 
 ## 두 벤더의 차이 (지금까지 확인한 것)
 | 항목 | Cyclone DDS | Fast DDS |
