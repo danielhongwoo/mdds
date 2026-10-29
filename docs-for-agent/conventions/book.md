@@ -7,7 +7,13 @@
 **결정: chapter가 유일한 진행 단위다. chapter마다 저자 노트 (`docs-for-agent/notes/<주제>.md`) 와 독자용 본문 (`book/NN-slug/`) 을 따로 둔다.**
 - 왜: 저자 노트는 체크리스트, 결정, 확인할 것, 진행 기록으로 이루어진 저자용 문서다. 교재는 "왜 필요한가 -> 보기 -> 규격 -> 구현 -> 확인"의 설명 흐름이 필요하고 독자가 읽는다. 한 문서로 두 역할을 하면 어느 쪽 독자에게도 맞지 않는다.
 - 버린 대안: 저자 노트를 chapter 디렉터리 안에 두기 (`book/NN-slug/notes.md`). 독자용 디렉터리에 저자용 파일이 섞인다. 작업 계획을 별도 번호 체계 (phase) 로 두기: chapter와 같은 내용을 두 번호로 관리하게 되어 서로 맞춰야 했다.
-- 저자 노트는 주제 이름으로 두고 번호를 붙이지 않는다. 한 노트가 여러 chapter를 맡을 수 있다 (`environment-and-captures.md`는 chapter 1-4). chapter와 노트의 대응은 [roadmap](../roadmap.md)의 표가 유일한 출처다.
+- chapter와 노트의 대응은 [roadmap](../roadmap.md)의 표가 유일한 출처다.
+
+**결정: chapter에 딸린 저자 노트는 그 chapter의 book 디렉터리와 같은 이름 `notes/NN-<slug>.md`로 짓는다 (`notes/06-cdr.md` <-> `book/06-cdr/`). 여러 chapter를 맡는 노트는 번호 범위를 쓴다 (`notes/01-04-environment-and-captures.md`).**
+- 왜: 파일 이름만 보고 어느 chapter의 노트인지 알 수 있고, 노트 목록이 읽는 순서대로 정렬된다.
+- 비용: chapter 번호를 바꾸면 노트 이름과 그 링크도 함께 고친다. 번호를 자유롭게 바꾸는 공개 전에만 드는 비용이다.
+- 버린 대안: 번호 없는 주제 이름 (`cdr.md`). 번호가 바뀌어도 이름은 그대로지만 chapter와의 연결이 이름에 드러나지 않는다. `chapterNN-` 접두. book 디렉터리 이름과 달라져 둘을 맞춰 보기 어렵다.
+- 번호는 chapter에 딸린 노트에만 붙인다. 스크립트, 도구, 캡처, crate, 조사 노트처럼 여러 chapter가 함께 쓰는 산출물은 지금처럼 하는 일과 대상으로 이름 짓는다.
 
 ## 언어
 - 한국어로 쓴다. 기술 용어는 영어 그대로 쓰고 처음 나올 때 한 줄로 설명하거나 [glossary](../../docs/glossary.md)로 링크한다.
@@ -25,7 +31,7 @@
   5. 벤더와 맞춰 보기
   6. 두 벤더는 어떻게 하는가
   7. 연습 문제
-  코드가 없는 chapter (환경, 관찰)는 4, 5를 뺀다. 도입 chapter (00)는 이 틀을 쓰지 않고 저자 노트 ([introduction](../notes/introduction.md))에서 절을 정한다.
+  코드가 없는 chapter (환경, 관찰)는 4, 5를 뺀다. 도입 chapter (00)는 이 틀을 쓰지 않고 저자 노트 ([00-introduction](../notes/00-introduction.md))에서 절을 정한다.
 - 연습 문제는 캡처 README의 "질문"에서 가져온다. 답은 그 chapter 안에 있거나, 다음 chapter를 가리킨다. 문제 옆에 `(캡처 README의 질문)`처럼 출처를 적는다.
 - "두 벤더는 어떻게 하는가"에서는 벤더 소스의 파일과 함수 이름, 동작을 설명한다. Cyclone DDS (EPL-2.0) 코드를 옮겨 적지 않는다.
 

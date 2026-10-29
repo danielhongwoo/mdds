@@ -35,26 +35,26 @@ chapter마다 같은 순서로 간다.
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | 들어가며: DDS란 무엇이고 왜 직접 만드는가 | [introduction](../docs-for-agent/notes/introduction.md) | 집필 전 |
-| 01 | 실습 환경: 벤더 DDS 두 개를 컨테이너로 | [environment-and-captures](../docs-for-agent/notes/environment-and-captures.md) | 집필 전 |
-| 02 | 멀티캐스트가 오가는 길 | [environment-and-captures](../docs-for-agent/notes/environment-and-captures.md) | 집필 전 |
-| 03 | 첫 DDS 통신 들여다보기 | [environment-and-captures](../docs-for-agent/notes/environment-and-captures.md) | 집필 전 |
-| 04 | 같은 규격, 다른 구현 | [environment-and-captures](../docs-for-agent/notes/environment-and-captures.md) | 집필 전 |
-| 05 | DCPS 개념 모델 | [dcps-concepts](../docs-for-agent/notes/dcps-concepts.md) | 집필 전 |
-| 06 | CDR 직렬화 | [cdr](../docs-for-agent/notes/cdr.md) | 집필 전 |
-| 07 | RTPS 메시지 | [rtps-messages](../docs-for-agent/notes/rtps-messages.md) | 집필 전 |
-| 08 | Best-effort 전송과 UDP | [best-effort-udp](../docs-for-agent/notes/best-effort-udp.md) | 집필 전 |
-| 09 | 참가자 디스커버리 (SPDP) | [spdp](../docs-for-agent/notes/spdp.md) | 집필 전 |
-| 10 | Reliable 프로토콜 | [reliable](../docs-for-agent/notes/reliable.md) | 집필 전 |
-| 11 | 엔드포인트 디스커버리와 매칭 (SEDP): 첫 상호운용 | [sedp-matching](../docs-for-agent/notes/sedp-matching.md) | 집필 전 |
-| 12 | ROS 2와 통신하기 | [ros2-interop](../docs-for-agent/notes/ros2-interop.md) | 집필 전 |
-| 13 | 키 인스턴스와 수명주기 | [instances](../docs-for-agent/notes/instances.md) | 집필 전 |
-| 14 | DCPS API와 OMG 상호운용 테스트 | [dcps-api](../docs-for-agent/notes/dcps-api.md) | 집필 전 |
-| 15 | 단편화와 성능 | [fragmentation-perf](../docs-for-agent/notes/fragmentation-perf.md) | 집필 전 |
-| 16 | 타입 시스템 (XTypes) | [xtypes](../docs-for-agent/notes/xtypes.md) | 집필 전 |
-| 17 | IDL 컴파일러 | [idl-compiler](../docs-for-agent/notes/idl-compiler.md) | 집필 전 |
-| 18 | DDS-Security | [security](../docs-for-agent/notes/security.md) | 집필 전 |
-| 19 | 그 밖의 것 (선택) | [extras](../docs-for-agent/notes/extras.md) | 집필 전 |
+| 00 | 들어가며: DDS란 무엇이고 왜 직접 만드는가 | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 집필 전 |
+| 01 | 실습 환경: 벤더 DDS 두 개를 컨테이너로 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
+| 02 | 멀티캐스트가 오가는 길 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
+| 03 | 첫 DDS 통신 들여다보기 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
+| 04 | 같은 규격, 다른 구현 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
+| 05 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) | 집필 전 |
+| 06 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) | 집필 전 |
+| 07 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) | 집필 전 |
+| 08 | Best-effort 전송과 UDP | [08-best-effort-udp](../docs-for-agent/notes/08-best-effort-udp.md) | 집필 전 |
+| 09 | 참가자 디스커버리 (SPDP) | [09-spdp](../docs-for-agent/notes/09-spdp.md) | 집필 전 |
+| 10 | Reliable 프로토콜 | [10-reliable](../docs-for-agent/notes/10-reliable.md) | 집필 전 |
+| 11 | 엔드포인트 디스커버리와 매칭 (SEDP): 첫 상호운용 | [11-sedp-matching](../docs-for-agent/notes/11-sedp-matching.md) | 집필 전 |
+| 12 | ROS 2와 통신하기 | [12-ros2-interop](../docs-for-agent/notes/12-ros2-interop.md) | 집필 전 |
+| 13 | 키 인스턴스와 수명주기 | [13-instances](../docs-for-agent/notes/13-instances.md) | 집필 전 |
+| 14 | DCPS API와 OMG 상호운용 테스트 | [14-dcps-api](../docs-for-agent/notes/14-dcps-api.md) | 집필 전 |
+| 15 | 단편화와 성능 | [15-fragmentation-perf](../docs-for-agent/notes/15-fragmentation-perf.md) | 집필 전 |
+| 16 | 타입 시스템 (XTypes) | [16-xtypes](../docs-for-agent/notes/16-xtypes.md) | 집필 전 |
+| 17 | IDL 컴파일러 | [17-idl-compiler](../docs-for-agent/notes/17-idl-compiler.md) | 집필 전 |
+| 18 | DDS-Security | [18-security](../docs-for-agent/notes/18-security.md) | 집필 전 |
+| 19 | 그 밖의 것 (선택) | [19-extras](../docs-for-agent/notes/19-extras.md) | 집필 전 |
 
 ## 저자를 위한 안내
 chapter를 쓰는 규칙 (틀, 번호, 코드 스냅샷, 언어, 라이선스)은 [conventions/book.md](../docs-for-agent/conventions/book.md)에 있다. 작업 계획과 결정은 [docs-for-agent/notes/](../docs-for-agent/notes/)에 두고, 이 디렉터리에는 독자용 본문만 둔다.

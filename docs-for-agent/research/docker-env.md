@@ -1,6 +1,6 @@
 # 조사 노트: Docker로 Cyclone DDS / Fast DDS 실행
 
-[roadmap](../roadmap.md) | [chapter 1-4 노트](../notes/environment-and-captures.md)
+[roadmap](../roadmap.md) | [chapter 1-4 노트](../notes/01-04-environment-and-captures.md)
 
 - 조사일: 2026-10-28
 - 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 현재 실행 환경은 [environment/docker-network.md](../../docs/environment/docker-network.md)를 본다. GUI 없이 CLI 도구만 사용
@@ -56,4 +56,4 @@
 1. 모든 시나리오를 shape_main 이미지 하나 (Cyclone, Fast DDS 실행 파일 두 개)로 만든다. 큰 샘플은 `--additional-payload-size`로 만들므로 `ddsperf`와 arm64 이미지는 필요 없다.
 2. ROS 2 (chapter 12): `ros:jazzy-ros-base` + Cyclone RMW
 3. 가장 먼저 확인할 것: 컨테이너 간 멀티캐스트, shape_main 실행에 필요한 라이브러리
-4. 상세 계획: [notes/environment-and-captures.md](../notes/environment-and-captures.md)
+4. 상세 계획: [notes/01-04-environment-and-captures.md](../notes/01-04-environment-and-captures.md)

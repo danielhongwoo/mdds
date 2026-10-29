@@ -3,7 +3,7 @@
 목표: OMG DDS 표준을 **직접 구현하며 이해**하고, 그 과정을 다른 학습자가 따라올 수 있는 **교재** ([book/](../book/README.md))로 쓴다. chapter가 진행 단위다. chapter마다 "읽을 규격 -> 구현 -> 완료 기준(검증)"을 저자 노트에 두고, 작업을 마치면 그 결과로 본문을 쓴다 (규칙은 [conventions/book.md](conventions/book.md)).
 최종 검증 기준은 **타 벤더(Cyclone DDS, Fast DDS)와의 상호운용**이다.
 
-이 문서는 전체 지도다. chapter별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 주제 이름 파일에 둔다. 용어는 [glossary](../docs/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
+이 문서는 전체 지도다. chapter별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 chapter의 book 디렉터리와 같은 이름의 파일 (`NN-<slug>.md`)에 둔다. 용어는 [glossary](../docs/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
 
 최초 조사일: 2026-10-27
 
@@ -15,23 +15,23 @@
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | 들어가며 (구현 없음) | [introduction](notes/introduction.md) | 진행 중 |
-| 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [environment-and-captures](notes/environment-and-captures.md) | 완료 |
-| 05 | DCPS 개념 모델 | [dcps-concepts](notes/dcps-concepts.md) | 대기 |
-| 06 | CDR 직렬화 (XCDR1) | [cdr](notes/cdr.md) | 대기 |
-| 07 | RTPS 메시지 계층 | [rtps-messages](notes/rtps-messages.md) | 대기 |
-| 08 | Best-effort 전송 + UDP | [best-effort-udp](notes/best-effort-udp.md) | 대기 |
-| 09 | SPDP (참가자 디스커버리) | [spdp](notes/spdp.md) | 대기 |
-| 10 | Reliable 프로토콜 | [reliable](notes/reliable.md) | 대기 |
-| 11 | SEDP + 매칭 (첫 상호운용) | [sedp-matching](notes/sedp-matching.md) | 대기 |
-| 12 | ROS 2 상호운용 (권장) | [ros2-interop](notes/ros2-interop.md) | 대기 |
-| 13 | 키 인스턴스와 수명주기 | [instances](notes/instances.md) | 대기 |
-| 14 | DCPS API 완성 + OMG 상호운용 테스트 | [dcps-api](notes/dcps-api.md) | 대기 |
-| 15 | 단편화 + 성능 | [fragmentation-perf](notes/fragmentation-perf.md) | 대기 |
-| 16 | DDS-XTypes | [xtypes](notes/xtypes.md) | 대기 |
-| 17 | IDL 4.2 컴파일러 | [idl-compiler](notes/idl-compiler.md) | 대기 |
-| 18 | DDS-Security (선택) | [security](notes/security.md) | 대기 |
-| 19 | 기타 (선택) | [extras](notes/extras.md) | 대기 |
+| 00 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 진행 중 |
+| 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [01-04-environment-and-captures](notes/01-04-environment-and-captures.md) | 완료 |
+| 05 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 대기 |
+| 06 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
+| 07 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |
+| 08 | Best-effort 전송 + UDP | [08-best-effort-udp](notes/08-best-effort-udp.md) | 대기 |
+| 09 | SPDP (참가자 디스커버리) | [09-spdp](notes/09-spdp.md) | 대기 |
+| 10 | Reliable 프로토콜 | [10-reliable](notes/10-reliable.md) | 대기 |
+| 11 | SEDP + 매칭 (첫 상호운용) | [11-sedp-matching](notes/11-sedp-matching.md) | 대기 |
+| 12 | ROS 2 상호운용 (권장) | [12-ros2-interop](notes/12-ros2-interop.md) | 대기 |
+| 13 | 키 인스턴스와 수명주기 | [13-instances](notes/13-instances.md) | 대기 |
+| 14 | DCPS API 완성 + OMG 상호운용 테스트 | [14-dcps-api](notes/14-dcps-api.md) | 대기 |
+| 15 | 단편화 + 성능 | [15-fragmentation-perf](notes/15-fragmentation-perf.md) | 대기 |
+| 16 | DDS-XTypes | [16-xtypes](notes/16-xtypes.md) | 대기 |
+| 17 | IDL 4.2 컴파일러 | [17-idl-compiler](notes/17-idl-compiler.md) | 대기 |
+| 18 | DDS-Security (선택) | [18-security](notes/18-security.md) | 대기 |
+| 19 | 기타 (선택) | [19-extras](notes/19-extras.md) | 대기 |
 
 ---
 
@@ -87,7 +87,7 @@ mdds/
     environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
   docs-for-agent/   # 저자와 agent용
     roadmap.md      # 이 문서
-    notes/          # chapter별 저자 노트 (주제 이름)
+    notes/          # chapter별 저자 노트 (NN-<slug>.md, book 디렉터리와 같은 이름)
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
     conventions/    # 프로젝트 규약 (Rust, TypeScript, Markdown, 캡처, 교재)
   book/             # 학습자용 교재. chapter마다 디렉터리 (NN-slug/README.md, code/)

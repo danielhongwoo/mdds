@@ -1,6 +1,6 @@
 # docker/ - Cyclone DDS / Fast DDS 상호운용 캡처 환경
 
-[roadmap](../docs-for-agent/roadmap.md) | [네트워크 설계](../docs/environment/docker-network.md) | [빌드 설계](../docs/environment/vendor-build.md) | [chapter 1-4 노트](../docs-for-agent/notes/environment-and-captures.md)
+[roadmap](../docs-for-agent/roadmap.md) | [네트워크 설계](../docs/environment/docker-network.md) | [빌드 설계](../docs/environment/vendor-build.md) | [chapter 1-4 노트](../docs-for-agent/notes/01-04-environment-and-captures.md)
 
 OMG 상호운용 테스트 프로그램 shape_main을 Cyclone DDS와 Fast DDS로 각각 소스에서 빌드하고, 컨테이너 두 개에서 서로 통신시켜 그 패킷을 캡처한다. 캡처는 이후 chapter에서 정답 바이트 (테스트 데이터)로 쓴다. chapter 1에서 만들었고, 이후 mdds의 상호운용 시험에도 같은 환경을 쓴다.
 
@@ -70,7 +70,7 @@ brew install deno                         # 처음 한 번. 외부 모듈은 쓰
 ./capture-shape-scenario.ts --list                  # 시나리오 이름
 ./capture-shape-scenario.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
 ```
-실행 흐름과 시나리오 표는 [chapter 1-4 노트](../docs-for-agent/notes/environment-and-captures.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [captures/cyclone-fastdds/README.md](../captures/cyclone-fastdds/README.md)에 있다. 결과는 `../captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
+실행 흐름과 시나리오 표는 [chapter 1-4 노트](../docs-for-agent/notes/01-04-environment-and-captures.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [captures/cyclone-fastdds/README.md](../captures/cyclone-fastdds/README.md)에 있다. 결과는 `../captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.
 
 ### 정리
