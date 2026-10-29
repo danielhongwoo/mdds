@@ -4,11 +4,11 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
 
 ## 문서
 세 갈래로 나눈다. 독자용 (`book/`), 공용 참고 (`docs/`), 저자와 agent용 (`docs-for-agent/`).
-- `book/`: 학습자용 교재. 장 (chapter) 이 진행 단위이자 읽는 순서다. 장 하나가 디렉터리 하나 (`NN-slug/README.md`, 코드가 있으면 `code/`). 독자용 본문만 둔다. 규칙은 `docs-for-agent/conventions/book.md`.
-- `docs/environment/`: 실행 환경 문서 (여러 장에서 같이 쓴다). `vendor-build.md` (벤더 DDS와 shape_main 빌드), `docker-network.md` (실행 호스트, 네트워크, 주소 배정).
+- `book/`: 학습자용 교재. chapter가 진행 단위이자 읽는 순서다. chapter 하나가 디렉터리 하나 (`NN-slug/README.md`, 코드가 있으면 `code/`). 직접 실행해 보는 실습은 chapter 안의 lab으로 나눈다 (Lab 1-1 = chapter 1의 첫 번째 lab). 독자용 본문만 둔다. 규칙은 `docs-for-agent/conventions/book.md`.
+- `docs/environment/`: 실행 환경 문서 (여러 chapter에서 같이 쓴다). `vendor-build.md` (벤더 DDS와 shape_main 빌드), `docker-network.md` (실행 호스트, 네트워크, 주소 배정).
 - `docs/glossary.md`: 용어. 새 용어가 나오면 추가한다.
-- `docs-for-agent/roadmap.md`: 전체 지도와 장 현황 표. 장의 작업 상태가 바뀌면 이 표와 해당 저자 노트의 "상태:" 줄을 함께 고친다.
-- `docs-for-agent/notes/<주제>.md`: 장별 저자 노트 (읽을 규격, 구현 체크리스트, 확인할 것, 완료 기준, 진행 기록). 주제 이름으로 두고 번호를 붙이지 않는다. 한 노트가 여러 장을 맡을 수 있다 (예: `lab-setup.md`는 1-4장).
+- `docs-for-agent/roadmap.md`: 전체 지도와 chapter 현황 표. chapter의 작업 상태가 바뀌면 이 표와 해당 저자 노트의 "상태:" 줄을 함께 고친다.
+- `docs-for-agent/notes/<주제>.md`: chapter별 저자 노트 (읽을 규격, 구현 체크리스트, 확인할 것, 완료 기준, 진행 기록). 주제 이름으로 두고 번호를 붙이지 않는다. 한 노트가 여러 chapter를 맡을 수 있다 (예: `environment-and-captures.md`는 chapter 1-4).
 - `docs-for-agent/research/`: 조사 노트. 원문으로 확인한 내용과 추정을 구분해 표시한다.
 - `docs-for-agent/conventions/`: 프로젝트 규약. 대상별로 나눈다 (`rust.md`, `typescript.md`, `markdown.md`, `captures.md`, `book.md`).
 - `omg-specs/`: OMG 규격 PDF와 `pdftotext -layout` 추출본. git에 넣지 않는다. 규격 내용을 인용할 때는 기억이 아니라 이 원문을 확인한다.
@@ -17,7 +17,7 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
   - 결정은 그 결정이 적용되는 문서에 "무엇을 / 왜 / 버린 대안과 이유"로 적는다. 버린 대안은 누군가 다시 시도할 만한 것만 적는다.
   - 저자 노트의 "진행 기록"은 한 줄짜리 색인이다: 날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 막힌 점은 해결되면 결정으로 옮기거나 지운다.
   - 검토 기록은 따로 두지 않는다. 반영한 지적은 문서에 녹이고, 반영하지 않기로 한 지적만 이유와 함께 결정으로 남긴다.
-- 산출물 (스크립트, 도구, 캡처, crate) 은 번호가 아니라 하는 일과 대상으로 이름 짓고, 종류별 디렉터리 (`docker/`, `tools/`, `tests/captures/`, `crates/`) 에 둔다. 장은 그것을 링크한다.
+- 산출물 (스크립트, 도구, 캡처, crate) 은 번호가 아니라 하는 일과 대상으로 이름 짓고, 종류별 디렉터리 (`docker/`, `tools/`, `tests/captures/`, `crates/`) 에 둔다. chapter는 그것을 링크한다.
 
 ## 코드
 - 프로토콜 코어는 I/O-free core로 만든다 (소켓, 시계, 스레드를 직접 쓰지 않는다). 자세한 내용은 `docs-for-agent/roadmap.md` 설계 원칙.

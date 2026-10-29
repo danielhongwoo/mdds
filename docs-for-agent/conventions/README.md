@@ -2,7 +2,7 @@
 
 [roadmap](../roadmap.md) | [CLAUDE.md](../../CLAUDE.md)
 
-모든 장에서 지키는 규칙이다. 대상마다 문서를 나눈다. 문서 갱신 규칙 (현재 상태만 적기, 결정 형식, 진행 기록)은 [CLAUDE.md](../../CLAUDE.md)에 있다.
+모든 chapter에서 지키는 규칙이다. 대상마다 문서를 나눈다. 문서 갱신 규칙 (현재 상태만 적기, 결정 형식, 진행 기록)은 [CLAUDE.md](../../CLAUDE.md)에 있다.
 
 | 문서 | 대상 |
 |---|---|
@@ -10,7 +10,7 @@
 | [typescript.md](typescript.md) | 보조 스크립트 (TypeScript + Deno) |
 | [markdown.md](markdown.md) | 문서: 문자, 규격 인용, 다이어그램 (Mermaid) |
 | [captures.md](captures.md) | 패킷 캡처 파일과 캡처 메모 |
-| [book.md](book.md) | 교재 (`book/`): 장 틀, 번호, 코드 스냅샷, 언어, 라이선스 |
+| [book.md](book.md) | 교재 (`book/`): chapter 틀, 번호, 코드 스냅샷, 언어, 라이선스 |
 
 ## 공통
 - **라이선스**: `MIT OR Apache-2.0` 이중 라이선스. 파일은 `LICENSE-MIT`, `LICENSE-APACHE`.

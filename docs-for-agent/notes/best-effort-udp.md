@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 08 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 08 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.4.1 ~ 8.4.8 (행동 모듈 개요, **8.4.2 상호운용 요구사항 먼저**), StatelessWriter/Reader, 9.6.2 (포트, 기본 로케이터)

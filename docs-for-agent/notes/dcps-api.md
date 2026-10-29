@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 14 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 14 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - DDS 1.4 Sec. 2.2.2 (엔티티 계층 전체: Factory, DomainParticipant, Publisher / Subscriber, Topic)

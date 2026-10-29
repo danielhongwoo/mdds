@@ -12,9 +12,9 @@
 - **RTPS**(Real-Time Publish-Subscribe): 서로 다른 벤더의 DDS 구현이 통신할 수 있게 정한 와이어 프로토콜. 메시지 형식, 신뢰성(HEARTBEAT/ACKNACK), 디스커버리(SPDP/SEDP)를 정의한다. 규격 이름 **DDSI-RTPS**의 DDSI는 "DDS Interoperability"다. DCPS가 응용에 보이는 API라면, RTPS는 그 아래에서 실제로 네트워크에 흐르는 바이트를 정한다.
 - **SPDP**(Simple Participant Discovery Protocol): 같은 도메인의 참가자(DomainParticipant)끼리 서로를 찾는 프로토콜. 각 참가자가 멀티캐스트로 "나는 누구이고 어느 주소로 연락하면 된다"를 주기적으로 알린다(best-effort).
 - **SEDP**(Simple Endpoint Discovery Protocol): SPDP로 찾은 참가자끼리 각자의 DataWriter/DataReader(엔드포인트)의 토픽/타입/QoS 정보를 교환하고, 서로 맞는 쌍을 매칭하는 프로토콜(reliable). 이름의 "Simple"은 RTPS가 기본 제공하는 방식이라는 뜻으로, 벤더가 다른 디스커버리 방식을 쓸 수도 있다.
-- **매칭 (matching)**: 상대의 writer 또는 reader를 SEDP로 알게 된 뒤, 자기 쪽 엔드포인트와 짝이 맞는지 판정해 통신 상대로 등록하는 일. 조건 (토픽, 타입, partition, RxO QoS)과 동작은 [11장 노트](../docs-for-agent/notes/sedp-matching.md). shape_main은 매칭되면 `on_publication_matched` / `on_subscription_matched`를 찍는다.
-- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff (RTPS 2.5 Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 해석 규칙은 [7장 노트](../docs-for-agent/notes/rtps-messages.md). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙인다.
-- **미리 보내는 ACKNACK (pre-emptive ACKNACK)**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK (RTPS 2.5 Sec. 8.4.2.3). 동작은 [10장 노트](../docs-for-agent/notes/reliable.md).
+- **매칭 (matching)**: 상대의 writer 또는 reader를 SEDP로 알게 된 뒤, 자기 쪽 엔드포인트와 짝이 맞는지 판정해 통신 상대로 등록하는 일. 조건 (토픽, 타입, partition, RxO QoS)과 동작은 [chapter 11 노트](../docs-for-agent/notes/sedp-matching.md). shape_main은 매칭되면 `on_publication_matched` / `on_subscription_matched`를 찍는다.
+- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff (RTPS 2.5 Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 해석 규칙은 [chapter 7 노트](../docs-for-agent/notes/rtps-messages.md). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙인다.
+- **미리 보내는 ACKNACK (pre-emptive ACKNACK)**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK (RTPS 2.5 Sec. 8.4.2.3). 동작은 [chapter 10 노트](../docs-for-agent/notes/reliable.md).
 - **HEARTBEAT 얹어 보내기 (piggyback)**: writer가 DATA 서브메시지 바로 뒤에 HEARTBEAT를 같은 메시지에 넣어 보내는 것 (RTPS 2.5 Sec. 8.4.15.4).
 - **ContentFilteredTopic (내용 필터 토픽)**: 기존 토픽에 SQL 비슷한 조건식 (예: `color = %0`)을 붙여 조건에 맞는 샘플만 받는 DCPS 토픽. 구독자가 SEDP에 `PID_CONTENT_FILTER_PROPERTY`로 조건을 알리므로 발행자 쪽에서 미리 거를 수도 있다. shape_main은 구독자에게 `-c`를 주면 이것을 만든다.
 
@@ -24,7 +24,7 @@
 - **XCDR2**(Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더(DHEADER)와 멤버별 헤더(EMHEADER)를 도입한 개선판. 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
 
 ## 도구
-- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. 이 프로젝트는 Docker 안에서 소스로 빌드해 쓴다 (1장). Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
+- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. 이 프로젝트는 Docker 안에서 소스로 빌드해 쓴다 (chapter 1). Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
 - **ShapesDemo**: 같은 ShapeType 토픽을 GUI로 보여 주는 각 벤더의 데모 프로그램 (RTI, eProsima 등). shape_main은 이것의 CLI판이라고 보면 된다.
 - **bridge 네트워크 (Docker)**: Docker가 호스트 안에 만드는 가상 L2 스위치. 컨테이너의 `eth0`가 여기에 꽂힌다. 같은 bridge 안에서는 유니캐스트와 멀티캐스트가 모두 통하고, 바깥으로는 NAT를 거친다. 사용자 정의 bridge는 기본 bridge와 달리 컨테이너 이름으로 서로를 찾을 수 있다.
 - **네트워크 네임스페이스 (network namespace)**: Linux 커널이 네트워크 스택 (인터페이스, IP 주소, 라우팅 표, 소켓)을 프로세스 묶음마다 따로 두는 기능. Docker 컨테이너가 각자 `eth0`과 IP를 갖는 것이 이것 덕분이다. 다른 컨테이너의 네임스페이스를 빌려 쓰면 (`--network container:<id>`) 같은 `eth0`과 IP를 공유한다. 이 프로젝트의 `mcast-check.sh`가 이 방식으로 벤더 컨테이너 안에서 도구를 돌린다.

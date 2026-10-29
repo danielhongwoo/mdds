@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 18 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 18 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - DDS-Security **1.2** 기준 (1.2에서 장 번호가 바뀌었다. 원문 확인함, 상세 지도: [research/xtypes-cdr-idl-security.md](../research/xtypes-cdr-idl-security.md))

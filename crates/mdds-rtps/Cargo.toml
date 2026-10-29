@@ -1,6 +1,6 @@
 [package]
 name = "mdds-rtps"
-description = "RTPS 메시지와 상태 머신, I/O-free core (7장부터)"
+description = "RTPS 메시지와 상태 머신, I/O-free core (chapter 7부터)"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

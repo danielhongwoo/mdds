@@ -6,7 +6,7 @@
  *   ./capture-shape-scenario.ts --list          시나리오 이름 목록
  *   ./capture-shape-scenario.ts --force <이름>  기존 결과를 덮어쓴다
  *
- * 설계 (실행 흐름, 시나리오 표): docs-for-agent/notes/lab-setup.md
+ * 설계 (실행 흐름, 시나리오 표): docs-for-agent/notes/environment-and-captures.md
  * 표를 바꾸면 아래 SCENARIOS 도 함께 고친다.
  *
  * 결과 (호스트 경로. 컨테이너 안에서는 /captures/cyclone-fastdds/):
@@ -270,7 +270,7 @@ async function main(args: string[]): Promise<void> {
   log(`  sub: ${p.subBin} ${p.subArgs.join(" ")}`);
   log(`  pub: ${p.pubBin} ${p.pubArgs.join(" ")}`);
 
-  // 번호는 lab-setup.md "시나리오 실행 흐름" 과 같다.
+  // 번호는 environment-and-captures.md "시나리오 실행 흐름" 과 같다.
 
   // 1-2. 캡처를 먼저 켠다. 첫 IGMP 가입과 첫 SPDP 부터 잡힌다.
   //      -U: 패킷마다 바로 쓰기, -Z root: 권한을 낮추다 바인드 마운트에 못 쓰는 문제 방지

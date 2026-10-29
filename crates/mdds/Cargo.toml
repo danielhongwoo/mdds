@@ -1,6 +1,6 @@
 [package]
 name = "mdds"
-description = "사용자 API와 UDP transport (8장부터)"
+description = "사용자 API와 UDP transport (chapter 8부터)"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

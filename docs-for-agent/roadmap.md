@@ -1,21 +1,21 @@
 # mdds 로드맵
 
-목표: OMG DDS 표준을 **직접 구현하며 이해**하고, 그 과정을 다른 학습자가 따라올 수 있는 **교재** ([book/](../book/README.md))로 쓴다. 장 (chapter) 이 진행 단위다. 장마다 "읽을 규격 -> 구현 -> 완료 기준(검증)"을 저자 노트에 두고, 작업을 마치면 그 결과로 본문을 쓴다 (규칙은 [conventions/book.md](conventions/book.md)).
+목표: OMG DDS 표준을 **직접 구현하며 이해**하고, 그 과정을 다른 학습자가 따라올 수 있는 **교재** ([book/](../book/README.md))로 쓴다. chapter가 진행 단위다. chapter마다 "읽을 규격 -> 구현 -> 완료 기준(검증)"을 저자 노트에 두고, 작업을 마치면 그 결과로 본문을 쓴다 (규칙은 [conventions/book.md](conventions/book.md)).
 최종 검증 기준은 **타 벤더(Cyclone DDS, Fast DDS)와의 상호운용**이다.
 
-이 문서는 전체 지도다. 장별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 주제 이름 파일에 둔다. 용어는 [glossary](../docs/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
+이 문서는 전체 지도다. chapter별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 주제 이름 파일에 둔다. 용어는 [glossary](../docs/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
 
 최초 조사일: 2026-10-27
 
 ---
 
-## 1. 장 현황
+## 1. chapter 현황
 
 상태는 저자 노트의 작업 상태다: 대기 / 진행 중 / 완료. 본문 집필 상태는 [book/README.md 목차](../book/README.md#목차)에 있다.
 
-| 장 | 제목 | 저자 노트 | 상태 |
+| chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [lab-setup](notes/lab-setup.md) | 완료 |
+| 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [environment-and-captures](notes/environment-and-captures.md) | 완료 |
 | 05 | DCPS 개념 모델 | [dcps-concepts](notes/dcps-concepts.md) | 대기 |
 | 06 | CDR 직렬화 (XCDR1) | [cdr](notes/cdr.md) | 대기 |
 | 07 | RTPS 메시지 계층 | [rtps-messages](notes/rtps-messages.md) | 대기 |
@@ -54,20 +54,20 @@
 ```
 DDS 1.4 Ch.2 (개념, QoS) --> DDSI-RTPS 2.5 --> DDS-XTypes 1.3 --> DDS-Security
 CDR (CORBA, XTypes Sec. 7.4 XCDR1) --> DDSI-RTPS 2.5, DDS-XTypes 1.3 에서 사용
-IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 장 (17장) 에서 본격적으로
+IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 chapter (17) 에서 본격적으로
 ```
 
 ### Rust 언어 매핑과 API 설계
 - 공식 Rust PSM은 없다. OMG에서 "IDL4 -> Rust 언어 매핑" RFP(mars/2026-3-6)가 나와 있다. 참여 의향서(LoI) 마감은 2026-06-18, 1차 제안서 마감은 2026-08-17이었다. **아직 채택된 표준이 아니다.**
   - RFP는 "이런 표준을 만들 테니 제안해 달라"는 공모다. 이후 제안서 제출 -> 투표로 채택(beta) -> 확정 태스크포스(FTF) -> formal 순서로 진행되며, 보통 몇 년이 걸린다.
   - 범위는 IDL 4.2의 모든 구문을 Rust로 매핑하는 것(타입 매핑 중심)이다. RFP 문서에 DDS나 CORBA 언급은 없다. 즉 DDS의 Rust API(DCPS PSM) 자체를 정하는 규격이 아니다. 비슷한 선례로 IDL4 -> C++ 매핑, IDL4 -> Java 매핑이 있다.
-- 이 프로젝트에서는 **API 설계를 자유롭게** 하되 DCPS PIM 개념은 그대로 따른다. 17장 IDL 컴파일러를 만들 때 RFP 진행 상황을 다시 확인한다.
+- 이 프로젝트에서는 **API 설계를 자유롭게** 하되 DCPS PIM 개념은 그대로 따른다. chapter 17 IDL 컴파일러를 만들 때 RFP 진행 상황을 다시 확인한다.
 
 ---
 
 ## 3. 저장소 구조
 
-### 처음 구성 (1-12장)
+### 처음 구성 (chapter 1-12)
 경계를 모르는 상태에서 crate를 미리 잘게 나누면 의존 정리에 시간이 든다. 세 개로 시작하고, 경계가 분명해지면 나눈다.
 
 ```
@@ -77,27 +77,27 @@ mdds/
     mdds-rtps       # RTPS 타입, 메시지 파서/인코더, Writer/Reader 상태 머신, 디스커버리 - I/O-free core
     mdds            # 사용자 API + UDP transport (드라이버)
   tools/
-    mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (2장)
-    shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (14장)
+    mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (chapter 2)
+    shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (chapter 14)
   tests/
     captures/       # 캡처한 pcap과 로그 (테스트의 정답 바이트). <누가-누구>/ 로 나눔 (cyclone-fastdds, mcast-check)
-  docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (1장에서 만들고 이후 계속 사용)
+  docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (chapter 1에서 만들고 이후 계속 사용)
   docs/             # 독자도 보는 공용 참고
     glossary.md
     environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
   docs-for-agent/   # 저자와 agent용
     roadmap.md      # 이 문서
-    notes/          # 장별 저자 노트 (주제 이름)
+    notes/          # chapter별 저자 노트 (주제 이름)
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
     conventions/    # 프로젝트 규약 (Rust, TypeScript, Markdown, 캡처, 교재)
-  book/             # 학습자용 교재. 장마다 디렉터리 (NN-slug/README.md, code/)
+  book/             # 학습자용 교재. chapter마다 디렉터리 (NN-slug/README.md, code/)
   omg-specs/        # OMG 규격 PDF와 텍스트 추출본 (git 제외: 재배포 조건 때문)
 ```
 
 ### 나중에 나눌 후보
-- `mdds-derive`: derive 매크로 (proc-macro crate는 별도여야 하므로 6장에서 바로 생길 수 있다)
+- `mdds-derive`: derive 매크로 (proc-macro crate는 별도여야 하므로 chapter 6에서 바로 생길 수 있다)
 - `mdds-discovery`, `mdds-transport`: mdds-rtps / mdds가 커지면 분리
-- `mdds-xtypes` (16장), `mdds-idl` (17장), `mdds-security` (18장)
+- `mdds-xtypes` (chapter 16), `mdds-idl` (chapter 17), `mdds-security` (chapter 18)
 
 ## 4. 설계 원칙
 - **I/O-free core** (I/O 없는 프로토콜 코어): 프로토콜 상태 머신이 소켓, 시계, 스레드, async 런타임을 직접 쓰지 않는다. 입력(받은 바이트, 현재 시각, 사용자 요청)을 받아 상태를 바꾸고, 출력(보낼 패킷과 목적지, 다음 타이머 시각, 이벤트)을 돌려주기만 한다. 실제 송수신과 대기는 바깥의 얇은 드라이버(tokio, mio, 테스트 하네스 등)가 맡는다.

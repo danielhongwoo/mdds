@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 16 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 16 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - XTypes 1.3 (섹션은 원문 확인함, 상세 지도: [research/xtypes-cdr-idl-security.md](../research/xtypes-cdr-idl-security.md))

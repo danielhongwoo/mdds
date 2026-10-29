@@ -1,6 +1,6 @@
 [package]
 name = "mdds-cdr"
-description = "CDR / XCDR 직렬화 (6장부터)"
+description = "CDR / XCDR 직렬화 (chapter 6부터)"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

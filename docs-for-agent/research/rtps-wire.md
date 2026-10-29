@@ -89,7 +89,7 @@
   - 모르는 PID는 건너뛴다. 단 must-understand 비트 (0x4000)가 붙은 모르는 PID는 해당 서브메시지를 무시한다. HeaderExtension 안이면 메시지 전체를 무시한다.
   - 0x8000 ~ 0xffff는 벤더 전용
   - 인라인 QoS PID (9.6.4): PID_KEY_HASH 0x0070, PID_STATUS_INFO 0x0071 (dispose / unregister 비트), 그 밖에 CONTENT_FILTER_INFO, COHERENT_SET
-- **SerializedPayload** (10장): 4바이트 헤더 = 표현 ID (2) + options (2). CDR_BE 0x0000, CDR_LE 0x0001, PL_CDR_BE 0x0002, PL_CDR_LE 0x0003. 디스커버리 데이터는 PL_CDR
+- **SerializedPayload** (chapter 10): 4바이트 헤더 = 표현 ID (2) + options (2). CDR_BE 0x0000, CDR_LE 0x0001, PL_CDR_BE 0x0002, PL_CDR_LE 0x0003. 디스커버리 데이터는 PL_CDR
 
 ## 4. 동작 (8.4)
 - Stateless writer / reader (8.4.8, 8.4.11): 피어별 상태 없음. writer는 ReaderLocator 목록만 가진다. SPDP가 사용

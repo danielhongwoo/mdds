@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 15 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 15 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.4.14 (단편화), DATA_FRAG / NACK_FRAG / HEARTBEAT_FRAG 레이아웃

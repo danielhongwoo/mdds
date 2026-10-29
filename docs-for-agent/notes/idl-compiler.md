@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 17 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 17 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - IDL 4.2 (섹션은 원문 확인함)
@@ -10,7 +10,7 @@
   - Sec. 7.4.1 Core Data Types, Sec. 7.4.13 Extended Data-Types, Sec. 7.4.14 Anonymous Types, Sec. 7.4.15 Annotations. 인터페이스 / CORBA 블록 (7.4.3 등)은 생략
   - Sec. 8.3.1 ~ 8.3.2 표준 어노테이션 (@id, @autoid, @optional, @extensibility, @key 등)
 - XTypes 1.3 Sec. 7.3.1.2.1 (DDS 전용 어노테이션은 IDL이 아니라 XTypes에 있다)
-- `#pragma keylist`는 어느 OMG 규격에도 없는 벤더 관례다. 호환을 위해 지원할지는 이 장에서 정한다.
+- `#pragma keylist`는 어느 OMG 규격에도 없는 벤더 관례다. 호환을 위해 지원할지는 이 chapter에서 정한다.
 
 ## 구현
 - 전처리 (#include) -> 파서 (pest / nom / chumsky) -> 스코프 이름 해석 -> Rust 코드 + TypeObject 생성 (`build.rs` 연동)

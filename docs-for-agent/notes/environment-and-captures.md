@@ -1,11 +1,11 @@
-# 저자 노트: 실습 환경과 캡처 (1-4장, 구현 없음)
+# 저자 노트: 실습 환경과 캡처 (chapter 1-4, 구현 없음)
 
 상태: 완료
 
-[roadmap](../roadmap.md) | 장: 01-04 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 01-04 ([목차](../../book/README.md#목차))
 
 ## 목표
-규격을 읽기 전에 실제 DDS 트래픽을 눈으로 본다. Cyclone DDS와 Fast DDS가 Docker 컨테이너 두 개에서 서로 통신하게 만들고, 그 패킷을 캡처해 이후 장의 테스트 데이터(정답 바이트)로 쓴다. 프로토콜 코드는 쓰지 않는다.
+규격을 읽기 전에 실제 DDS 트래픽을 눈으로 본다. Cyclone DDS와 Fast DDS가 Docker 컨테이너 두 개에서 서로 통신하게 만들고, 그 패킷을 캡처해 이후 chapter의 테스트 데이터(정답 바이트)로 쓴다. 프로토콜 코드는 쓰지 않는다.
 
 ## 범위
 하는 것
@@ -14,9 +14,9 @@
 - Cargo 워크스페이스 뼈대와 프로젝트 규약 확정
 
 하지 않는 것
-- RTPS / CDR 코드 작성, 캡처 파일을 읽는 테스트 코드 (6장, 7장에서)
-- 규격 정독 (5장부터)
-- ROS 2 환경 (12장에서)
+- RTPS / CDR 코드 작성, 캡처 파일을 읽는 테스트 코드 (chapter 6, chapter 7에서)
+- 규격 정독 (chapter 5부터)
+- ROS 2 환경 (chapter 12에서)
 - `ddsperf` 등 벤더 고유 도구. 모든 시나리오는 OMG `shape_main` 하나로 만든다 (큰 샘플도 `--additional-payload-size`로 가능).
 
 ## 산출물
@@ -27,7 +27,7 @@
 | 빈 crate 세 개가 있는 Cargo 워크스페이스 | `Cargo.toml`, `crates/` |
 | 확정된 프로젝트 규약 | [conventions/](../conventions/README.md), `CLAUDE.md` |
 | 캡처 분석 메모 (어느 프레임에 무엇이 보이는지) | `tests/captures/cyclone-fastdds/README.md`, 이 문서의 "진행 기록" |
-| 교재 장 (이 노트의 작업을 마친 뒤 씀) | [book/](../../book/README.md) 01 실습 환경, 02 멀티캐스트, 03 첫 DDS 통신, 04 같은 규격 다른 구현 |
+| 교재 chapter (이 노트의 작업을 마친 뒤 씀) | [book/](../../book/README.md) 01 실습 환경, 02 멀티캐스트, 03 첫 DDS 통신, 04 같은 규격 다른 구현 |
 
 ## 작업 순서
 
@@ -82,6 +82,25 @@
 
 ### Step 8. 규약 확정
 - [x] 프로젝트 규약을 확정해 [conventions/](../conventions/README.md)에 두고 `CLAUDE.md`와 맞춘다. Deno / TypeScript 스크립트, Mermaid 다이어그램, 캡처 메모 규칙을 넣고 `editcap` 기준을 10MB로 정했다.
+
+## lab
+chapter 본문에 둘 lab 목록이다 (규칙은 [conventions/book.md](../conventions/book.md#lab)). 위의 Step을 독자가 따라 할 수 있는 크기로 다시 나눈 것이다. chapter 3과 4 사이의 나눔은 본문을 쓰면서 바뀔 수 있다.
+
+| lab | 제목 | 하는 일 -> 기대 결과 | 쓰는 산출물 |
+|---|---|---|---|
+| Lab 1-1 | 벤더 이미지 빌드와 컨테이너 띄우기 | `docker compose up -d --build` -> 두 컨테이너가 Up, `uname -m`이 호스트 아키텍처 (Mac은 `aarch64`) | `docker/compose.yaml`, `docker/cyclone/`, `docker/fastdds/` |
+| Lab 1-2 | shape_main 확인 | `ldd`, `-h`, 버전 확인 -> `not found` 없음, 옵션이 dds-rtps README와 같음 | [vendor-build.md](../../docs/environment/vendor-build.md) |
+| Lab 2-1 | 컨테이너 사이 연결 | 주소 확인과 ping -> cyclone 172.28.0.10, fastdds 172.28.0.11이 서로 닿음 | [docker-network.md](../../docs/environment/docker-network.md#네트워크-구성) |
+| Lab 2-2 | 멀티캐스트 보내고 받기 | `mcast-check`로 239.255.0.1:7400 송수신, `ip maddr show eth0` -> 3건 모두 수신, 가입 주소가 보임, tcpdump에 IGMP 가입이 잡힘 | `tools/mcast-check`, `tests/captures/mcast-check/` |
+| Lab 2-3 | 가입하지 않으면 | 아무도 가입하지 않은 채 송신 -> 패킷이 받는 쪽 `eth0`까지 옴. bridge는 거르지 않고, 받을지는 받는 쪽 커널의 가입이 정함 | `mcast-check.nojoin.pcap` |
+| Lab 3-1 | 첫 DDS 통신 | `capture-shape-scenario.ts rel-cyclone-pub` -> 구독 로그에 샘플이 찍히고 pcap이 생김 | `docker/capture-shape-scenario.ts` |
+| Lab 3-2 | 캡처에서 RTPS 메시지 찾기 | Wireshark 필터 `rtps` -> SPDP, SEDP, DATA, HEARTBEAT, ACKNACK를 캡처 README의 흐름도 프레임 번호와 맞춰 찾음 | `tests/captures/cyclone-fastdds/rel-cyclone-pub.*` |
+| Lab 3-3 | best-effort와 비교 | `be-cyclone-pub`을 같은 방법으로 봄 -> HEARTBEAT, ACKNACK가 없음 | `be-cyclone-pub.*` |
+| Lab 4-1 | 방향을 바꾸면 | `rel-fastdds-pub`과 비교 -> 벤더 ID, 프로토콜 버전, 벤더 전용 PID, lease 값, 유니캐스트 포트, 공유 메모리 로케이터가 다름 | `rel-fastdds-pub.*`, `be-fastdds-pub.*` |
+| Lab 4-2 | 끝날 때 dispose | `dispose-on-exit` -> 마지막 DATA의 `PID_STATUS_INFO`에 dispose 비트, 이어서 unregister와 SEDP writer 제거 | `dispose-on-exit.*` |
+| Lab 4-3 | 말없이 사라진 참가자 | `lease-expiry` -> 마지막 SPDP 뒤 약 10초 (Cyclone lease) 지나 구독자가 정리 | `lease-expiry.*` |
+| Lab 4-4 | 큰 샘플 | `large-sample` -> DATA_FRAG, HEARTBEAT_FRAG, IP 단편화 | `large-sample.*` |
+| Lab 4-5 | XCDR2 | `xcdr2` -> 캡슐화 식별자와 PID_DATA_REPRESENTATION이 XCDR2 | `xcdr2.*` |
 
 ## 실행 환경
 - 이미지 빌드 (소스 버전, Dockerfile 구성, 빌드 결과): [environment/vendor-build.md](../../docs/environment/vendor-build.md)
@@ -169,7 +188,7 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 | SPDP는 보이는데 매칭이 안 됨 | QoS 불일치, 데이터 표현 불일치 (`-x`) | 양쪽 옵션을 같게 맞춘다. 이것 자체도 좋은 캡처다 |
 
 ## 프로젝트 규약
-모든 장에서 지키는 규약은 [conventions/](../conventions/README.md)에 있다.
+모든 chapter에서 지키는 규약은 [conventions/](../conventions/README.md)에 있다.
 
 ## 참고 코드
 - Cyclone DDS: RTPS 상태 머신, 디스커버리 로직 읽기 좋음
@@ -189,15 +208,16 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-28: 실행 호스트를 Mac (arm64) Docker Desktop으로 정함. x86_64 Linux 머신은 선택 -> [docker-network.md](../../docs/environment/docker-network.md#실행-호스트-mac-docker-desktop)
 - 2026-10-28: Cyclone을 태그 11.0.1이 아닌 master `f2aaccb4`로 고정 (11.0.1로는 C판 shape_main 링크 실패) -> [vendor-build.md](../../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유)
 - 2026-10-28: Step 3 이미지 빌드 완료 (Mac에서 약 3분) -> [vendor-build.md "빌드 결과"](../../docs/environment/vendor-build.md#빌드-결과)
-- 2026-10-28: 실행 환경 문서를 이 노트에서 `docs/environment/`로 분리 (이후 장에서도 계속 쓰므로). 검토 기록 절을 없애고 진행 기록을 한 줄 색인으로 줄임
+- 2026-10-28: 실행 환경 문서를 이 노트에서 `docs/environment/`로 분리 (이후 chapter에서도 계속 쓰므로). 검토 기록 절을 없애고 진행 기록을 한 줄 색인으로 줄임
 - 2026-10-28: Step 4 완료. 이 환경의 bridge는 querier가 없어 IGMP 가입과 무관하게 멀티캐스트를 모든 포트로 흘려보냄 (전달 여부는 받는 쪽 커널의 가입이 결정) -> [docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
-- 2026-10-28: 캡처 볼륨을 `tests/captures` 전체로 바꿈 (장에 묶지 않음). 시나리오는 `/captures/cyclone-fastdds/`에 쓴다 -> [docker-network.md "compose 설계"](../../docs/environment/docker-network.md#compose-설계)
+- 2026-10-28: 캡처 볼륨을 `tests/captures` 전체로 바꿈 (chapter에 묶지 않음). 시나리오는 `/captures/cyclone-fastdds/`에 쓴다 -> [docker-network.md "compose 설계"](../../docs/environment/docker-network.md#compose-설계)
 - 2026-10-28: 멀티캐스트 확인 도구를 socat 대신 Rust로 만듦 (`tools/mcast-check`, 이미지 `mdds/tools`, 벤더 컨테이너의 네트워크 네임스페이스를 빌려 실행). 이를 위해 Step 2 워크스페이스 뼈대를 함께 만듦 -> [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령)
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 컨테이너 사이 멀티캐스트를 전달함을 확인 (fastdds 가입, cyclone 송신 3건 모두 수신)
 - 2026-10-28: Step 5 완료. 시나리오 스크립트 작성, rel 두 시나리오 캡처. shape_main `-c`를 발행 전용으로 바꿈 (구독자에게는 내용 필터가 됨) -> [시나리오 표](#시나리오-표), [캡처 README](../../tests/captures/cyclone-fastdds/README.md)
 - 2026-10-29: 시나리오 스크립트를 POSIX sh에서 TypeScript + Deno로 바꿈 (가독성) -> [시나리오 실행 흐름](#시나리오-실행-흐름-capture-shape-scenariots)
 - 2026-10-29: Step 6 완료. 나머지 6개 시나리오 캡처 (large-sample은 2.9MB라 자르지 않음). 시나리오별 다이어그램은 Step 7 -> [캡처 README](../../tests/captures/cyclone-fastdds/README.md#파일)
-- 2026-10-29: 캡처 메모는 관찰과 질문까지만 적고, 해석과 가설은 해당 장의 저자 노트 "확인할 것"으로 옮김 (7, 9, 10, 11, 13장) -> [Step 7](#step-7-캡처-분석-메모)
+- 2026-10-29: 캡처 메모는 관찰과 질문까지만 적고, 해석과 가설은 해당 chapter의 저자 노트 "확인할 것"으로 옮김 (chapter 7, 9, 10, 11, 13) -> [Step 7](#step-7-캡처-분석-메모)
 - 2026-10-29: Step 7 완료. 캡처 8개 모두 다이어그램과 질문을 적음 -> [캡처 README](../../tests/captures/cyclone-fastdds/README.md)
-- 2026-10-29: Step 8 완료, 이 노트의 작업 완료. 프로젝트 규약을 이 노트에서 `conventions/` (Rust, TypeScript, Markdown, 캡처)로 분리 (모든 장에서 쓰므로). `editcap` 기준 10MB -> [conventions](../conventions/README.md)
-- 2026-10-29: phase 구조를 없애고 장 (chapter) 을 유일한 진행 단위로 함. 저자 문서는 `docs-for-agent/`로, 산출물은 서술형 이름으로 (`capture-shape-scenario.ts`, `tests/captures/cyclone-fastdds/`) -> [conventions/book.md](../conventions/book.md), [typescript.md](../conventions/typescript.md)
+- 2026-10-29: Step 8 완료, 이 노트의 작업 완료. 프로젝트 규약을 이 노트에서 `conventions/` (Rust, TypeScript, Markdown, 캡처)로 분리 (모든 chapter에서 쓰므로). `editcap` 기준 10MB -> [conventions](../conventions/README.md)
+- 2026-10-29: phase 구조를 없애고 chapter를 유일한 진행 단위로 함. 저자 문서는 `docs-for-agent/`로, 산출물은 서술형 이름으로 (`capture-shape-scenario.ts`, `tests/captures/cyclone-fastdds/`) -> [conventions/book.md](../conventions/book.md), [typescript.md](../conventions/typescript.md)
+- 2026-10-30: 독자가 직접 해 보는 실습을 chapter 안의 lab (Lab 1-1 = chapter 1의 첫 lab)으로 나누고, 이 노트 이름을 `lab-setup`에서 `environment-and-captures`로 바꿈 (lab이라는 단위와 헷갈리지 않게) -> [conventions/book.md](../conventions/book.md#lab), [lab](#lab)

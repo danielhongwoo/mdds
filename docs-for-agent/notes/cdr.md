@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 06 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 06 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - CORBA 3.3 Part 2 Sec. 9.3 CDR Transfer Syntax, 특히 Sec. 9.3.1.1 Alignment (Table 9.1)

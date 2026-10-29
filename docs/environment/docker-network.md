@@ -2,7 +2,7 @@
 
 [roadmap](../../docs-for-agent/roadmap.md) | 사용법: [docker/README.md](../../docker/README.md) | 이미지 빌드: [vendor-build.md](vendor-build.md)
 
-Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환경의 설계와 원리를 정리한다. 1장에서 만들었고, 이후 캡처를 더 만들 때 (7장, 13장), mdds를 세 번째 참가자로 붙여 상호운용을 시험할 때 (9장, 11장, 14장 이후) 계속 쓴다. 명령어 위주의 사용법은 `docker/README.md`에 있다.
+Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환경의 설계와 원리를 정리한다. chapter 1에서 만들었고, 이후 캡처를 더 만들 때 (chapter 7, chapter 13), mdds를 세 번째 참가자로 붙여 상호운용을 시험할 때 (chapter 9, chapter 11, chapter 14 이후) 계속 쓴다. 명령어 위주의 사용법은 `docker/README.md`에 있다.
 
 ## 실행 호스트: Mac (Docker Desktop)
 
@@ -80,8 +80,8 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 | gateway | 172.28.0.1 | VM 안. DDS 참가자 아님 |
 | `cyclone` | 172.28.0.10 | 유니캐스트 포트는 임의 (아래 참고) |
 | `fastdds` | 172.28.0.11 | 유니캐스트 7410 / 7411 |
-| 벤더 컨테이너 추가분 | 172.28.0.12 - .19 | 예: ROS 2 이미지 (12장) |
-| mdds 컨테이너 | 172.28.0.20 부터 | 9장에서 처음 붙인다 (예정) |
+| 벤더 컨테이너 추가분 | 172.28.0.12 - .19 | 예: ROS 2 이미지 (chapter 12) |
+| mdds 컨테이너 | 172.28.0.20 부터 | chapter 9에서 처음 붙인다 (예정) |
 | 멀티캐스트 | 239.255.0.1:7400 | SPDP (도메인 0). bridge 안에서만 |
 
 캡처를 읽을 때 주소만 보고 어느 구현인지 알 수 있게 고정한다. 컨테이너를 다시 만들어도 주소가 같아서 캡처끼리 비교하기 쉽다.
@@ -124,7 +124,7 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 - DDS 구현이 239.255.0.1 그룹에 가입하면 커널이 IGMP Membership Report를 `eth0`으로 내보낸다. 가입은 두 곳에 영향을 준다.
   - **받는 쪽 커널**: 가입한 그룹의 패킷만 소켓으로 올린다. 가입하지 않으면 `eth0`에 도착해도 (tcpdump에는 보여도) 버린다. 이것이 가입이 꼭 필요한 이유다.
   - **bridge**: 멀티캐스트 스누핑 (multicast snooping)이 켜져 있고 IGMP querier가 있으면 보고를 보고 그 포트로만 전달한다. querier가 없으면 Linux bridge는 가입과 무관하게 모든 포트로 흘려보낸다 (`multicast_flood` 기본 켜짐).
-- **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`tests/captures/cyclone-fastdds/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
+- **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`tests/captures/mcast-check/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
 - 멀티캐스트 TTL 기본값이 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다.
 - 캡처로 본 것 (`tests/captures/cyclone-fastdds/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
   - 가입 직후 IGMPv3 Membership Report (목적지 224.0.0.22)가 두 번 나간다 (0초, 0.65초 뒤). RFC 3376의 Robustness Variable 기본값 2 때문이다. 종료 때 Leave도 두 번이다.

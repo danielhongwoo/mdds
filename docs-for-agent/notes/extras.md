@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | 장: 19 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 19 ([목차](../../book/README.md#목차))
 
 ## 후보
 - ContentFilteredTopic / QueryCondition (DDS 1.4 Annex B SQL 서브셋)
