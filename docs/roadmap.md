@@ -15,7 +15,7 @@
 
 | Phase | 내용 | 상태 |
 |---|---|---|
-| 00 | [준비 (구현 없음, 관찰 단계)](phases/phase-00-setup.md) | 대기 |
+| 00 | [준비 (구현 없음, 관찰 단계)](phases/phase-00-setup.md) | 완료 |
 | 01 | [DCPS 개념 모델](phases/phase-01-dcps-concepts.md) | 대기 |
 | 02 | [CDR 직렬화 (XCDR1)](phases/phase-02-cdr.md) | 대기 |
 | 03 | [RTPS 메시지 계층](phases/phase-03-rtps-messages.md) | 대기 |
@@ -87,6 +87,7 @@ mdds/
     phases/         # 단계별 계획과 진행 기록
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
     environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
+    conventions/    # 프로젝트 규약 (Rust, TypeScript, Markdown, 캡처)
   omg-specs/        # OMG 규격 PDF와 텍스트 추출본 (git 제외: 재배포 조건 때문)
 ```
 

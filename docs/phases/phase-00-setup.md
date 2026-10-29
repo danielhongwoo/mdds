@@ -1,6 +1,6 @@
 # Phase 00 - 준비 (구현 없음, 관찰 단계)
 
-상태: 대기
+상태: 완료
 
 [roadmap](../roadmap.md) | 다음: [Phase 01](phase-01-dcps-concepts.md)
 
@@ -25,7 +25,7 @@
 | Docker 이미지 정의, compose 파일, 시나리오 실행 스크립트, 사용법 | `docker/` |
 | 시나리오별 캡처 파일, 양쪽 stdout 로그, 설명 | `tests/captures/phase00/<이름>.pcap`, `<이름>.pub.log`, `<이름>.sub.log`, `README.md` |
 | 빈 crate 세 개가 있는 Cargo 워크스페이스 | `Cargo.toml`, `crates/` |
-| 확정된 프로젝트 규약 | 이 문서의 "프로젝트 규약" 절, `CLAUDE.md` |
+| 확정된 프로젝트 규약 | [docs/conventions/](../conventions/README.md), `CLAUDE.md` |
 | 캡처 분석 메모 (어느 프레임에 무엇이 보이는지) | `tests/captures/phase00/README.md`, 이 문서의 "진행 기록" |
 
 ## 작업 순서
@@ -76,16 +76,11 @@
 - [x] xcdr2
 
 ### Step 7. 캡처 분석 메모
-- [x] `tests/captures/phase00/README.md`에 시나리오마다: 실행 명령, 벤더와 버전, 캡처한 컨테이너, 흐름을 Mermaid 시퀀스 다이어그램 (`mermaid` 코드 블록)으로 적는다. 반복은 `loop`로 줄이고 메시지마다 프레임 번호와 시각을 붙인다 (첫 SPDP, SEDP 교환, HEARTBEAT / ACKNACK 왕복, dispose, 첫 DATA_FRAG). 다이어그램 아래에 "질문"을 적는다. 형식은 rel-cyclone-pub 절을 따른다.
-  - 왜: 프레임 번호 표만으로는 무엇이 무엇에 대한 응답인지 보이지 않는다. 캡처 한 개에 프레임이 수백 개이고 대부분 같은 일의 반복이다. Mermaid는 GitHub과 VS Code에서 그림으로 그려지고, 원문도 메시지 한 줄씩이라 터미널에서 읽힌다. 문법이 ASCII라 전역 문자 규칙도 지킨다.
-  - 버린 대안: ASCII 그림. 한글이 두 칸을 차지해 오른쪽 세로선을 표시 폭으로 맞춰야 하고, 한 줄만 고쳐도 다시 맞춰야 한다.
-  - **결정: 캡처 메모는 관찰과 질문까지만 적는다.** 다이어그램에는 메시지 이름, 방향, 필드 값 (예: `HB 12-11`, `ACKNACK 13/0`)만 쓰고 "매칭", "요청", "보낼 것 없음" 같은 해석은 쓰지 않는다. 해석이 필요한 것은 "질문"에 적고 다루는 단계를 붙인다. 이미 세운 가설은 그 단계 파일의 "확인할 것"에 [추정]으로 둔다.
-    - 왜: Phase 00은 규격을 읽기 전 단계라 해석이 맞는지 확인할 수 없다. 해석을 여기 쓰면 뒤 단계 문서, book의 장과 같은 설명이 두 곳에 생긴다. 질문 목록은 그 단계에서 풀 숙제가 된다.
-    - 버린 대안: 메커니즘 설명까지 적기. 캡처를 막 본 시점이라 설명이 쉽게 나오지만, 규격으로 확인하지 않은 추정이 사실처럼 남는다.
+- [x] `tests/captures/phase00/README.md`에 시나리오마다 실행 명령, 흐름 (Mermaid 다이어그램), 질문을 적는다. 형식과 "관찰과 질문까지만" 기준은 [captures.md](../conventions/captures.md#readme-형식).
 - [x] 두 벤더의 차이를 메모한다: 벤더 ID, 프로토콜 버전, 벤더 전용 PID, 데이터 표현 ID, SPDP의 lease 기간 값, 유니캐스트 포트 (Fast DDS 7410 / 7411, Cyclone은 임의 포트), Fast DDS SPDP에 실리는 공유 메모리 로케이터 (벤더 전용 kind).
 
 ### Step 8. 규약 확정
-- [ ] 아래 "프로젝트 규약" 절의 "제안"을 "확정"으로 바꾸고 `CLAUDE.md`와 맞춘다.
+- [x] 프로젝트 규약을 확정해 [docs/conventions/](../conventions/README.md)에 두고 `CLAUDE.md`와 맞춘다. Deno / TypeScript 스크립트, Mermaid 다이어그램, 캡처 메모 규칙을 넣고 `editcap` 기준을 10MB로 정했다.
 
 ## 실행 환경
 - 이미지 빌드 (소스 버전, Dockerfile 구성, 빌드 결과): [environment/vendor-build.md](../environment/vendor-build.md)
@@ -97,14 +92,7 @@
 ## 시나리오 실행 흐름 (`phase00-capture.ts`)
 스크립트는 [docker/phase00-capture.ts](../../docker/phase00-capture.ts)다. `./phase00-capture.ts <이름>`으로 실행하고, `--list`로 이름을 본다. 결과 파일이 이미 있으면 멈추며 `--force`로 덮어쓴다 (캡처는 커밋되는 정답 데이터라 실수로 지우지 않게). 시작 전에 두 컨테이너가 떠 있는지, 이전 실행의 shape_main이나 tcpdump가 남아 있는지 검사한다. 아래 흐름과 시나리오 표를 바꾸면 스크립트의 `SCENARIOS`도 함께 고친다.
 
-**결정: 파일 이름에 단계를 붙인다 (`phase00-capture.ts`).**
-- 왜: 시나리오 표와 출력 경로 (`tests/captures/phase00/`)가 Phase 00에 묶여 있다. `docker/`는 이후 단계에서도 계속 쓰므로, 일반적인 이름 (`run-scenario.ts`)이면 다른 단계의 시나리오도 이 파일로 돌리는 것처럼 읽힌다. 단계 번호를 앞에 두면 파일이 단계 순서로 정렬된다.
-- 버린 대안: 시나리오 표를 단계별 파일로 빼고 실행기 하나를 같이 쓰기. 다른 단계에 캡처 시나리오가 생길 때 다시 본다. 지금은 쓰는 곳이 하나뿐이다.
-
-**결정: TypeScript + Deno로 쓴다.**
-- 왜: 시나리오를 객체로 두면 기본값과 차이가 분리되어 표처럼 읽힌다. 인자를 배열로 넘기므로 셸의 단어 분리와 이중 따옴표 문제가 사라진다. Deno는 실행 파일 하나이고, 외부 모듈 없이 표준 API (`Deno.Command`)만 쓴다. 권한은 `docker` 실행과 파일 읽기/쓰기로 제한한다. `docker/deno.json`에서 lint 규칙 `explicit-function-return-type`을 켜 모든 함수에 반환 타입을 적는다 (함수 머리만 보고 무엇을 돌려주는지 알 수 있게. Rust와 같은 습관). `docker/`에서 `deno fmt --check`, `deno check phase00-capture.ts`, `deno lint`가 통과해야 한다.
-- 비용: 호스트에 Deno 2가 필요하다 (`brew install deno`). 컨테이너 안에서 리다이렉트하는 부분은 여전히 `sh -c` 한 번을 거친다.
-- 버린 대안: POSIX sh (처음 버전. 시나리오가 `case` 한 줄에 몰리고 옵션을 문자열로 이어 붙여 읽기 어려웠다), Rust로 `tools/`에 두기 (프로젝트 언어와 같지만 프로세스 호출 코드가 길어져 흐름이 오히려 안 보인다).
+스크립트 언어 (TypeScript + Deno), 파일 이름 (`phaseNN-*.ts`), 통과해야 하는 검사는 [typescript.md](../conventions/typescript.md)를 따른다.
 
 시나리오마다 아래 변수를 정한다. 값은 시나리오 표에 있다.
 ```
@@ -179,20 +167,8 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 | 스크립트에서 "input device is not a TTY" | `docker compose exec`에 `-T` 누락 | `-T`를 붙인다 |
 | SPDP는 보이는데 매칭이 안 됨 | QoS 불일치, 데이터 표현 불일치 (`-x`) | 양쪽 옵션을 같게 맞춘다. 이것 자체도 좋은 캡처다 |
 
-## 프로젝트 규약 (제안, Step 8에서 확정)
-- 라이선스: `MIT OR Apache-2.0` 이중 라이선스 (2026-10-28 결정). 파일: `LICENSE-MIT`, `LICENSE-APACHE`
-  - Rust 생태계 표준 관례 (Rust 자체, tokio, serde 등). 사용자가 둘 중 하나를 고른다.
-  - Apache-2.0은 특허 허락 조항이 있고, MIT는 GPLv2 프로젝트와도 섞어 쓸 수 있다.
-  - 참고 구현 중 Cyclone DDS는 EPL-2.0이다. 읽고 배우는 것은 괜찮지만 코드를 그대로 옮겨 오지 않는다.
-- Rust: edition 2024. 시작 시점의 stable 버전을 `rust-toolchain.toml`에 고정하고 그 버전을 MSRV로 삼는다.
-- 형식과 정적 검사: `rustfmt` 기본 설정, `cargo clippy -- -D warnings` 통과
-- 테스트 배치: 단위 테스트는 모듈 안 `#[cfg(test)]`, pcap 기반 골든 테스트와 상호운용 테스트는 `tests/`
-- 캡처 파일: `tests/captures/phase00/<시나리오>.pcap`과 `.pub.log`, `.sub.log`. README에 실행 명령, 벤더 버전, 빌드 소스 커밋 해시를 적는다. 파일 하나가 수 MB를 넘으면 (large-sample) 필요한 프레임만 `editcap`으로 잘라 저장한다.
-  - 디렉터리 이름을 `captures`로 한 이유: 내용이 전부 캡처와 그 로그이고, 컨테이너 안 마운트 경로 `/captures`와 이름이 같다. 버린 대안 `fixtures`: 테스트의 준비 코드 (pytest fixture, rstest `#[fixture]`)와 이름이 겹쳐 헷갈린다.
-- 코드 주석에 규격 근거를 적는다. 형식: `// RTPS 2.5 Sec. 9.4.5.3`
-- 문서 / 커밋 / 주석은 ASCII와 한글만 쓴다 (전역 지침).
-- CI: 원격 저장소를 연결하면 GitHub Actions로 fmt, clippy, test를 돌린다.
-- 프로젝트 `CLAUDE.md`: 위 규약과 문서 갱신 규칙을 적는다.
+## 프로젝트 규약
+모든 단계에서 지키는 규약은 [docs/conventions/](../conventions/README.md)에 있다.
 
 ## 참고 코드
 - Cyclone DDS: RTPS 상태 머신, 디스커버리 로직 읽기 좋음
@@ -201,10 +177,10 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 
 ## 완료 기준
 - Mac의 Docker Desktop (또는 어떤 Docker 호스트)에서 `docker compose up -d` 와 `phase00-capture.ts <이름>` 만으로 (Deno 2 필요) 누구나 같은 캡처를 재현할 수 있다.
-- 시나리오 표의 캡처 8개와 로그가 저장소에 있고, README에 주목할 프레임이 적혀 있다.
+- 시나리오 표의 캡처 8개와 로그가 저장소에 있고, README에 흐름 (프레임 번호가 붙은 다이어그램)과 질문이 적혀 있다.
 - 캡처에서 SPDP / SEDP / DATA / HEARTBEAT / ACKNACK / STATUS_INFO(dispose) / DATA_FRAG를 Wireshark로 식별했고, 두 벤더의 차이를 메모했다.
 - Cargo 워크스페이스가 빌드되고 clippy, fmt를 통과한다.
-- 프로젝트 규약이 확정되어 이 문서와 `CLAUDE.md`에 반영되어 있다.
+- 프로젝트 규약이 확정되어 [docs/conventions/](../conventions/README.md)와 `CLAUDE.md`에 반영되어 있다.
 
 ## 진행 기록
 결정과 막힌 점만 한 줄씩 적고 근거 문서로 링크한다. 세부 경위는 커밋 메시지에 둔다.
@@ -222,3 +198,4 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-29: Step 6 완료. 나머지 6개 시나리오 캡처 (large-sample은 2.9MB라 자르지 않음). 시나리오별 다이어그램은 Step 7 -> [캡처 README](../../tests/captures/phase00/README.md#파일)
 - 2026-10-29: 캡처 메모는 관찰과 질문까지만 적고, 해석과 가설은 해당 단계의 "확인할 것"으로 옮김 (Phase 03, 05, 06, 07, 09) -> [Step 7](#step-7-캡처-분석-메모)
 - 2026-10-29: Step 7 완료. 캡처 8개 모두 다이어그램과 질문을 적음 -> [캡처 README](../../tests/captures/phase00/README.md)
+- 2026-10-29: Step 8 완료, Phase 00 완료. 프로젝트 규약을 phase-00에서 `docs/conventions/` (Rust, TypeScript, Markdown, 캡처)로 분리 (모든 단계에서 쓰므로). `editcap` 기준 10MB -> [conventions](../conventions/README.md)
