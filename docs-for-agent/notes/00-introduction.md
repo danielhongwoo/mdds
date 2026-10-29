@@ -64,12 +64,12 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - DDS 1.4 Sec. 1 (Overview), Sec. 2.1 (Summary), Sec. 2.2.1.2 (Conceptual Outline)
 - DDSI-RTPS 2.5 Sec. 7.2 (Requirements for a DDS Wire-protocol), Sec. 7.3, Sec. 8.5 (Discovery Module) 도입부
 - [research/dds-dcps.md](../research/dds-dcps.md), [roadmap "대상 규격 지도"](../roadmap.md#2-대상-규격-지도)
-- 이 저장소의 캡처: [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md) (rel-cyclone-pub은 프레임 268개 중 디스커버리가 72개)
+- 이 저장소의 캡처: [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md) (rel-cyclone-pub은 프레임 268개 중 디스커버리가 72개). 비중 집계는 [research/discovery-scaling.md](../research/discovery-scaling.md#4-이-저장소의-캡처에서-본-비중)
 - 비교 대상의 공식 문서: ZeroMQ (zguide), Zenoh (zenoh.io), MQTT 5.0 (OASIS 규격), SOME/IP (AUTOSAR 규격), DDS-XRCE 1.0 (OMG 규격)과 micro-ROS
 
 ## 작업 순서
 - [x] 비교 조사: "비교 대상과 기준"의 대상을 공통 기준과 분야별 기준으로 정리해 `research/middleware-comparison.md`에 둔다. 표의 "주로 거론되는 분야"도 출처로 확인한다. 원문으로 확인한 것과 추정을 구분하고 확인 날짜를 적는다. -> [research/middleware-comparison.md](../research/middleware-comparison.md)
-- [ ] 디스커버리 비용 근거: 캡처에서 디스커버리 패킷 비중을 세고, 규모가 커질 때 문제가 되는 이유 (참가자 수에 따른 SEDP 교환, 멀티캐스트 부담)와 알려진 대안 (Fast DDS Discovery Server, Zenoh의 방식 등)을 출처와 함께 정리한다.
+- [x] 디스커버리 비용 근거: 캡처에서 디스커버리 패킷 비중을 세고, 규모가 커질 때 문제가 되는 이유 (참가자 수에 따른 SEDP 교환, 멀티캐스트 부담)와 알려진 대안 (Fast DDS Discovery Server, Zenoh의 방식 등)을 출처와 함께 정리한다. -> [research/discovery-scaling.md](../research/discovery-scaling.md)
 - [ ] 규격 사실 확인: 규격 이름, 판, 계층 관계를 `omg-specs/` 원문으로 확인한다.
 - [ ] 본문 초안 (`book/00-introduction/README.md`), 목차 상태를 "초안"으로.
 
@@ -97,3 +97,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 2026-10-30: 비교 조사 완료. 핵심 근거 (RTPS 2.5 Sec. 7.2, 8.5.1, Zenoh 디스커버리 측정, ROS 2 alternative middleware report, Kilted Tier 1)는 원문으로 재확인. 남은 빈칸은 조사 노트 7절 -> [middleware-comparison.md](../research/middleware-comparison.md)
 - 2026-10-30: 분야 이름 "임베디드"를 "MCU" (펌웨어 / RTOS)로 좁힘. Linux edge 기기는 빠짐 -> [비교 대상과 기준](#비교-대상과-기준)
 - 2026-10-30: 조사 노트의 MCU 표에 DDS 구현 열과 미션크리티컬 표의 DDS 안전 인증 칸을 채움. MCU와 안전 에디션은 정적 endpoint 디스커버리를 정식 기능으로 둔다 (Connext Micro DPSE) -> [middleware-comparison.md](../research/middleware-comparison.md#4-디스커버리-관점-chapter-00의-핵심-근거)
+- 2026-10-30: 디스커버리 비용 근거 정리. 캡처에서 SPDP + SEDP가 바이트의 37~62% (large-sample 제외), 규모에 따른 증가는 규격 동작에서 추론, 벤더 대안과 OMG 이슈 DDSIRTP26-37 (Open) -> [discovery-scaling.md](../research/discovery-scaling.md)
