@@ -123,7 +123,7 @@ DDS만 이런 문제를 푸는 것은 아니다. 같은 문제 (프로세스나 
 
 | | DDS | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
 |---|---|---|---|---|---|---|
-| 한 줄 설명 | data-centric pub/sub 표준 | 브로커 없는 메시지 전송 라이브러리 | pub/sub + 저장 + 질의 | 브로커 중심 pub/sub 표준 | 차량 안 service 지향 통신 표준 | 작은 기기용 DDS |
+| 한 줄 설명 | data-centric pub/sub 표준 | 브로커 없는 메시지 전송 라이브러리 | pub/sub + storage + query | 브로커 중심 pub/sub 표준 | 차량 안 service 지향 통신 표준 | 작은 기기용 DDS |
 | 브로커 | 없음 | 없음 | peer 모드는 없음, client 모드는 router 경유 | 있음 (필수) | 없음 | Agent 경유 |
 | 디스커버리 | 내장 (SPDP + SEDP) | 없음 (주소를 직접 지정) | 내장 (관심사 단위로 줄임) | 없음 (broker 주소를 앎) | 내장 (service 단위 offer / find) | Agent가 대신 함 |
 | 데이터 모델 | 타입, 키, 인스턴스, 상태 | 바이트 메시지 | key 경로 + 바이트, 최신 값 조회 | 토픽 문자열 + 바이트, 마지막 값 보관 | method, event, field | DDS와 같음 |

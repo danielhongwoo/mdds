@@ -43,7 +43,7 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 | 대상 | 대표하는 것 | 주로 거론되는 분야 (조사로 확인) |
 |---|---|---|
 | ZeroMQ | 브로커 없는 메시지 라이브러리. 통신 패턴만 주고 디스커버리, 데이터 모델, QoS는 응용이 만든다 | 범용. 분야별 공식 사례는 찾지 못함 |
-| Zenoh | 브로커 없는 pub/sub + 저장 + 질의. 무선, 대규모, 마이크로컨트롤러까지 겨냥 | 로보틱스 (ROS 2 rmw), MCU (zenoh-pico) |
+| Zenoh | 브로커 없는 pub/sub + storage + query. 무선, 대규모, 마이크로컨트롤러까지 겨냥 | 로보틱스 (ROS 2 rmw), MCU (zenoh-pico) |
 | MQTT | 브로커 방식의 대조군. 표준 (OASIS)이고 제약 기기에 맞춤 | MCU, IoT (MQTT-SN은 센서망) |
 | SOME/IP | 서비스 지향 통신. 차량 안 ECU 사이의 표준 (AUTOSAR) | 미션크리티컬 (자동차) |
 | DDS-XRCE (micro-ROS) | DDS 쪽의 제약 기기 답. 에이전트를 거쳐 DDS에 붙는다 | MCU, 로보틱스 |

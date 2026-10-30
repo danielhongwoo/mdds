@@ -74,8 +74,8 @@ sequenceDiagram
     Note over F,C: [6] 종료
     C->>F: 254 (13.55s) DATA(w[UD]) status_info Unregistered + Disposed
     C->>F: 255-256 (13.55s) SPDP DATA(p[UD]), 멀티캐스트와 유니캐스트
-    Note right of C: 257-258: IGMP 탈퇴
-    Note left of F: 19.46s, 263-268: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+    Note right of C: 257-258: IGMP leave
+    Note left of F: 19.46s, 263-268: SPDP DATA(p[UD]),<br/>IGMP leave (구독자 SIGINT)
 ```
 
 - 표기: `HB a-b`는 HEARTBEAT의 firstAvailableSeqNumber a, lastSeqNumber b다. `ACKNACK b/n:bits`는 readerSNState의 bitmapBase/numBits:bitmap이다 (RTPS 2.5 Sec. 9.4.2.6의 표기). 값의 뜻은 chapter 10에서 다룬다.
@@ -153,8 +153,8 @@ sequenceDiagram
     C->>F: 206 (13.44s) ACKNACK 101/0
     F->>C: 207 (13.44s) DATA(w[UD])
     F->>C: 208-209 (13.44s) SPDP DATA(p[UD]), 유니캐스트와 멀티캐스트
-    Note right of F: 210-211: IGMP 탈퇴
-    Note left of C: 19.63s, 214-217: IGMP 탈퇴 (구독자 SIGINT)<br/>DATA(p[UD])는 없다
+    Note right of F: 210-211: IGMP leave
+    Note left of C: 19.63s, 214-217: IGMP leave (구독자 SIGINT)<br/>DATA(p[UD])는 없다
 ```
 
 - 사용자 엔드포인트는 Fast DDS의 writer `0x00000102`, Cyclone의 reader `0x00000207`이다. 나머지 엔드포인트 ID는 rel-cyclone-pub과 같다.
@@ -217,8 +217,8 @@ sequenceDiagram
     Note over F,C: 종료
     C->>F: 155 (13.40s) DATA(w[UD]) status_info 0x3
     C->>F: 156-157 (13.41s) SPDP DATA(p[UD]), 멀티캐스트와 유니캐스트
-    Note right of C: 158-159: IGMP 탈퇴
-    Note left of F: 19.56s, 164-168: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+    Note right of C: 158-159: IGMP leave
+    Note left of F: 19.56s, 164-168: SPDP DATA(p[UD]),<br/>IGMP leave (구독자 SIGINT)
 ```
 
 ### 질문
@@ -268,8 +268,8 @@ sequenceDiagram
     Note over C,F: 종료
     F->>C: 152 (13.47s) DATA(w[UD]) status_info 0x3
     F->>C: 153-154 (13.47s) SPDP DATA(p[UD]), 유니캐스트와 멀티캐스트
-    Note right of F: 155-156: IGMP 탈퇴
-    Note left of C: 19.48s, 159-162: IGMP 탈퇴 (구독자 SIGINT)<br/>DATA(p[UD])는 없다
+    Note right of F: 155-156: IGMP leave
+    Note left of C: 19.48s, 159-162: IGMP leave (구독자 SIGINT)<br/>DATA(p[UD])는 없다
 ```
 
 ### 질문
@@ -312,8 +312,8 @@ sequenceDiagram
     F->>C: 269 (13.41s) ACKNACK 102/0
     C->>F: 270 (13.41s) DATA(w[UD]) status_info 0x3
     C->>F: 271-272 (13.42s) SPDP DATA(p[UD]), 멀티캐스트와 유니캐스트
-    Note right of C: 273-274: IGMP 탈퇴
-    Note left of F: 24.59s, 283-288: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+    Note right of C: 273-274: IGMP leave
+    Note left of F: 24.59s, 283-288: SPDP DATA(p[UD]),<br/>IGMP leave (구독자 SIGINT)
 ```
 
 ### 질문
@@ -354,15 +354,15 @@ sequenceDiagram
     end
 
     Note over F,C: Cyclone SIGKILL (14.26s 직후)
-    Note right of C: 270 (14.26s): 마지막 DATA seq 109<br/>DATA(w[UD]), DATA(p[UD])는 없다<br/>272-273 (14.30s, 15.09s): IGMP 탈퇴
+    Note right of C: 270 (14.26s): 마지막 DATA seq 109<br/>DATA(w[UD]), DATA(p[UD])는 없다<br/>272-273 (14.30s, 15.09s): IGMP leave
     F->>C: 274, 277, 280 (15.5s-21.5s) SPDP DATA(p), 유니캐스트 46914 (멀티캐스트도)
     Note left of F: 24.53s-36.54s, 283-292:<br/>SPDP는 멀티캐스트로만 나간다
-    Note left of F: 39.46s, 293-298: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+    Note left of F: 39.46s, 293-298: SPDP DATA(p[UD]),<br/>IGMP leave (구독자 SIGINT)
 ```
 
 ### 질문
 - 사용자 seq가 12부터다. rel-cyclone-pub과 같이 Cyclone이 첫 SEDP `HB sub 1-1` (21)에 `1/0` (28)으로 답했고, 1초 뒤 HB (43)에 `1/1:1` (45)로 답했다. Cyclone이 발행한 캡처 6개 중 2개 (rel-cyclone-pub, lease-expiry)가 이렇다. -> chapter 11
-- SIGKILL로 프로세스가 죽었는데 IGMP 탈퇴 (272-273)가 나간다. 누가 보내나? -> chapter 8
+- SIGKILL로 프로세스가 죽었는데 IGMP leave (272-273)가 나간다. 누가 보내나? -> chapter 8
 - Fast DDS는 21.53초까지 Cyclone에 유니캐스트 SPDP를 보내고, 24.53초부터는 보내지 않는다. Cyclone의 마지막 SPDP는 11.22초, 마지막 패킷은 14.26초, Cyclone이 알린 lease는 10초다. Fast DDS는 언제, 무엇을 기준으로 Cyclone을 지웠나? -> chapter 9
 - 구독 로그 끝은 정상 종료와 같은 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`다. 캡처에는 이 판정을 알리는 패킷이 없다. -> chapter 9, chapter 11
 
@@ -401,8 +401,8 @@ sequenceDiagram
     Note over F,C: 종료
     C->>F: 2184 (6.25s) DATA(w[UD]) status_info 0x3
     C->>F: 2185-2186 (6.25s) SPDP DATA(p[UD])
-    Note right of C: 2187, 2190: IGMP 탈퇴
-    Note left of F: 11.60s, 2193-2198: SPDP DATA(p[UD]),<br/>IGMP 탈퇴 (구독자 SIGINT)
+    Note right of C: 2187, 2190: IGMP leave
+    Note left of F: 11.60s, 2193-2198: SPDP DATA(p[UD]),<br/>IGMP leave (구독자 SIGINT)
 ```
 
 ### 질문

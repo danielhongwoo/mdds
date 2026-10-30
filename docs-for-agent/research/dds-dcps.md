@@ -101,4 +101,4 @@ Object model 프로파일은 DLRL과 함께 예전 판에만 있었다.
 | 상호작용 모델 | Sec. 2.2.6 | 131 |
 | IDL PSM | Sec. 2.3 | 137 |
 | 적합성 | Annex A | 163 |
-| 질의 / 필터 문법 | Annex B | 165 |
+| query / filter 문법 | Annex B | 165 |

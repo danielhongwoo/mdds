@@ -209,7 +209,7 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-28: Cyclone을 태그 11.0.1이 아닌 master `f2aaccb4`로 고정 (11.0.1로는 C판 shape_main 링크 실패) -> [vendor-build.md](../../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유)
 - 2026-10-28: Step 3 이미지 빌드 완료 (Mac에서 약 3분) -> [vendor-build.md "빌드 결과"](../../docs/environment/vendor-build.md#빌드-결과)
 - 2026-10-28: 실행 환경 문서를 이 노트에서 `docs/environment/`로 분리 (이후 chapter에서도 계속 쓰므로). 검토 기록 절을 없애고 진행 기록을 한 줄 색인으로 줄임
-- 2026-10-28: Step 4 완료. 이 환경의 bridge는 querier가 없어 IGMP 가입과 무관하게 멀티캐스트를 모든 포트로 흘려보냄 (전달 여부는 받는 쪽 커널의 가입이 결정) -> [docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
+- 2026-10-28: Step 4 완료. 이 환경의 bridge는 querier가 없어 IGMP 가입과 무관하게 멀티캐스트를 모든 포트로 flooding함 (전달 여부는 받는 쪽 커널의 가입이 결정) -> [docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
 - 2026-10-28: 캡처 볼륨을 `captures` 전체로 바꿈 (chapter에 묶지 않음). 시나리오는 `/captures/cyclone-fastdds/`에 쓴다 -> [docker-network.md "compose 설계"](../../docs/environment/docker-network.md#compose-설계)
 - 2026-10-28: 멀티캐스트 확인 도구를 socat 대신 Rust로 만듦 (`tools/mcast-check`, 이미지 `mdds/tools`, 벤더 컨테이너의 네트워크 네임스페이스를 빌려 실행). 이를 위해 Step 2 워크스페이스 뼈대를 함께 만듦 -> [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령)
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 컨테이너 사이 멀티캐스트를 전달함을 확인 (fastdds 가입, cyclone 송신 3건 모두 수신)

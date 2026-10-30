@@ -110,7 +110,7 @@ DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구�
 
 ## 5. 대상별 한 줄 요약 (DDS와 다른 설계 선택)
 - **ZeroMQ**: 브로커 없는 메시지 전송 라이브러리. 디스커버리, 데이터 모델, QoS는 응용 몫이다.
-- **Zenoh**: 브로커 없는 pub/sub에 저장과 질의를 더하고, 디스커버리를 interest 단위로 줄였다. 타입 시스템과 풍부한 QoS는 두지 않았다. 공개 명세는 있으나 표준 기구의 표준은 아니다.
+- **Zenoh**: 브로커 없는 pub/sub에 storage와 query를 더하고, 디스커버리를 interest 단위로 줄였다. 타입 시스템과 풍부한 QoS는 두지 않았다. 공개 명세는 있으나 표준 기구의 표준은 아니다.
 - **MQTT**: broker 중심 pub/sub. 단순해서 구현이 많고 제약 기기에 맞지만, broker가 단일 장애점이고 데이터 모델이 없다.
 - **SOME/IP**: 차량 안 ECU 사이의 service 지향 RPC. 디스커버리는 단순한 offer / find다. AUTOSAR Adaptive의 ara::com은 SOME/IP와 DDS를 바꿔 끼울 수 있는 network binding으로 둔다.
 - **DDS-XRCE**: 제약 기기가 RTPS 디스커버리와 상태를 감당하지 않도록 Agent에게 맡긴 DDS 계열. 대가는 Agent 단일 장애점과 비표준 Client API다.
