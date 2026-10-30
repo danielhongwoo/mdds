@@ -9,7 +9,7 @@
 ---
 
 ## 1. 요약
-- **장비마다 상태를 만든다.** 스위치는 MAC table와 IGMP snooping table, 라우터와 호스트는 neighbor (ARP) table, NAT / 방화벽은 UDP conntrack entry, Wi-Fi AP는 단말별 가입 정보와 DTIM 버퍼를 둔다. hub (repeater)는 물리 계층 장치라 상태가 없다. [추정, hub]
+- **장비마다 상태를 만든다.** 스위치는 MAC table과 IGMP snooping table, 라우터와 호스트는 neighbor (ARP) table, NAT / 방화벽은 UDP conntrack (connection tracking) entry, Wi-Fi AP는 단말별 가입 정보와 DTIM 버퍼를 둔다. hub (repeater)는 물리 계층 장치라 상태가 없다. [추정, hub]
 - **DDS의 수명과 네트워크 상태의 수명이 다르다.** DDS는 상대가 사라졌음을 lease (Cyclone 10초, Fast DDS 20초)로 알지만, 스위치의 IGMP 가입 정보는 IGMP 기본값으로 260초까지 남을 수 있다. 서로 상대의 정리 시점을 모른다. [추론]
 - **프로세스가 죽는 것과 호스트가 사라지는 것은 다르다.** 이 저장소의 lease-expiry 캡처에서 Cyclone 프로세스를 SIGKILL로 죽였는데도 IGMP leave report가 나갔다. 커널이 소켓을 닫으면서 그룹을 떠나는 것으로 보인다 [추정]. 그래서 오래 남는 상태는 주로 호스트 전원이 꺼지거나 링크가 끊길 때 생긴다. [추론]
 - **멀티캐스트 TTL이 벤더마다 다르다.** 이 저장소의 캡처에서 SPDP 멀티캐스트의 IP TTL은 Cyclone DDS가 32, Fast DDS가 1이었다. 문서상 기본값도 같다 (Cyclone `General/MulticastTimeToLive` 32, RTI 1). 보통의 LAN에서는 라우터가 멀티캐스트를 라우팅하지 않으므로 어느 쪽이든 서브넷을 벗어나지 않는다. [확인, 캡처와 문서]
@@ -20,7 +20,7 @@
 - **IGMP join과 leave**: 모든 캡처에 IGMPv3 report가 12개씩 있다. 시작할 때 각 참가자가 239.255.0.1에 "Change To Exclude" (join) report를 두 번 보내고, 끝날 때 "Change To Include" (leave) report를 두 번 보낸다. 두 번인 것은 RFC 3376의 Robustness Variable 기본값 2 때문이다 ([docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)). [확인]
 - **SIGKILL 뒤에도 leave가 나간다**: lease-expiry에서 Cyclone 발행자를 SIGKILL로 죽인 뒤 (마지막 RTPS 패킷 14.26초) 14.30초와 15.09초에 Cyclone 쪽 leave report가 나갔다 (프레임 272, 273). 프로세스는 정리 코드를 돌리지 못했지만 커널이 소켓을 닫으면서 그룹 가입을 해제하고 report를 보낸 것으로 보인다. [확인, 관찰] 원인 설명은 [추정]이다. 캡처 README에 "누가 보내나? -> chapter 8" 질문으로 남아 있다.
 - **SPDP 멀티캐스트의 TTL**: rel-cyclone-pub에서 172.28.0.10 (Cyclone)이 보낸 239.255.0.1 패킷은 TTL 32, 172.28.0.11 (Fast DDS)은 TTL 1이다. lease-expiry도 같다. [확인]
-- **유니캐스트 흐름**: 참가자 2개인 rel-cyclone-pub에서 UDP flow (보내는 주소:포트 -> 받는 주소:포트)은 3개였다. Cyclone -> Fast DDS 7410 (메타 트래픽), Cyclone -> Fast DDS 7411 (사용자 데이터), Fast DDS -> Cyclone의 임의 포트. 방화벽이나 NAT가 있으면 flow마다 conntrack entry가 하나씩 생긴다. [확인, flow 수] [추론, conntrack]
+- **유니캐스트 flow**: 참가자 2개인 rel-cyclone-pub에서 UDP flow (보내는 주소:포트 -> 받는 주소:포트)는 3개였다. Cyclone -> Fast DDS 7410 (메타 트래픽), Cyclone -> Fast DDS 7411 (사용자 데이터), Fast DDS -> Cyclone의 임의 포트. 방화벽이나 NAT가 있으면 flow마다 conntrack entry가 하나씩 생긴다. [확인, flow 수] [추론, conntrack]
   - 7410, 7411은 RTPS 2.5 Sec. 9.6.2.1의 기본 포트 공식 (PB 7400 + DG 250 x domainId + d1 10 + PG 2 x participantId, 사용자 데이터는 d3 11)에서 domain 0, participantId 0일 때의 값이다. (재확인)
 
 ## 3. 장비별 상태
@@ -45,7 +45,7 @@
 - **neighbor (ARP) table**: 유니캐스트 상대마다 항목이 생기고, 상대가 사라지면 stale이 되었다가 정리된다. Linux 기본 `gc_stale_time` 60초, 항목 수 상한 `gc_thresh3` 1024. 참가자가 많은 서브넷에서는 이 상한에 닿을 수 있다 [추론]. https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html [확인, 조사 결과]
 
 ### NAT / 상태 기반 방화벽
-- UDP flow마다 conntrack entry가 생긴다. Linux 기본 timeout은 한 방향만 본 flow 30초 (`nf_conntrack_udp_timeout`), 양방향 flow 120초 (`nf_conntrack_udp_timeout_stream`). https://www.kernel.org/doc/html/latest/networking/nf_conntrack-sysctl.html [확인, 조사 결과]
+- **conntrack**은 connection tracking의 줄임으로, Linux netfilter가 지나가는 연결 (UDP는 연결이 없으므로 보내는 주소:포트와 받는 주소:포트의 짝, 즉 flow)을 하나씩 기억하는 기능이다. 그 기록 하나가 conntrack entry다. 상태 기반 방화벽은 이 entry로 "먼저 나간 요청에 대한 응답"만 들여보내고, NAT는 주소를 어떻게 바꿨는지를 이 entry에 적어 돌아오는 패킷을 되돌린다. 그래서 NAT나 상태 기반 방화벽을 거치는 UDP flow마다 conntrack entry가 하나씩 생긴다. Linux 기본 timeout은 한 방향만 본 flow 30초 (`nf_conntrack_udp_timeout`), 양방향 flow 120초 (`nf_conntrack_udp_timeout_stream`). https://www.kernel.org/doc/html/latest/networking/nf_conntrack-sysctl.html [확인, 조사 결과]
 - DDS는 참가자 쌍마다 방향별로 메타 트래픽 flow와 사용자 데이터 flow을 만들므로 flow 수가 대략 N x (N - 1)에 비례한다 [추론]. 참가자가 사라지면 항목은 timeout으로 저절로 사라진다.
 - 더 큰 문제는 구조다. SPDP와 SEDP 데이터 안에 "나에게는 이 주소:포트로 보내라"는 locator가 들어 있어, NAT 뒤 참가자의 사설 주소를 상대가 그대로 쓰다가 실패한다. 멀티캐스트도 NAT를 넘지 못한다. [추론, 원문 인용 없음]
 - 같은 Docker user-defined bridge 안의 컨테이너끼리는 L2로 전달된다. bridge-nf-call-iptables가 켜져 있으면 iptables (conntrack)를 거친다. [추정]
