@@ -98,7 +98,7 @@ DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구�
 - Zenoh 블로그 (2021-03-23)는 DDS 디스커버리 트래픽이 n*(n-1)*(r+w)로 는다고 쓴다 (n: 참가자 수, r / w: 참가자당 reader / writer 수). (재확인) [벤더 주장]
 - 같은 글의 측정: ROS 2 Foxy, TurtleBot Burger SLAM + 노트북 RViz2, WiFi에서 DDS 디스커버리 686 packets / 251,576 bytes. zenoh-plugin-dds를 거치면 31 packets / 6,617 bytes (97.37% 감소), 두 기법을 함께 쓰면 99.97% 감소. 단일 시나리오이고 벤더 측정이다. (재확인) [벤더 주장]
   - 출처: https://zenoh.io/blog/2021-03-23-discovery/
-- ROS 2 core team은 2023-09-27 "ROS 2 alternative middleware report"에서 DDS의 문제가 배포마다 해결은 되지만 전문가의 응용별 DDS 설정이 필요한 경우가 많다고 하고, Zenoh가 요구 사항을 가장 잘 만족하며 사용자 추천도 가장 많았다고 결론 냈다. 구체적 요구 사항과 점수는 링크된 PDF 보고서에 있다 (읽지 못함). (재확인)
+- ROS 2 core team은 2023-09-27 "ROS 2 alternative middleware report"에서 DDS의 문제가 배포마다 해결은 되지만 DDS를 잘 아는 사람의 응용별 DDS 설정 ("expert application-specific DDS configuration")이 필요한 경우가 많다고 하고, Zenoh가 요구 사항을 가장 잘 만족하며 사용자 추천도 가장 많았다고 결론 냈다. 구체적 요구 사항과 점수는 링크된 PDF 보고서에 있다 (읽지 못함). (재확인)
   - 출처: https://discourse.openrobotics.org/t/ros-2-alternative-middleware-report/33771
 - ROS 2 Kilted Kaiju (2025-05-23)가 Zenoh를 Tier 1 미들웨어로 지원한 첫 릴리스다. (재확인) Lyrical의 기본 RMW는 여전히 Fast DDS다 [확인, 조사 결과].
   - 출처: https://www.openrobotics.org/blog/2025/5/23/ros-2-kilted-kaiju-released
