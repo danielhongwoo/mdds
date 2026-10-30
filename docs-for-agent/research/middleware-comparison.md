@@ -181,6 +181,8 @@ MCU 위에서 agent 없이 RTPS 노드로 도는 구현
 - micro-ROS: rclc + rmw_microxrcedds, 정적 메모리 풀, 지원 distro humble / jazzy / kilted / lyrical / rolling. 안전 표준으로 개발하지 않았다고 명시. https://github.com/micro-ROS/rmw_microxrcedds , https://micro.vulcanexus.org/ [확인]
 - PX4가 비행 컨트롤러와 ROS 2 사이에 uXRCE-DDS를 쓴다. https://docs.px4.io/main/en/middleware/uxrce_dds.html [확인]
 
+비교 대상에 넣지 않은 OPC UA (data-centric에 가장 가까운 다른 산업 표준)는 [opc-ua.md](opc-ua.md)에 따로 정리했다.
+
 ## 7. 확인하지 못한 것
 - DDS 안전 에디션의 인증서 원문 (어느 제품도 TUV 인증서나 인증 DB 항목을 보지 못함). Safe DDS의 인증 기관, Apex.Grace의 ASIL 수준 (B / D).
 - IEC 61508, IEC 62304, EN 50128 인증을 받은 DDS 제품 (찾지 못함).
