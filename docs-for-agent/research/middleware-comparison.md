@@ -175,7 +175,7 @@ MCU 위에서 agent 없이 RTPS 노드로 도는 구현
 
 ### DDS-XRCE (micro-ROS)
 - 이름: DDS for eXtremely Resource Constrained Environments. https://www.omg.org/spec/DDS-XRCE/ [확인]
-- 규격: OMG DDS-XRCE 1.0 (formal/20-02-01). Sec. 8.1: Client끼리 직접 통신하지 않고 모든 통신이 Agent를 거친다. 코드 100 KB 미만 목표. Client API는 표준이 없어 벤더 사이 이식이 안 된다. https://www.omg.org/spec/DDS-XRCE/ [확인]
+- 규격: OMG DDS-XRCE 1.0 (formal/20-02-01, `omg-specs/dds-xrce-1.0.pdf`). Sec. 8.1: 대역폭 40-100 Kbps의 네트워크와 깊이 잠드는 기기를 겨냥한다. Client는 Agent 없이 동작하지 못하고, peer-to-peer로 통신하지 않으며 모든 통신이 Agent를 거쳐 중계된다 (둘 다 깊은 잠 때문이라고 적음). 전체 구현을 100 KB 미만 코드로 하는 것이 목표다. Client API는 표준이 없어 벤더 사이 이식이 안 된다. https://www.omg.org/spec/DDS-XRCE/ (재확인)
 - Agent 발견: multicast GET_INFO (기본 239.255.0.2:7400) 또는 미리 설정한 주소. [확인]
 - 구현: eProsima Micro XRCE-DDS Client / Agent 3.0.2 (2026-08 / 2026-09). 전송 UDP, TCP, serial, CAN FD (Agent, Linux), custom. https://micro-xrce-dds.docs.eprosima.com/en/latest/ [확인]
 - micro-ROS: rclc + rmw_microxrcedds, 정적 메모리 풀, 지원 distro humble / jazzy / kilted / lyrical / rolling. 안전 표준으로 개발하지 않았다고 명시. https://github.com/micro-ROS/rmw_microxrcedds , https://micro.vulcanexus.org/ [확인]

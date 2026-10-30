@@ -131,7 +131,7 @@ DDS만 이런 문제를 푸는 것은 아니다. 같은 문제 (프로세스나 
 
 여기서는 RAM이 수십~수백 KB이고 범용 OS가 없는 환경을 말한다. Linux가 도는 edge 기기 (Jetson, Raspberry Pi 등)는 일반 컴퓨터와 같은 조건이라 여기 넣지 않는다.
 
-이 환경에서는 코드 크기, 동적 메모리 할당 없이 쓸 수 있는지, 시리얼이나 CAN 같은 비IP 링크, 자주 끊기는 연결이 기준이 된다. DDS를 마이크로컨트롤러에서 직접 돌리는 구현도 있지만 (상용 RTI Connext Micro, 연구용 embeddedRTPS 등) IP 스택과 디스커버리 상태를 감당해야 해서 부담이 크다. 그래서 OMG는 작은 기기가 DDS에 직접 참여하지 않고 Agent를 거쳐 붙는 DDS-XRCE를 따로 만들었다. XRCE는 eXtremely Resource Constrained Environments, 즉 자원이 극히 제한된 환경이라는 뜻이다. DDS-XRCE에서는 Client끼리 직접 통신하지 않고 모든 통신이 Agent를 거친다. ROS 2의 micro-ROS가 이 방식을 쓴다. Zenoh의 zenoh-pico와 MQTT (특히 센서망용 MQTT-SN)도 이 분야의 선택지다.
+이 환경에서는 코드 크기, 동적 메모리 할당 없이 쓸 수 있는지, 시리얼이나 CAN 같은 비IP 링크, 자주 끊기는 연결이 기준이 된다. DDS를 마이크로컨트롤러에서 직접 돌리는 구현도 있지만 (상용 RTI Connext Micro, 연구용 embeddedRTPS 등) IP 스택과 디스커버리 상태를 감당해야 해서 부담이 크다. 그래서 OMG는 작은 기기가 DDS에 직접 참여하지 않고 Agent를 거쳐 붙는 DDS-XRCE를 따로 만들었다. XRCE는 eXtremely Resource Constrained Environments, 즉 자원이 극히 제한된 환경이라는 뜻이다. 규격은 Client가 Agent 없이는 동작하지 못하고, Client끼리 직접 통신하지 않으며 모든 통신이 Agent를 거쳐 중계된다고 적는다. 기기가 몇 분에서 몇 년에 한 번 깨어나는 깊은 잠을 견뎌야 하기 때문이다 (DDS-XRCE 1.0 Sec. 8.1). ROS 2의 micro-ROS가 이 방식을 쓴다. Zenoh의 zenoh-pico와 MQTT (특히 센서망용 MQTT-SN)도 이 분야의 선택지다.
 
 ### 미션크리티컬
 

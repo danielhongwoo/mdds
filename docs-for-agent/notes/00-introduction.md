@@ -76,7 +76,6 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 ## 확인할 것
 - 저장소 루트의 int2DDS 논문 PDF (무선 다중 기기 환경의 디스커버리 트래픽 문제)를 근거로 인용할지 (저자에게 확인). 인용하면 서지 정보와 짧은 인용만 쓰고 PDF는 저장소에 넣지 않는다.
 - ROS 2가 DDS를 기본 미들웨어로 쓰다가 Zenoh 기반 rmw를 추가한 경위. 공식 출처로 확인되면 비교 절의 예로 쓴다.
-- DDS-XRCE 규격 PDF를 `omg-specs/`에 받아 Sec. 8.1 (Client끼리 직접 통신하지 않고 Agent를 거침)을 원문으로 확인한다. 확인 전이라 본문은 절 번호 없이 썼다.
 
 ## 완료 기준
 저자가 정한 것
@@ -100,3 +99,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 2026-10-30: 조사 노트의 MCU 표에 DDS 구현 열과 미션크리티컬 표의 DDS 안전 인증 칸을 채움. MCU와 안전 에디션은 정적 endpoint 디스커버리를 정식 기능으로 둔다 (Connext Micro DPSE) -> [middleware-comparison.md](../research/middleware-comparison.md#4-디스커버리-관점-chapter-00의-핵심-근거)
 - 2026-10-30: 디스커버리 비용 근거 정리. 캡처에서 SPDP + SEDP가 바이트의 37~62% (large-sample 제외), 규모에 따른 증가는 규격 동작에서 추론, 벤더 대안과 OMG 이슈 DDSIRTP26-37 (Open) -> [discovery-scaling.md](../research/discovery-scaling.md)
 - 2026-10-30: 본문 초안 작성 (book/00-introduction/README.md). 기본 개념 용어를 glossary에 추가 -> [본문](../../book/00-introduction/README.md)
+- 2026-10-30: DDS-XRCE 1.0 PDF를 omg-specs/에 받아 Sec. 8.1을 원문으로 확인, 본문에 절 번호를 넣음 -> [본문](../../book/00-introduction/README.md)

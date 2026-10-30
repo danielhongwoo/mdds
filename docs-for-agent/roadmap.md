@@ -45,6 +45,7 @@
 | DDS-XTypes | 1.3 (2020), 1.4 beta 진행 중 | 타입 시스템, XCDR1/XCDR2, TypeObject | 후반 |
 | IDL | 4.2 (2018) | 타입 정의 언어, 어노테이션 | 후반 (초기엔 derive 매크로로 대체) |
 | DDS-Security | 1.2 (formal/25-03-06). 1.1은 2018 | 인증/접근제어/암호화 플러그인 | 선택 |
+| DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter 00) |
 | DDS-RPC 1.0, DDS-XML 1.0, DDS-TSN, DDS-WEB | - | 부가 규격 | 선택 |
 
 - 로컬 사본: `omg-specs/` (git 제외). PDF와 `pdftotext -layout` 추출본이 있다.
