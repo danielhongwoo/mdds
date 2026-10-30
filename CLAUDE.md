@@ -6,7 +6,7 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
 세 갈래로 나눈다. 독자용 (`book/`), 공용 참고 (`docs/`), 저자와 agent용 (`docs-for-agent/`).
 - `book/`: 학습자용 교재. chapter가 진행 단위이자 읽는 순서다. chapter 하나가 디렉터리 하나 (`NN-slug/README.md`, 코드가 있으면 `code/`). 직접 실행해 보는 실습은 chapter 안의 lab으로 나눈다 (Lab 1-1 = chapter 1의 첫 번째 lab). 독자용 본문만 둔다. 규칙은 `docs-for-agent/conventions/book.md`.
 - `docs/environment/`: 실행 환경 문서 (여러 chapter에서 같이 쓴다). `vendor-build.md` (벤더 DDS와 shape_main 빌드), `docker-network.md` (실행 호스트, 네트워크, 주소 배정).
-- `docs/glossary.md`: 용어. 새 용어가 나오면 추가한다.
+- `book/glossary.md`: 용어 정리. 독자가 보는 문서라 `book/`에 둔다. 새 용어가 나오면 추가한다.
 - `docs-for-agent/roadmap.md`: 전체 지도와 chapter 현황 표. chapter의 작업 상태가 바뀌면 이 표와 해당 저자 노트의 "상태:" 줄을 함께 고친다.
 - `docs-for-agent/notes/NN-<slug>.md`: chapter별 저자 노트 (읽을 규격, 구현 체크리스트, 확인할 것, 완료 기준, 진행 기록). 이름은 그 chapter의 book 디렉터리와 같다 (`06-cdr.md` <-> `book/06-cdr/`). chapter와 노트는 일대일이다.
 - `docs-for-agent/research/`: 조사 노트. 원문으로 확인한 내용과 추정을 구분해 표시한다.

@@ -3,7 +3,7 @@
 목표: OMG DDS 표준을 **직접 구현하며 이해**하고, 그 과정을 다른 학습자가 따라올 수 있는 **교재** ([book/](../book/README.md))로 쓴다. chapter가 진행 단위다. chapter마다 "읽을 규격 -> 구현 -> 완료 기준(검증)"을 저자 노트에 두고, 작업을 마치면 그 결과로 본문을 쓴다 (규칙은 [conventions/book.md](conventions/book.md)).
 최종 검증 기준은 **타 벤더(Cyclone DDS, Fast DDS)와의 상호운용**이다.
 
-이 문서는 전체 지도다. chapter별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 chapter의 book 디렉터리와 같은 이름의 파일 (`NN-<slug>.md`)에 둔다. 용어는 [glossary](../docs/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
+이 문서는 전체 지도다. chapter별 체크리스트, 확인할 것, 진행 기록은 [notes/](notes/) 아래 chapter의 book 디렉터리와 같은 이름의 파일 (`NN-<slug>.md`)에 둔다. 용어는 [glossary](../book/glossary.md), 규격 요약표와 조사 결과는 [research](research/)를 본다.
 
 최초 조사일: 2026-10-27
 
@@ -90,7 +90,6 @@ mdds/
   captures/         # 캡처한 pcap과 로그 (관찰 자료이자 테스트의 정답 바이트). <누가-누구>/ 로 나눔 (cyclone-fastdds, mcast-check)
   docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (chapter 1에서 만들고 이후 계속 사용)
   docs/             # 독자도 보는 공용 참고
-    glossary.md
     environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
   docs-for-agent/   # 저자와 agent용
     roadmap.md      # 이 문서
@@ -98,6 +97,7 @@ mdds/
     research/       # 조사 노트 (규격 요약표, 생태계 조사)
     conventions/    # 프로젝트 규약 (Rust, TypeScript, Markdown, 캡처, 교재)
   book/             # 학습자용 교재. chapter마다 디렉터리 (NN-slug/README.md, code/)
+    glossary.md     # 용어 정리
   omg-specs/        # OMG 규격 PDF와 텍스트 추출본 (git 제외: 재배포 조건 때문)
 ```
 

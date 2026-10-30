@@ -1,12 +1,13 @@
 # 용어 정리
 
-[roadmap](../docs-for-agent/roadmap.md)
+[목차](README.md)
 
 ## 기본 개념
 - **data-centric / message-centric**: message-centric 미들웨어는 바이트 메시지를 나르고 뜻은 응용이 안다. data-centric 미들웨어는 데이터의 타입과 "어떤 대상의 값인가"를 알고 상태를 관리한다. DDS는 data-centric이다 (DDS 1.4 Sec. 1.2).
 - **global data space**: DCPS가 데이터를 보는 모델. 응용은 이 공간에 값을 쓰고 (publisher) 관심 있는 부분을 읽으며 (subscriber), 미들웨어가 값을 관심 있는 쪽으로 전한다 (DDS 1.4 Sec. 1.2).
 - **토픽 (topic)**: global data space를 나누는 단위. 이름과 타입을 가진다.
 - **키 (key), 인스턴스 (instance)**: 타입 필드 가운데 대상을 가르는 필드가 키다. 키가 같은 값은 같은 인스턴스의 연속된 값이고, 키가 다르면 다른 인스턴스다 (DDS 1.4 Sec. 2.2.1.2.2).
+- **도메인 (domain)**: 서로 통신하는 응용들의 묶음. 같은 도메인 번호 (domainId)를 쓰는 참가자끼리만 서로를 찾고 통신한다. 그래서 같은 네트워크에서 여러 시스템이 서로 간섭하지 않고 함께 돈다 (DDS 1.4 Sec. 2.2.2.2.1).
 - **참가자 (DomainParticipant)**: 한 DDS 도메인에 참여하는 단위. 보통 프로세스 하나에 하나다. 디스커버리는 참가자 단위로 시작한다.
 - **QoS 정책**: 데이터마다 다른 요구 (신뢰성, 보관 개수, 늦게 온 reader에게 줄지, 마감 시간 등)를 정하는 설정. writer와 reader가 각자 밝히고 맞아야 매칭한다.
 - **브로커 (broker)**: 모든 메시지가 거쳐 가는 중앙 서버. MQTT가 이 방식이다. DDS의 와이어 프로토콜은 브로커에 기대지 않는다 (RTPS 2.5 Sec. 7.2).
@@ -24,9 +25,9 @@
 - **RTPS**(Real-Time Publish-Subscribe): 서로 다른 벤더의 DDS 구현이 통신할 수 있게 정한 와이어 프로토콜. 메시지 형식, 신뢰성(HEARTBEAT/ACKNACK), 디스커버리(SPDP/SEDP)를 정의한다. 규격 이름 **DDSI-RTPS**의 DDSI는 "DDS Interoperability"다. DCPS가 응용에 보이는 API라면, RTPS는 그 아래에서 실제로 네트워크에 흐르는 바이트를 정한다.
 - **SPDP**(Simple Participant Discovery Protocol): 같은 도메인의 참가자(DomainParticipant)끼리 서로를 찾는 프로토콜. 각 참가자가 멀티캐스트로 "나는 누구이고 어느 주소로 연락하면 된다"를 주기적으로 알린다(best-effort).
 - **SEDP**(Simple Endpoint Discovery Protocol): SPDP로 찾은 참가자끼리 각자의 DataWriter/DataReader(엔드포인트)의 토픽/타입/QoS 정보를 교환하고, 서로 맞는 쌍을 매칭하는 프로토콜(reliable). 이름의 "Simple"은 RTPS가 기본 제공하는 방식이라는 뜻으로, 벤더가 다른 디스커버리 방식을 쓸 수도 있다.
-- **매칭 (matching)**: 상대의 writer 또는 reader를 SEDP로 알게 된 뒤, 자기 쪽 엔드포인트와 짝이 맞는지 판정해 통신 상대로 등록하는 일. 조건 (토픽, 타입, partition, RxO QoS)과 동작은 [chapter 11 노트](../docs-for-agent/notes/11-sedp-matching.md). shape_main은 매칭되면 `on_publication_matched` / `on_subscription_matched`를 찍는다.
-- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff (RTPS 2.5 Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 해석 규칙은 [chapter 7 노트](../docs-for-agent/notes/07-rtps-messages.md). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙인다.
-- **pre-emptive ACKNACK**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK (RTPS 2.5 Sec. 8.4.2.3). 동작은 [chapter 10 노트](../docs-for-agent/notes/10-reliable.md).
+- **매칭 (matching)**: 상대의 writer 또는 reader를 SEDP로 알게 된 뒤, 자기 쪽 엔드포인트와 짝이 맞는지 판정해 통신 상대로 등록하는 일. 토픽 이름과 타입이 같고, partition이 겹치고, 양쪽 QoS가 호환될 때 (reader가 요구한 수준을 writer가 제공할 때) 매칭된다. shape_main은 매칭되면 `on_publication_matched` / `on_subscription_matched`를 찍는다.
+- **벤더 전용 서브메시지 / PID (vendor-specific submessage / ParameterId)**: RTPS가 벤더 확장용으로 비워 둔 번호 구간. 서브메시지 ID 0x80-0xff, ParameterId 0x8000-0xffff (RTPS 2.5 Sec. 9.4.5.1.1, Sec. 9.6.2.2.1). 받는 쪽은 모르는 벤더의 서브메시지와 모르는 ParameterId를 건너뛰고 나머지를 계속 해석한다 (RTPS 2.5 Sec. 8.3.4.1). 예: Fast DDS는 모든 메시지 끝에 통계 서브메시지 0x80을 붙인다.
+- **pre-emptive ACKNACK**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK. 평소 reader는 HEARTBEAT에 답할 때만 ACKNACK를 보내지만, writer를 처음 찾았을 때는 최적화로 먼저 보낼 수 있다. writer가 여기에 답할 의무는 없다 (RTPS 2.5 Sec. 8.4.2.3).
 - **HEARTBEAT piggyback**: writer가 DATA 서브메시지 바로 뒤에 HEARTBEAT를 같은 메시지에 넣어 보내는 것 (RTPS 2.5 Sec. 8.4.15.4).
 - **ContentFilteredTopic**: 기존 토픽에 SQL 비슷한 조건식 (예: `color = %0`)을 붙여 조건에 맞는 샘플만 받는 DCPS 토픽. 구독자가 SEDP에 `PID_CONTENT_FILTER_PROPERTY`로 조건을 알리므로 발행자 쪽에서 미리 거를 수도 있다. shape_main은 구독자에게 `-c`를 주면 이것을 만든다.
 
@@ -36,10 +37,10 @@
 - **XCDR2**(Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더(DHEADER)와 멤버별 헤더(EMHEADER)를 도입한 개선판. 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
 
 ## 도구
-- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. 이 프로젝트는 Docker 안에서 소스로 빌드해 쓴다 (chapter 1). Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
+- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
 - **ShapesDemo**: 같은 ShapeType 토픽을 GUI로 보여 주는 각 벤더의 데모 프로그램 (RTI, eProsima 등). shape_main은 이것의 CLI판이라고 보면 된다.
 - **bridge 네트워크 (Docker)**: Docker가 호스트 안에 만드는 가상 L2 스위치. 컨테이너의 `eth0`가 여기에 꽂힌다. 같은 bridge 안에서는 유니캐스트와 멀티캐스트가 모두 통하고, 바깥으로는 NAT를 거친다. 사용자 정의 bridge는 기본 bridge와 달리 컨테이너 이름으로 서로를 찾을 수 있다.
-- **네트워크 네임스페이스 (network namespace)**: Linux 커널이 네트워크 스택 (인터페이스, IP 주소, 라우팅 표, 소켓)을 프로세스 묶음마다 따로 두는 기능. Docker 컨테이너가 각자 `eth0`과 IP를 갖는 것이 이것 덕분이다. 다른 컨테이너의 네임스페이스를 빌려 쓰면 (`--network container:<id>`) 같은 `eth0`과 IP를 공유한다. 이 프로젝트의 `mcast-check.sh`가 이 방식으로 벤더 컨테이너 안에서 도구를 돌린다.
+- **네트워크 네임스페이스 (network namespace)**: Linux 커널이 네트워크 스택 (인터페이스, IP 주소, 라우팅 표, 소켓)을 프로세스 묶음마다 따로 두는 기능. Docker 컨테이너가 각자 `eth0`과 IP를 갖는 것이 이것 덕분이다. 다른 컨테이너의 네임스페이스를 빌려 쓰면 (`--network container:<id>`) 같은 `eth0`과 IP를 공유한다.
 
 ## 설계
-- **I/O-free core**: 소켓, 시계, 스레드를 직접 쓰지 않고 입력을 받아 출력(보낼 패킷, 타이머, 이벤트)만 돌려주는 프로토콜 코어. 커뮤니티에서는 "sans-IO"라고도 부른다. 자세한 내용은 [roadmap 설계 원칙](../docs-for-agent/roadmap.md#4-설계-원칙).
+- **I/O-free core**: 소켓, 시계, 스레드를 직접 쓰지 않고 입력을 받아 출력(보낼 패킷, 타이머, 이벤트)만 돌려주는 프로토콜 코어. 커뮤니티에서는 "sans-IO"라고도 부른다. 시간과 받은 바이트를 바깥에서 넣어 주므로 타이머 만료, 패킷 손실과 재정렬을 결정적으로 시험할 수 있다. 실제 송수신과 대기는 바깥의 얇은 드라이버가 맡는다.
