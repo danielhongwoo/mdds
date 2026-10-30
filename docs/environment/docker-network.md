@@ -13,45 +13,28 @@ Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환�
 - 아래 네트워크 설계는 어느 호스트에서나 같다. 바뀌는 것은 "누가 Docker 데몬을 돌리느냐"뿐이다.
 
 ### 구성도
+```mermaid
+flowchart LR
+  %% LR로 두면 중첩 subgraph 안이 위에서 아래로 그려져 이 모양이 된다 (TB로 두면 가로로 길어진다)
+  subgraph MAC["Mac (Docker Desktop)"]
+    CAP[("~/work/mdds/captures/")]
+    subgraph VM["Linux VM (arm64)"]
+      subgraph CY["container cyclone"]
+        CYP["image mdds/cyclone-shape:11.0.1-f2aaccb4<br/>process cyclone_shape, tcpdump (if subscriber)<br/>eth0 172.28.0.10"]
+      end
+      subgraph FD["container fastdds"]
+        FDP["image mdds/fastdds-shape:3.6.1<br/>process fastdds_shape, tcpdump (if subscriber)<br/>eth0 172.28.0.11"]
+      end
+      BR{{"bridge dds-net 172.28.0.0/24, gateway 172.28.0.1<br/>multicast 239.255.0.1:7400 (SPDP)<br/>unicast 172.28.0.10 <-> 172.28.0.11 (SEDP, DATA, HEARTBEAT, ACKNACK)"}}
+    end
+  end
+  CAP -.-|"bind mount /captures"| CYP
+  CAP -.-|"bind mount /captures"| FDP
+  CYP ---|veth| BR
+  FDP ---|veth| BR
 ```
-+-- Mac (Apple Silicon, macOS) --------------------------------------------------------------------------------+
-|                                                                                                              |
-|  ~/work/mdds/captures/                                                                                       |
-|        :                                                                                                     |
-|        :  bind mount (Docker Desktop file sharing)                                                           |
-|        :                                                                                                     |
-|   +----:-- Docker Desktop Linux VM (arm64) --------------------------------------------------------------+   |
-|   |    :                                                                                                 |   |
-|   |    :...................................................                                              |   |
-|   |    :                                                  :                                              |   |
-|   |  +-:-- Docker container "cyclone" -------------+    +-:-- Docker container "fastdds" -------------+  |   |
-|   |  | :                                           |    | :                                           |  |   |
-|   |  | /captures  (mount point)                    |    | /captures  (mount point)                    |  |   |
-|   |  |                                             |    |                                             |  |   |
-|   |  | image    mdds/cyclone-shape:11.0.1-f2aaccb4 |    | image    mdds/fastdds-shape:3.6.1           |  |   |
-|   |  | process  cyclone_shape                      |    | process  fastdds_shape                      |  |   |
-|   |  |          tcpdump (if subscriber)            |    |          tcpdump (if subscriber)            |  |   |
-|   |  |                                             |    |                                             |  |   |
-|   |  | eth0     172.28.0.10                        |    | eth0     172.28.0.11                        |  |   |
-|   |  +---#-----------------------------------------+    +---#-----------------------------------------+  |   |
-|   |      #                                                  #                                            |   |
-|   |      #  veth                                            #  veth                                      |   |
-|   |      #                                                  #                                            |   |
-|   |  ====#==================================================#==========================================  |   |
-|   |                                                                                                      |   |
-|   |      bridge "dds-net"   172.28.0.0/24   gateway 172.28.0.1                                           |   |
-|   |      multicast  239.255.0.1:7400  (SPDP)                                                             |   |
-|   |      unicast    172.28.0.10 <-> 172.28.0.11  (SEDP, DATA, HEARTBEAT, ACKNACK)                        |   |
-|   |                                                                                                      |   |
-|   +------------------------------------------------------------------------------------------------------+   |
-|                                                                                                              |
-+--------------------------------------------------------------------------------------------------------------+
+점선은 바인드 마운트 (컨테이너의 `/captures`에 쓴 캡처가 Mac의 `captures/`에 바로 생긴다), 실선은 네트워크 연결 (각 컨테이너의 veth와 bridge `dds-net`)이다.
 
-Legend
-  +---+  |    box outline (Mac, VM, Docker container)
-  .....  :    bind mount (file sharing between Mac and the containers)
-  =====  #    network link (bridge "dds-net" and each container's veth)
-```
 - **Docker container**: 이미지로 띄운 실행 인스턴스다. 벤더마다 하나씩, 이미지도 따로다. 각 컨테이너는 자기 네트워크 네임스페이스 (`eth0` 하나)를 가지므로 DDS 입장에서는 서로 다른 호스트 두 대다.
 - **tcpdump**: 두 컨테이너에 모두 있고, 캡처는 구독자 쪽 컨테이너에서 한다 (아래 "어느 쪽에서 캡처해도 RTPS는 전부 보인다").
 - **bridge 구간 (VM 안)**: 두 컨테이너의 `eth0`은 veth 쌍으로 bridge에 꽂혀 있다. SPDP 멀티캐스트와 유니캐스트가 모두 이 안에서만 돈다. Mac의 네트워크 인터페이스에는 DDS 패킷이 나오지 않는다. 바깥으로 나가는 것은 이미지 빌드 때의 GitHub clone, apt, Gradle 다운로드뿐이다.
