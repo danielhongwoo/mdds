@@ -44,7 +44,7 @@ Cyclone DDS와 Fast DDS가 처음 통신하는 과정을 캡처하고, Wireshark
 | lab | 제목 | 하는 일 -> 기대 결과 | 쓰는 산출물 |
 |---|---|---|---|
 | Lab 3-1 | 첫 DDS 통신 | `capture-shape-scenario.ts rel-cyclone-pub` -> 구독 로그에 샘플이 찍히고 pcap이 생김 | `docker/capture-shape-scenario.ts` |
-| Lab 3-2 | 캡처에서 RTPS 메시지 찾기 | Wireshark 필터 `rtps` -> SPDP, SEDP, DATA, HEARTBEAT, ACKNACK를 캡처 README의 흐름도 프레임 번호와 맞춰 찾음 | `captures/cyclone-fastdds/rel-cyclone-pub.*` |
+| Lab 3-2 | 캡처에서 RTPS 메시지 찾기 | Wireshark 필터 `rtps` -> SPDP, SEDP, DATA, HEARTBEAT, ACKNACK를 캡처 README의 흐름도 프레임 번호와 맞춰 찾음. 디스커버리 패킷 (SPDP, SEDP)이 전체에서 차지하는 몫도 셈 (chapter 00 3.3절 "대가"를 직접 확인) | `captures/cyclone-fastdds/rel-cyclone-pub.*` |
 | Lab 3-3 | best-effort와 비교 | `be-cyclone-pub`을 같은 방법으로 봄 -> HEARTBEAT, ACKNACK가 없음 | `be-cyclone-pub.*` |
 
 ## 시나리오 실행 흐름 (`capture-shape-scenario.ts`)

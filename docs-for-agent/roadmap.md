@@ -15,7 +15,7 @@
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 진행 중 |
+| 00 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 완료 |
 | 01 | 실습 환경 (구현 없음) | [01-environment](notes/01-environment.md) | 완료 |
 | 02 | 멀티캐스트 (구현 없음) | [02-multicast](notes/02-multicast.md) | 완료 |
 | 03 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |

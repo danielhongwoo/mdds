@@ -106,7 +106,6 @@ DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구�
   - 출처: https://github.com/ros2/rmw_zenoh/blob/rolling/docs/design.md
 - 자원이 적거나 안전 인증이 필요한 곳에서는 동적 엔드포인트 디스커버리를 빼는 선택이 정식 기능으로 있다. RTI Connext Micro의 DPSE (Dynamic Participant, Static Endpoint)는 참가자만 SPDP로 찾고, 상대 endpoint와 그 QoS는 응용이 미리 선언한다. 이때 DataWriter와 DataReader의 QoS 일치를 런타임에 검사하지 않는다고 문서가 경고한다. (재확인) 안전 에디션들도 정적 디스커버리를 지원한다 (6절). 디스커버리가 DDS의 장점이자 비용이라는 점을 보여 주는 예다.
   - 출처: https://community.rti.com/static/documentation/connext-micro/4.1.0/doc/html/usersmanual/discovery.html
-- 무선 환경의 디스커버리 트래픽 문제는 저장소 루트의 int2DDS 논문도 제기한다 (인용 여부는 [chapter 00 노트](../notes/00-introduction.md#확인할-것)에서 결정).
 
 ## 5. 대상별 한 줄 요약 (DDS와 다른 설계 선택)
 - **ZeroMQ**: 브로커 없는 메시지 전송 라이브러리. 디스커버리, 데이터 모델, QoS는 응용 몫이다.

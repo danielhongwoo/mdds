@@ -1,33 +1,43 @@
 # 저자 노트: 들어가며 (chapter 00, 구현 없음)
 
-상태: 진행 중
+상태: 완료
 
 [roadmap](../roadmap.md) | chapter: 00 ([목차](../../book/README.md#목차))
 
 ## 목표
-DDS를 처음 보는 독자가 "왜 이런 것이 필요한가"와 "왜 직접 만들어 보는가"를 이해하고 chapter 01로 넘어가게 한다. 특히 브로커 없이 서로를 찾는 디스커버리가 DDS의 핵심이자 비용이라는 점을 앞에서 분명히 한다. 엔티티와 QoS의 자세한 내용은 chapter 05가 맡으므로 여기서는 큰 그림만 준다.
+DDS를 처음 보는 독자가 맥락을 잡고 chapter 01로 넘어가게 한다. 세부 사항을 외우게 하는 것이 아니라 다음을 이해하게 한다.
+- DDS가 어떤 문제를 푸는가, data-centric이 무엇인가 (그 일을 응용이 아니라 미들웨어가 한다)
+- 브로커 없이 서로를 찾는 디스커버리가 DDS의 핵심이자 비용이라는 것
+- 다른 기술과 비교해 DDS가 맞는 곳과 다른 선택이 나은 곳
+- 이 책이 왜 DDS를 직접 만들며 배우는가
 
 ## 범위
 하는 것
-- DDS가 푸는 문제와 data-centric publish-subscribe의 뜻
-- 디스커버리가 왜 중요한가 (브로커 없음, 동적 참여, 그 대가인 트래픽과 확장성 문제)
-- 비슷한 미들웨어와의 비교: MCU, 미션크리티컬, 로보틱스 관점에서 ("비교 대상과 기준")
-- OMG 규격 지도와 이 책의 chapter 흐름
-- 왜 직접 만드는가
+- DDS가 푸는 문제, message-centric과 data-centric, 토픽과 키, QoS, DCPS와 RTPS
+- 디스커버리의 요구, 동작 (SPDP, SEDP), 대가와 현장의 대응
+- 다른 미들웨어와 비교, 분야별 기준 (MCU, 미션크리티컬, 로보틱스), DDS가 맞는 곳
+- OMG 규격 지도와 이 책의 흐름, 왜 직접 만드는가
+- 스스로 확인하기
 
 하지 않는 것
-- `book/README.md`에 이미 있는 내용 (누구를 위한 책인가, 이 책의 방식, 준비물)을 되풀이하지 않는다. 필요하면 링크한다.
-- 엔티티, QoS 정책 목록, RxO (chapter 05), 와이어 형식 (chapter 07 이후)
-- 코드와 lab. 환경 준비는 chapter 01부터다.
+- `book/README.md`의 내용 (누구를 위한 책인가, 이 책의 방식, 준비물)을 되풀이하지 않는다. 예외로 객관성 원칙은 첫 문단에서 짧게 밝힌다 (이 chapter의 비교가 그 원칙을 가장 직접 보여 주므로).
+- 엔티티 계층, QoS 정책 전체와 매칭 규칙 (chapter 05, 11), OWNERSHIP의 자세한 규칙 (chapter 14), 와이어 형식 (chapter 07 이후)
+- 디스커버리 비용을 줄이는 벤더 기능의 동작 (chapter 19 ~ 21). 여기서는 이름과 대가만
+- 코드와 lab, 캡처의 수치. 독자는 아직 실험 환경이 없고, 캡처는 chapter 03에서 처음 만든다.
 
 ## 틀
-chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ... / 연습 문제)을 쓰지 않는다 ([book.md](../conventions/book.md#chapter)). 절 구성 초안:
-1. DDS가 푸는 문제: 여러 프로세스와 기기가 센서 값이나 명령 같은 데이터를 실시간으로 나누는 상황
-2. DDS란 무엇인가: data-centric publish-subscribe, global data space, 토픽과 키, QoS 계약
-3. 디스커버리: 브로커 없이 서로를 찾는 방법과 그 비용. 이 저장소의 캡처에서 디스커버리가 차지하는 비중을 예로 든다
-4. 다른 선택지와 비교: MCU, 미션크리티컬, 로보틱스에서 각각 무엇이 맞는지
-5. 규격 지도와 이 책의 흐름: DCPS, RTPS, CDR, XTypes, IDL, Security와 그것을 다루는 chapter. 규격 밖 벤더 기능 (chapter 19 ~ 21)과 그 밖의 것 (22)까지
+기능 chapter의 틀을 쓰지 않는다 ([book.md](../conventions/book.md#chapter)). 소절에 번호를 붙인다 (2.1, 2.2 ...).
+1. DDS가 푸는 문제: 이동 로봇 예와 세 질문 (누가 누구에게, 무엇을, 어떻게). 2절과 3절이 이 세 질문에 답한다
+2. DDS란 무엇인가
+   - 2.1 message-centric과 data-centric: ZeroMQ, MQTT와 DDS. 늦게 켜진 관제 PC를 두 방식으로 그린 그림 두 개. 차이는 같은 일을 응용과 미들웨어 가운데 누가 하는가
+   - 2.2 토픽, 타입, 키: 키는 보내는 쪽이 아니라 대상을 가리킨다. 상태와 사건
+   - 2.3 QoS: 네 가지 정책의 예
+   - 2.4 DCPS와 RTPS: 구현 바꾸기는 DCPS, 구현 사이 통신은 RTPS. 이 책의 검증 기준은 RTPS
+3. 디스커버리: 규격의 요구 (단일 장애점 없음), SPDP와 SEDP, 대가 (규격의 동작으로만 설명)와 현장의 대응 (표준 밖)
+4. 다른 선택지와 비교: 비교의 목적 (DDS가 낫다는 것이 아님), 표, MCU, 미션크리티컬 (OWNERSHIP으로 보는 failover), 로보틱스, DDS가 맞는 곳과 다른 선택이 나은 곳
+5. 규격 지도와 이 책의 흐름 (규격 밖 벤더 기능 19 ~ 21, 그 밖의 것 22까지)
 6. 왜 직접 만드는가
+7. 스스로 확인하기: 질문마다 "해설"을 접어 둔다 ([book.md](../conventions/book.md#스스로-확인하기))
 
 디렉터리: `book/00-introduction/README.md`
 
@@ -48,56 +58,36 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 | SOME/IP | 서비스 지향 통신. 차량 안 ECU 사이의 표준 (AUTOSAR) | 미션크리티컬 (자동차) |
 | DDS-XRCE (micro-ROS) | DDS 쪽의 제약 기기 답. 에이전트를 거쳐 DDS에 붙는다 | MCU, 로보틱스 |
 
-- 처음 후보 (ZeroMQ, Zenoh)는 저자가 예로 든 것이고, MQTT는 브로커 방식의 대조군으로 더했다. 분야 관점을 넣으면서 SOME/IP (자동차)와 DDS-XRCE (제약 기기)를 더했다.
-- 버린 대안: gRPC (요청-응답 RPC가 중심이라 pub/sub 비교에 맞지 않음), Kafka (데이터센터 로그 스트리밍이라 세 분야와 거리가 멂), OPC UA PubSub (산업 자동화. 지면이 허락하면 추가 후보).
+- 버린 대안: gRPC (요청-응답 RPC가 중심이라 pub/sub 비교에 맞지 않음), Kafka (데이터센터 로그 스트리밍이라 세 분야와 거리가 멂), OPC UA (산업 자동화의 data-centric 표준이지만 지면 때문에 본문에서 뺌. 비교는 [research/opc-ua.md](../research/opc-ua.md)).
 
 **비교 기준: 공통 기준에 분야별 기준을 더한다.**
 - 분야의 범위
-  - MCU: 마이크로컨트롤러 위의 펌웨어 (bare-metal)나 RTOS (FreeRTOS, Zephyr, NuttX 등). 수십~수백 KB의 RAM, MMU와 범용 OS가 없는 환경이다. Linux가 도는 edge 기기 (Jetson Orin NX, Raspberry Pi 등)는 넣지 않는다. 이런 기기는 일반 Linux 호스트와 같은 조건이라 공통 기준으로 비교한다.
+  - MCU: 마이크로컨트롤러 위의 펌웨어 (bare-metal)나 RTOS (FreeRTOS, Zephyr, NuttX 등). 수십~수백 KB의 RAM, MMU와 범용 OS가 없는 환경이다. Linux가 도는 edge 기기 (Jetson Orin NX, Raspberry Pi 등)는 일반 Linux 호스트와 같은 조건이라 넣지 않는다. 이 범위 설명은 노트에만 두고 본문에는 쓰지 않는다.
   - 버린 표현: "임베디드". edge 기기까지 넓게 읽혀서 기준 (코드 크기, 동적 할당, RTOS)과 맞지 않는다.
 - 공통: 브로커 유무, 디스커버리 방식, 데이터 모델 (타입, 키, 상태), QoS, 전송 (UDP, TCP, 공유 메모리, 비IP), 표준화 주체와 상호운용 구현 수
 - MCU: 코드와 메모리 크기, 지원하는 RTOS, 동적 할당 없이 쓸 수 있는지, 비IP 전송 (시리얼, CAN 등), 좁은 대역폭과 끊기는 링크에서의 동작
-- 미션크리티컬: 단일 장애점 유무, 시간 제약 표현 (deadline, latency budget, liveliness), 이중화와 failover (ownership 등), 보안 (인증, 접근 제어, 암호화), 안전 인증 (ISO 26262, DO-178C 등)을 받은 구현이 있는지, 여러 공급자와 장기 지원
-- 로보틱스: ROS 2 지원 방식, 타입 정의와 타입 진화, 큰 데이터 (이미지, point cloud)를 위한 공유 메모리나 zero-copy, 무선과 다수 로봇 환경에서의 디스커버리 비용
+- 미션크리티컬: 단일 장애점 유무, 시간 제약 표현 (deadline, liveliness), 이중화와 failover (ownership 등), 보안, 안전 인증을 받은 구현이 있는지, 여러 공급자
+- 로보틱스: ROS 2 지원 방식, 타입 정의와 타입 진화, 큰 데이터를 위한 공유 메모리, 무선과 다수 로봇 환경에서의 디스커버리 비용
 
 ## 읽을 자료
-- DDS 1.4 Sec. 1 (Overview), Sec. 2.1 (Summary), Sec. 2.2.1.2 (Conceptual Outline)
-- DDSI-RTPS 2.5 Sec. 7.2 (Requirements for a DDS Wire-protocol), Sec. 7.3, Sec. 8.5 (Discovery Module) 도입부
-- [research/dds-dcps.md](../research/dds-dcps.md), [roadmap "대상 규격 지도"](../roadmap.md#2-대상-규격-지도)
-- 이 저장소의 캡처: [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md) (rel-cyclone-pub은 프레임 268개 중 디스커버리가 72개). 비중 집계는 [research/discovery-scaling.md](../research/discovery-scaling.md#4-이-저장소의-캡처에서-본-비중)
-- 비교 대상의 공식 문서: ZeroMQ (zguide), Zenoh (zenoh.io), MQTT 5.0 (OASIS 규격), SOME/IP (AUTOSAR 규격), DDS-XRCE 1.0 (OMG 규격)과 micro-ROS
-
-## 작업 순서
-- [x] 비교 조사: "비교 대상과 기준"의 대상을 공통 기준과 분야별 기준으로 정리해 `research/middleware-comparison.md`에 둔다. 표의 "주로 거론되는 분야"도 출처로 확인한다. 원문으로 확인한 것과 추정을 구분하고 확인 날짜를 적는다. -> [research/middleware-comparison.md](../research/middleware-comparison.md)
-- [x] 디스커버리 비용 근거: 캡처에서 디스커버리 패킷 비중을 세고, 규모가 커질 때 문제가 되는 이유 (참가자 수에 따른 SEDP 교환, 멀티캐스트 부담)와 알려진 대안 (Fast DDS Discovery Server, Zenoh의 방식 등)을 출처와 함께 정리한다. -> [research/discovery-scaling.md](../research/discovery-scaling.md)
-- [x] 규격 사실 확인: 규격 이름, 판, 계층 관계를 `omg-specs/` 원문으로 확인한다.
-- [x] 본문 초안 (`book/00-introduction/README.md`), 목차 상태를 "초안"으로.
-
-## 확인할 것
-- 저장소 루트의 int2DDS 논문 PDF (무선 다중 기기 환경의 디스커버리 트래픽 문제)를 근거로 인용할지 (저자에게 확인). 인용하면 서지 정보와 짧은 인용만 쓰고 PDF는 저장소에 넣지 않는다.
-- ROS 2가 DDS를 기본 미들웨어로 쓰다가 Zenoh 기반 rmw를 추가한 경위. 공식 출처로 확인되면 비교 절의 예로 쓴다.
+- DDS 1.4 Sec. 1 (Overview), Sec. 1.2 (Purpose, 적용 분야), Sec. 2.2.1.2 (Conceptual Outline), Sec. 2.2.3 (QoS), Sec. 2.2.3.9.2 (OWNERSHIP)
+- DDSI-RTPS 2.5 Sec. 7.2, Sec. 8.5.1, Sec. 8.5.3.1, Sec. 8.5.4.2
+- DDS-XRCE 1.0 Sec. 8.1
+- 조사 노트: [middleware-comparison.md](../research/middleware-comparison.md) (비교의 근거), [discovery-scaling.md](../research/discovery-scaling.md) (디스커버리 비용과 대안), [opc-ua.md](../research/opc-ua.md) (본문 밖 비교)
+- 캡처: [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md). 저자가 디스커버리 비용을 가늠하는 데만 쓴다. 본문에는 수치를 쓰지 않는다 (범위 참고).
 
 ## 완료 기준
-저자가 정한 것
-- 독자가 DDS의 필요성을 이해할 수 있다.
-- 독자가 디스커버리를 왜 중요하게 다루는지 설명할 수 있다.
-- 비슷한 라이브러리 (ZeroMQ, Zenoh 등)와 비교되어 있다. MCU, 미션크리티컬, 로보틱스 각각에서 무엇을 기준으로 고르는지 드러난다.
-
-추가로 둔 것
-- 독자가 data-centric (데이터와 그 상태를 공유)과 message-centric (메시지를 전달)의 차이를 한두 문장으로 말할 수 있다. DDS를 다른 미들웨어와 가르는 기준이다.
-- 비교는 "DDS가 낫다"가 아니라 쓰임새별 선택 기준으로 끝난다. DDS의 약점 (복잡도, 디스커버리 트래픽, 무선과 대규모 환경)도 적는다.
-- 독자가 규격 지도 (DCPS / RTPS / CDR / XTypes / IDL / Security)를 보고 각 규격을 어느 chapter에서 다루는지 찾을 수 있다. 규격 밖의 벤더 기능을 어디서 다루는지 (19 ~ 21)도 찾을 수 있다.
-- 표준과 상호운용이 왜 중요한지 (여러 벤더가 같은 와이어 규격으로 통신) 설명되어 있고, 그것이 이 책의 검증 기준임이 드러난다.
-- 모든 사실 진술에 출처 (규격 절 번호 또는 공식 문서와 확인 날짜)가 있다.
-- `book/README.md`, chapter 05와 내용이 겹치지 않는다.
+- 독자가 DDS의 필요성과 data-centric의 뜻을 "그 일을 누가 하는가"로 설명할 수 있다.
+- 독자가 디스커버리를 왜 중요하게 다루는지 (장점이자 비용) 설명할 수 있다.
+- 비슷한 기술 (ZeroMQ, Zenoh, MQTT, SOME/IP, DDS-XRCE)과 비교되어 있고, MCU, 미션크리티컬, 로보틱스 각각에서 무엇을 기준으로 고르는지, DDS가 맞는 곳과 다른 선택이 나은 곳이 드러난다.
+- 비교가 객관성 원칙 ([book.md](../conventions/book.md#작성-원칙-객관성))을 지킨다: 쓰임새별 결론, DDS의 약점, 출처, 벤더 주장 표시.
+- 독자가 규격 지도를 보고 각 규격과 벤더 기능을 어느 chapter에서 다루는지 찾을 수 있다.
+- 모든 사실 진술에 출처가 있다 (규격 절 번호 또는 공식 문서).
+- 스스로 확인하기의 질문을 이 chapter만 읽고 풀 수 있다.
 
 ## 진행 기록
-- 2026-10-30: 노트 작성. chapter 00은 기능 chapter 틀을 쓰지 않고 위 "틀"의 절을 쓴다 -> [book.md](../conventions/book.md#chapter)
-- 2026-10-30: 비교 대상 선정 기준과 분야별 (임베디드, 미션크리티컬, 로보틱스) 비교 기준을 정함. 노트 이름을 book 디렉터리와 같게 바꿈 (`00-introduction.md`) -> [비교 대상과 기준](#비교-대상과-기준), [book.md](../conventions/book.md)
-- 2026-10-30: 비교 조사 완료. 핵심 근거 (RTPS 2.5 Sec. 7.2, 8.5.1, Zenoh 디스커버리 측정, ROS 2 alternative middleware report, Kilted Tier 1)는 원문으로 재확인. 남은 빈칸은 조사 노트 7절 -> [middleware-comparison.md](../research/middleware-comparison.md)
-- 2026-10-30: 분야 이름 "임베디드"를 "MCU" (펌웨어 / RTOS)로 좁힘. Linux edge 기기는 빠짐 -> [비교 대상과 기준](#비교-대상과-기준)
-- 2026-10-30: 조사 노트의 MCU 표에 DDS 구현 열과 미션크리티컬 표의 DDS 안전 인증 칸을 채움. MCU와 안전 에디션은 정적 endpoint 디스커버리를 정식 기능으로 둔다 (Connext Micro DPSE) -> [middleware-comparison.md](../research/middleware-comparison.md#4-디스커버리-관점-chapter-00의-핵심-근거)
-- 2026-10-30: 디스커버리 비용 근거 정리. 캡처에서 SPDP + SEDP가 바이트의 37~62% (large-sample 제외), 규모에 따른 증가는 규격 동작에서 추론, 벤더 대안과 OMG 이슈 DDSIRTP26-37 (Open) -> [discovery-scaling.md](../research/discovery-scaling.md)
-- 2026-10-30: 본문 초안 작성 (book/00-introduction/README.md). 기본 개념 용어를 glossary에 추가 -> [본문](../../book/00-introduction/README.md)
-- 2026-10-30: DDS-XRCE 1.0 PDF를 omg-specs/에 받아 Sec. 8.1을 원문으로 확인, 본문에 절 번호를 넣음 -> [본문](../../book/00-introduction/README.md)
-- 2026-10-30: 벤더 확장 chapter 19 ~ 21과 extras 22를 본문 3절 (대가)과 5절 (규격 지도, 흐름)에 반영. 대응 방법에 중계를 더함 -> [book.md](../conventions/book.md#벤더-확장-chapter)
+- 2026-10-30: chapter 00은 기능 chapter 틀을 쓰지 않고 위 "틀"의 절을 쓴다 -> [book.md](../conventions/book.md#chapter)
+- 2026-10-30: 비교 대상과 기준, 분야 이름을 "MCU"로 좁힘 -> [비교 대상과 기준](#비교-대상과-기준)
+- 2026-10-30: 비교 조사와 디스커버리 비용 조사를 마침 -> [middleware-comparison.md](../research/middleware-comparison.md), [discovery-scaling.md](../research/discovery-scaling.md)
+- 2026-10-30: 본문 초안 작성, 저자 리뷰로 구성을 다시 잡음 (OWNERSHIP을 4.2로, 캡처 수치 제외, 비교 그림, 스스로 확인하기, 소절 번호)
+- 2026-10-30: 객관성 원칙을 정하고 첫 문단에 밝힘 -> [book.md](../conventions/book.md#작성-원칙-객관성)

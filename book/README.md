@@ -21,6 +21,8 @@ chapter마다 같은 순서로 간다.
 
 직접 실행해 보는 부분은 **lab**으로 나눈다. Lab 1-1은 chapter 1의 첫 번째 lab이다. lab마다 목표, 준비, 단계, 기대 결과, 확인 질문이 있어서 무엇이 보이면 성공인지 알 수 있다.
 
+이 책은 DDS가 가장 좋은 기술이라고 주장하지 않는다. DDS가 어떤 문제를 잘 풀고 어떤 대가를 치르는지, 어떤 경우에 다른 기술이 더 맞는지를 출처와 함께 적는다. 독자가 자기 문제에 맞는 기술을 고를 때 참고할 수 있는 객관적인 자료가 되는 것이 목표다.
+
 벤더 DDS는 관찰 대상이자 검증 기준이다. 벤더 사용법을 가르치는 책은 아니다. 규격이 정하지 않은 벤더 기능 (정적 디스커버리, 디스커버리 서버, TCP / WAN 전송, 중계)은 chapter 19-21에서 다루는데, 이때도 사용법이 아니라 어떤 문제를 풀고 무엇을 잃는지를 본다.
 
 ## 준비물
@@ -35,7 +37,7 @@ chapter마다 같은 순서로 간다.
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 초안 |
+| 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 완료 |
 | 01 | 실습 환경: 벤더 DDS 두 개를 컨테이너로 | [01-environment](../docs-for-agent/notes/01-environment.md) | 집필 전 |
 | 02 | 멀티캐스트가 오가는 길 | [02-multicast](../docs-for-agent/notes/02-multicast.md) | 집필 전 |
 | 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) | 집필 전 |
@@ -63,13 +65,14 @@ chapter마다 같은 순서로 간다.
 chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다. 앞 chapter에서 뒤의 내용을 깊이 다루면 같은 설명을 두 번 하게 되므로, 각 chapter는 "미루는 것"을 넘지 않는다. 계획이므로 집필하면서 바뀔 수 있다. 기능 chapter (05 이후)는 모두 같은 틀 (왜 필요한가 / 캡처에서 보기 / 규격 읽기 / 구현 / 벤더와 맞춰 보기 / 두 벤더는 어떻게 하는가 / 연습 문제)을 따르고, 아래 소제목은 그 안에서 다루는 주제다.
 
 ### 00. 들어가며: DDS란 무엇이고 왜 직접 만드는가
-- DDS가 푸는 문제
-- DDS란 무엇인가: data-centric, 토픽과 키와 인스턴스, QoS, API와 와이어 프로토콜
-- 디스커버리: 브로커 없이 서로를 찾기, 그 대가
-- 다른 선택지와 비교: MCU, 미션크리티컬, 로보틱스
-- 규격 지도와 이 책의 흐름
-- 왜 직접 만드는가
-- 미루는 것: QoS 정책 전체와 매칭 규칙 (05, 11), SPDP / SEDP의 동작과 메시지 (09, 11), 디스커버리 비용을 줄이는 벤더 기능의 동작 (19 ~ 21. 00에서는 이름과 대가만)
+- 1 DDS가 푸는 문제
+- 2 DDS란 무엇인가: message-centric과 data-centric (누가 그 일을 하는가), 토픽과 키 (상태와 사건), QoS, DCPS와 RTPS
+- 3 디스커버리: 규격의 요구, SPDP와 SEDP, 그 대가
+- 4 다른 선택지와 비교: MCU, 미션크리티컬, 로보틱스, DDS가 맞는 곳과 다른 선택이 나은 곳
+- 5 규격 지도와 이 책의 흐름
+- 6 왜 직접 만드는가
+- 7 스스로 확인하기
+- 미루는 것: QoS 정책 전체와 매칭 규칙 (05, 11), SPDP / SEDP의 동작과 메시지 (09, 11), 디스커버리 비용을 줄이는 벤더 기능의 동작 (19 ~ 21. 00에서는 이름과 대가만), OWNERSHIP의 자세한 규칙 (14. 00에서는 failover 예 하나만)
 
 ### 01. 실습 환경: 벤더 DDS 두 개를 컨테이너로
 - 실행 호스트와 준비물
@@ -93,7 +96,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - shape_main과 시나리오 스크립트 (`capture-shape-scenario.ts`)
 - Lab 3-1 첫 DDS 통신
 - 캡처를 읽는 법: Wireshark `rtps` 필터, 프레임 번호, 흐름도
-- Lab 3-2 캡처에서 RTPS 메시지 찾기 (SPDP, SEDP, DATA, HEARTBEAT, ACKNACK)
+- Lab 3-2 캡처에서 RTPS 메시지 찾기 (SPDP, SEDP, DATA, HEARTBEAT, ACKNACK), 디스커버리가 차지하는 몫
 - Lab 3-3 best-effort와 비교
 - 미루는 것: 메시지의 바이트 해석 (07), reliable 동작 원리 (10), 매칭 규칙 (11)
 
