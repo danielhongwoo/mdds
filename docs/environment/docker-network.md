@@ -125,7 +125,7 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
   - **받는 쪽 커널**: 가입한 그룹의 패킷만 소켓으로 올린다. 가입하지 않으면 `eth0`에 도착해도 (tcpdump에는 보여도) 버린다. 이것이 가입이 꼭 필요한 이유다.
   - **bridge**: 멀티캐스트 스누핑 (multicast snooping)이 켜져 있고 IGMP querier가 있으면 보고를 보고 그 포트로만 전달한다. querier가 없으면 Linux bridge는 가입과 무관하게 모든 포트로 흘려보낸다 (`multicast_flood` 기본 켜짐).
 - **이 환경의 bridge는 가입과 무관하게 모든 포트로 흘려보낸다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`captures/mcast-check/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 스누핑으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
-- 멀티캐스트 TTL 기본값이 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다.
+- SPDP 멀티캐스트의 IP TTL은 벤더마다 다르다 (캡처에서 Fast DDS 1, Cyclone DDS 32). 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다. 장비에 남는 상태는 [discovery-network-state.md](../../docs-for-agent/research/discovery-network-state.md).
 - 캡처로 본 것 (`captures/mcast-check/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
   - 가입 직후 IGMPv3 Membership Report (목적지 224.0.0.22)가 두 번 나간다 (0초, 0.65초 뒤). RFC 3376의 Robustness Variable 기본값 2 때문이다. 종료 때 Leave도 두 번이다.
   - 상대 컨테이너의 `eth0`에서도 이 보고가 보인다. 224.0.0.0/24 (link-local)는 bridge가 항상 모든 포트로 흘려보내기 때문이다.
