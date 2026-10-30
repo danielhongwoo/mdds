@@ -75,6 +75,15 @@ IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 chapter (17)
 
 ## 3. 저장소 구조
 
+### 이름
+**결정: 구현과 crate 접두사는 mdds (my DDS)를 쓴다.** 독자가 책을 따라 직접 만드는 자기만의 DDS라는 뜻이다.
+- 왜: 이름을 바꾸는 비용이 없고 (crate, 코드, 문서 전체), "my DDS"가 독자가 직접 만든다는 책의 취지와 맞는다. crates.io에서도 비어 있다.
+- 알고 쓰는 충돌: 같은 이름의 C++ 라이브러리 mdds (Multi-Dimensional Data Structure, LibreOffice가 의존)가 있다. 분야가 달라 혼동될 일은 적다.
+- 버린 대안
+  - sdds (Scratch-built DDS 또는 simple DDS): 2014년 무선 센서망용 DDS 연구 sDDS와 겹치고, "simple"은 책이 뒤에서 다루는 범위 (XTypes, 보안, 벤더 확장)를 좁혀 보이게 한다. 바꾸는 비용에 비해 더 낫다고 보기 어렵다.
+  - ddsfs (DDS from scratch): 이름 끝의 fs가 file system (sshfs, s3fs, procfs)으로 읽힌다.
+  - ddsfg (DDS from ground): "from ground"는 영어로 어색하다 (굳어진 표현은 "from the ground up").
+
 ### 처음 구성 (chapter 1-12)
 경계를 모르는 상태에서 crate를 미리 잘게 나누면 의존 정리에 시간이 든다. 세 개로 시작하고, 경계가 분명해지면 나눈다.
 
