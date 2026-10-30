@@ -157,7 +157,7 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 
 - COMMON 기본값: `-d 0 -t Square -x 1`에 표의 신뢰성 옵션을 더한다. xcdr2 시나리오만 `-x 2`. 데이터 표현을 명시하는 이유는 실행 파일의 기본값을 모르기 때문이다.
 - PUB_ONLY 기본값: `-c BLUE --write-period 100 --num-iterations 100` (10 Hz로 약 10초 보내고 스스로 끝난다). 표의 값은 여기에 더하거나 대체한다.
-- **`-c`는 발행 전용이다.** 구독자에게 주면 내용 필터 (ContentFilteredTopic)가 되어 토픽 이름이 `Square_filtered`로 바뀌고 SEDP에 `PID_CONTENT_FILTER_PROPERTY` (DDSSQL `color = %0`)가 실린다. 색이 하나뿐이라 거르는 것은 없고 기본 캡처만 복잡해지므로 뺐다. 내용 필터 자체를 볼 캡처가 필요해지면 별도 시나리오로 추가한다.
+- **`-c`는 발행 전용이다.** 구독자에게 주면 ContentFilteredTopic이 되어 토픽 이름이 `Square_filtered`로 바뀌고 SEDP에 `PID_CONTENT_FILTER_PROPERTY` (DDSSQL `color = %0`)가 실린다. 색이 하나뿐이라 거르는 것은 없고 기본 캡처만 복잡해지므로 뺐다. ContentFilteredTopic 자체를 볼 캡처가 필요해지면 별도 시나리오로 추가한다.
 - **구독 로그의 샘플 수는 실제 전달 수보다 적을 수 있다.** 구독자는 기본 history (KEEP_LAST)로 100ms마다 읽는데 발행도 100ms 주기라, 한 주기에 둘이 들어오면 앞의 것이 덮어써진다. 전달 여부는 캡처의 DATA seq와 ACKNACK로 판단한다. 또 발행자는 구독자를 발견하기 전부터 쓰므로 (VOLATILE) 앞쪽 seq 몇 개는 전달 대상이 아니다.
 - SUB_ONLY: 모든 시나리오에서 없음.
 
@@ -213,7 +213,7 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 2026-10-28: 캡처 볼륨을 `captures` 전체로 바꿈 (chapter에 묶지 않음). 시나리오는 `/captures/cyclone-fastdds/`에 쓴다 -> [docker-network.md "compose 설계"](../../docs/environment/docker-network.md#compose-설계)
 - 2026-10-28: 멀티캐스트 확인 도구를 socat 대신 Rust로 만듦 (`tools/mcast-check`, 이미지 `mdds/tools`, 벤더 컨테이너의 네트워크 네임스페이스를 빌려 실행). 이를 위해 Step 2 워크스페이스 뼈대를 함께 만듦 -> [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령)
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 컨테이너 사이 멀티캐스트를 전달함을 확인 (fastdds 가입, cyclone 송신 3건 모두 수신)
-- 2026-10-28: Step 5 완료. 시나리오 스크립트 작성, rel 두 시나리오 캡처. shape_main `-c`를 발행 전용으로 바꿈 (구독자에게는 내용 필터가 됨) -> [시나리오 표](#시나리오-표), [캡처 README](../../captures/cyclone-fastdds/README.md)
+- 2026-10-28: Step 5 완료. 시나리오 스크립트 작성, rel 두 시나리오 캡처. shape_main `-c`를 발행 전용으로 바꿈 (구독자에게는 ContentFilteredTopic이 됨) -> [시나리오 표](#시나리오-표), [캡처 README](../../captures/cyclone-fastdds/README.md)
 - 2026-10-29: 시나리오 스크립트를 POSIX sh에서 TypeScript + Deno로 바꿈 (가독성) -> [시나리오 실행 흐름](#시나리오-실행-흐름-capture-shape-scenariots)
 - 2026-10-29: Step 6 완료. 나머지 6개 시나리오 캡처 (large-sample은 2.9MB라 자르지 않음). 시나리오별 다이어그램은 Step 7 -> [캡처 README](../../captures/cyclone-fastdds/README.md#파일)
 - 2026-10-29: 캡처 메모는 관찰과 질문까지만 적고, 해석과 가설은 해당 chapter의 저자 노트 "확인할 것"으로 옮김 (chapter 7, 9, 10, 11, 13) -> [Step 7](#step-7-캡처-분석-메모)

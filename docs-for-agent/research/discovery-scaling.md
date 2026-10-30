@@ -14,7 +14,7 @@
 
 ## 2. 규격이 정한 동작
 - **SPDP** (RTPS 2.5 Sec. 8.5.3.1): 참가자마다 best-effort StatelessWriter 하나가 자기 정보 (SPDPdiscoveredParticipantData) 한 개를 미리 설정된 locator 목록 (유니캐스트, 멀티캐스트)으로 **주기적으로** 다시 보낸다. 주기는 leaseDuration보다 짧아야 한다. 주기적으로 보내기 때문에 참가자가 어떤 순서로 들어와도 서로를 찾는다. 새 참가자를 보면 바로 한 번 더 보내는 것은 선택이다. [확인]
-- **SEDP** (Sec. 8.5.4.1, 8.5.4.2): 상대 참가자를 알면 미리 정해진 내장 endpoint (DCPSPublication, DCPSSubscription, DCPSTopic)와 짝을 맺고, 일반 데이터와 같은 RTPS 프로토콜로 자기 DataWriter와 DataReader의 존재와 QoS를 알린다. 이 내장 endpoint는 **reliable**이다. [확인]
+- **SEDP** (Sec. 8.5.4.1, 8.5.4.2): 상대 참가자를 알면 미리 정해진 내장 endpoint (DCPSPublication, DCPSSubscription, DCPSTopic)와 매칭하고, 일반 데이터와 같은 RTPS 프로토콜로 자기 DataWriter와 DataReader의 존재와 QoS를 알린다. 이 내장 endpoint는 **reliable**이다. [확인]
 - **한계** (Sec. 8.5.1): 모든 구현은 상호운용을 위해 SPDP와 SEDP를 지원해야 하고, 둘은 소~중규모 네트워크에 충분하다. 더 큰 네트워크용 프로토콜은 이후 판에 더할 수 있다고 적는다. [확인]
 
 ## 3. 왜 규모에 따라 커지는가 [추론]
@@ -53,7 +53,7 @@
 ## 5. 벤더와 ROS 2의 대안
 | 방식 | 예 | 무엇을 바꾸나 | 대가 |
 |---|---|---|---|
-| 중앙 서버 (hub) | Fast DDS Discovery Server | 각 참가자가 client로 서버에 유니캐스트로 보내고 서버가 다시 나눠 준다. 문서가 드는 이유는 SPDP가 노드가 늘면 패킷이 크게 늘고, 멀티캐스트가 WiFi 같은 곳에서 믿을 만하지 않다는 것. (재확인) v2는 같은 토픽에 짝이 있는 client끼리만 이어 SEDP를 더 줄인다 [확인, 조사 결과] | 서버가 디스커버리의 중심이 된다. backup 서버 기능 (재확인). ROS 2 도구가 전체 그래프를 보려면 Super Client로 설정해야 한다 (재확인) |
+| 중앙 서버 (hub) | Fast DDS Discovery Server | 각 참가자가 client로 서버에 유니캐스트로 보내고 서버가 다시 나눠 준다. 문서가 드는 이유는 SPDP가 노드가 늘면 패킷이 크게 늘고, 멀티캐스트가 WiFi 같은 곳에서 믿을 만하지 않다는 것. (재확인) v2는 같은 토픽에 매칭되는 상대가 있는 client끼리만 이어 SEDP를 더 줄인다 [확인, 조사 결과] | 서버가 디스커버리의 중심이 된다. backup 서버 기능 (재확인). ROS 2 도구가 전체 그래프를 보려면 Super Client로 설정해야 한다 (재확인) |
 | | RTI Cloud Discovery Service | 참가자 공지 (SPDP)만 중계하고 SEDP는 참가자끼리 직접 [확인, 조사 결과] | 목적은 멀티캐스트가 없는 환경 |
 | 정적 설정 | Fast DDS STATIC EDP (XML), RTI Connext Micro DPSE, RTI LBED / LBPD | SEDP (또는 참가자 정보 일부)를 미리 쓴 설정으로 대신한다. SPDP는 계속 동작 [확인, 조사 결과]. DPSE는 (재확인) | 모든 endpoint를 미리 알아야 한다. 동적 참여를 잃는다. DPSE는 QoS 일치를 런타임에 검사하지 않는다 |
 | 유니캐스트 peer, 멀티캐스트 축소 | Cyclone DDS `General/AllowMulticast=spdp`, `Discovery/Peers`; Fast DDS initial peers | `spdp`는 SPDP에만 멀티캐스트를 쓰고 endpoint 디스커버리와 사용자 데이터는 모두 유니캐스트로 한다 (재확인). peer 목록은 디스커버리를 보낼 주소를 정한다 | peer 목록을 관리해야 한다. 유니캐스트 SPDP는 N*(N-1) |
