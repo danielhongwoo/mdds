@@ -4,15 +4,16 @@
 
 `book/`은 학습자를 위한 본문이다. 저자의 작업 계획, 결정, 진행 기록은 `docs-for-agent/notes/`에 두고 섞지 않는다.
 
-**결정: chapter가 유일한 진행 단위다. chapter마다 저자 노트 (`docs-for-agent/notes/<주제>.md`) 와 독자용 본문 (`book/NN-slug/`) 을 따로 둔다.**
+**결정: chapter가 유일한 진행 단위다. chapter마다 저자 노트 하나 (`docs-for-agent/notes/NN-<slug>.md`) 와 독자용 본문 (`book/NN-slug/`) 을 따로 둔다.**
 - 왜: 저자 노트는 체크리스트, 결정, 확인할 것, 진행 기록으로 이루어진 저자용 문서다. 교재는 "왜 필요한가 -> 보기 -> 규격 -> 구현 -> 확인"의 설명 흐름이 필요하고 독자가 읽는다. 한 문서로 두 역할을 하면 어느 쪽 독자에게도 맞지 않는다.
 - 버린 대안: 저자 노트를 chapter 디렉터리 안에 두기 (`book/NN-slug/notes.md`). 독자용 디렉터리에 저자용 파일이 섞인다. 작업 계획을 별도 번호 체계 (phase) 로 두기: chapter와 같은 내용을 두 번호로 관리하게 되어 서로 맞춰야 했다.
 - chapter와 노트의 대응은 [roadmap](../roadmap.md)의 표가 유일한 출처다.
 
-**결정: chapter에 딸린 저자 노트는 그 chapter의 book 디렉터리와 같은 이름 `notes/NN-<slug>.md`로 짓는다 (`notes/06-cdr.md` <-> `book/06-cdr/`). 여러 chapter를 맡는 노트는 번호 범위를 쓴다 (`notes/01-04-environment-and-captures.md`).**
+**결정: chapter에 딸린 저자 노트는 그 chapter의 book 디렉터리와 같은 이름 `notes/NN-<slug>.md`로 짓는다 (`notes/06-cdr.md` <-> `book/06-cdr/`). chapter와 노트는 일대일이다.**
 - 왜: 파일 이름만 보고 어느 chapter의 노트인지 알 수 있고, 노트 목록이 읽는 순서대로 정렬된다.
 - 비용: chapter 번호를 바꾸면 노트 이름과 그 링크도 함께 고친다. 번호를 자유롭게 바꾸는 공개 전에만 드는 비용이다.
 - 버린 대안: 번호 없는 주제 이름 (`cdr.md`). 번호가 바뀌어도 이름은 그대로지만 chapter와의 연결이 이름에 드러나지 않는다. `chapterNN-` 접두. book 디렉터리 이름과 달라져 둘을 맞춰 보기 어렵다.
+- 버린 대안: 노트 하나가 여러 chapter를 맡기 (`01-04-environment-and-captures.md`). 노트가 길어지고, chapter를 쓸 때 어느 절이 그 chapter의 것인지 골라 읽어야 했다. 여러 chapter가 함께 쓰는 내용 (예: 시나리오 표)은 처음 나오는 chapter의 노트에 두고 뒤 chapter의 노트가 링크한다.
 - 번호는 chapter에 딸린 노트에만 붙인다. 스크립트, 도구, 캡처, crate, 조사 노트처럼 여러 chapter가 함께 쓰는 산출물은 지금처럼 하는 일과 대상으로 이름 짓는다.
 
 ## 언어
@@ -61,5 +62,6 @@
 - 고지는 [book/LICENSE.md](../../book/LICENSE.md)에 있다. 규격 인용은 최소한으로 하고 절 번호를 붙인다 (OMG 저작물).
 
 ## 목차 갱신
+- `book/README.md`의 "chapter별 내용"에 chapter마다 소제목과 "미루는 것"을 둔다. chapter 작업을 시작할 때 저자 노트와 맞추고, 본문은 "미루는 것"을 넘지 않는다. 앞 chapter에서 뒤 chapter의 내용을 깊이 다루면 같은 설명을 두 번 쓰게 된다.
 - `book/README.md`의 목차 표에 chapter의 상태 (집필 전 / 초안 / 완료)를 둔다. chapter를 쓰기 시작하면 "초안", 틀의 모든 절이 채워지고 코드 스냅샷 검사가 통과하면 "완료".
 - 저자 노트의 산출물 표에 그 노트로 쓴 chapter를 링크한다.

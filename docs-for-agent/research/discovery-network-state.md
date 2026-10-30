@@ -71,7 +71,7 @@ gantt
     MAC table 300s              :0, 300
 ```
 
-- 근거: DDS lease는 [chapter 01-04 노트의 시나리오 표](../notes/01-04-environment-and-captures.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
+- 근거: DDS lease는 [chapter 03 노트의 시나리오 표](../notes/03-first-communication.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
 - IGMP의 2초는 leave를 받은 뒤 querier가 group-specific query를 1초 간격으로 2번 보내고 정리할 때다 [R4]. leave 없이 사라지면 260초 쪽이다.
 
 ### 2.3 요약 표

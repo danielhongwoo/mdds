@@ -16,7 +16,10 @@
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
 | 00 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 진행 중 |
-| 01-04 | 실습 환경 / 멀티캐스트 / 첫 DDS 통신 / 같은 규격 다른 구현 (구현 없음, 관찰) | [01-04-environment-and-captures](notes/01-04-environment-and-captures.md) | 완료 |
+| 01 | 실습 환경 (구현 없음) | [01-environment](notes/01-environment.md) | 완료 |
+| 02 | 멀티캐스트 (구현 없음) | [02-multicast](notes/02-multicast.md) | 완료 |
+| 03 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |
+| 04 | 같은 규격, 다른 구현 (구현 없음, 관찰) | [04-vendor-differences](notes/04-vendor-differences.md) | 완료 |
 | 05 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 대기 |
 | 06 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
 | 07 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |

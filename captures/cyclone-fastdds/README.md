@@ -1,6 +1,6 @@
 # Cyclone DDS <-> Fast DDS 캡처
 
-[chapter 1-4 노트](../../docs-for-agent/notes/01-04-environment-and-captures.md) | [시나리오 표](../../docs-for-agent/notes/01-04-environment-and-captures.md#시나리오-표) | [docker-network.md](../../docs/environment/docker-network.md)
+[chapter 03 노트](../../docs-for-agent/notes/03-first-communication.md) | [chapter 04 노트](../../docs-for-agent/notes/04-vendor-differences.md) | [시나리오 표](../../docs-for-agent/notes/03-first-communication.md#시나리오-표) | [docker-network.md](../../docs/environment/docker-network.md)
 
 Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다. 이후 chapter에서 파서와 상태 머신을 검증하는 정답 데이터로 쓴다.
 
@@ -14,7 +14,7 @@ Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다
 ## 파일
 | 파일 | 내용 |
 |---|---|
-| [`../mcast-check/`](../mcast-check/) | 네트워크 검증 (01-04-environment-and-captures Step 4). DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령) |
+| [`../mcast-check/`](../mcast-check/) | 네트워크 검증 ([chapter 02 노트](../../docs-for-agent/notes/02-multicast.md)). DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령) |
 | `rel-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, RELIABLE. 캡처는 fastdds |
 | `rel-fastdds-pub.*` | Fast DDS 발행 -> Cyclone 구독, RELIABLE. 캡처는 cyclone |
 | `be-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, BEST_EFFORT. 캡처는 fastdds |
