@@ -28,7 +28,7 @@
 
 | 기준 | DDS (RTPS) | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
 |---|---|---|---|---|---|---|
-| 브로커 | 없음 | 없음 (필요하면 proxy를 직접 구성) | 둘 다 (peer / client + router) | 필수 (모든 메시지가 broker 경유) | 없음 | Agent 경유 필수 |
+| 브로커 | 없음 | 없음 (필요하면 proxy를 직접 구성) | 모드에 따라 다름. peer 모드: 없음 (peer끼리 직접). client 모드: 있음 (router가 broker 역할, 모든 통신이 router 경유). router 모드: router끼리 mesh로 이어 client를 중계 | 필수 (모든 메시지가 broker 경유) | 없음 | Agent 경유 필수 |
 | 디스커버리 | 내장 SPDP + SEDP, 모든 엔드포인트 정보 교환 | core에 없음 (endpoint 직접 지정). 별도 규격 ZRE | scouting (UDP multicast) + gossip, key expression 단위 interest | 없음 (broker 주소를 미리 앎). MQTT-SN에는 gateway 발견 | SOME/IP-SD (multicast Offer / Find, TTL, 주기 offer) | Client가 Agent를 찾고, DDS 디스커버리는 Agent가 대신 함 |
 | 데이터 모델 | data-centric. topic + type + key (인스턴스), 상태 (history, durability) | message-centric. 불투명한 byte frame, 직렬화 없음 | key expression + bytes. storage / queryable로 최신 값 조회. 타입 시스템 없음 | topic 문자열 + 불투명 payload. retained (마지막 값), session | service 지향 (method, event, field). 직렬화 규칙은 규격에, 타입은 ARXML 모델 | DDS와 같음 (topic, type, key). 엔티티를 이름 참조나 XML로 생성 |
 | QoS | 정책 집합 (reliability, durability, history, deadline, liveliness 등) | socket 옵션 (HWM, conflate 등). deadline, durability 없음 | priority 8단계, congestion control, express. deadline류 없음 [추정] | QoS 0/1/2 (구간별), message expiry, will, keep alive | 전송 선택 (TCP / UDP)과 SD 타이머. E2E 보호 | stream 단위 best-effort / reliable. DDS QoS는 Agent 쪽 설정으로 |
