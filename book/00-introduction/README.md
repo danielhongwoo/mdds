@@ -113,9 +113,10 @@ sequenceDiagram
 - **중앙 서버**: 디스커버리만 서버를 거치게 한다 (Fast DDS Discovery Server 등). 트래픽은 줄지만 서버가 디스커버리의 중심이 되므로, 서버를 여럿 두는 방법을 함께 쓴다.
 - **정적 설정**: 상대의 endpoint를 설정 파일에 미리 적고 SEDP를 끈다. 작은 마이크로컨트롤러용 구현과 기능 안전 인증을 받은 제품이 이 방식을 정식으로 지원한다. 대신 동적으로 참여하는 성질을 잃는다.
 - **범위 제한**: 멀티캐스트를 줄이고 유니캐스트로 보낼 상대를 정하거나, 디스커버리가 닿는 범위를 같은 호스트로 줄인다.
+- **중계**: 네트워크나 도메인 사이에 중계 프로세스를 두어 디스커버리가 닿는 범위를 나눈다 (eProsima DDS Router, Zenoh의 DDS 브리지 등). 중계 너머의 상대는 원래 참가자가 아니라 중계를 보게 된다.
 - **다른 미들웨어**: 디스커버리를 다르게 설계한 Zenoh를 쓴다 (4절).
 
-이 방법들은 모두 표준 밖이라 회사마다 다르고 서로 호환되지 않는다. 디스커버리 서비스를 규격에 넣자는 제안이 OMG에 열려 있지만 (OMG 이슈 DDSIRTP26-37) 아직 반영되지 않았다. 벤더 사이에 통하는 것은 여전히 표준 SPDP와 SEDP뿐이다. 그래서 이 책은 표준 SPDP (chapter 09)와 SEDP (chapter 11)를 직접 구현하면서 그 비용이 어디서 오는지 본다.
+이 방법들은 모두 표준 밖이라 회사마다 다르고 서로 호환되지 않는다. 디스커버리 서비스를 규격에 넣자는 제안이 OMG에 열려 있지만 (OMG 이슈 DDSIRTP26-37) 아직 반영되지 않았다. 벤더 사이에 통하는 것은 여전히 표준 SPDP와 SEDP뿐이다. 그래서 이 책은 먼저 표준 SPDP (chapter 09)와 SEDP (chapter 11)를 직접 구현하면서 그 비용이 어디서 오는지 본다. 그다음 벤더들이 표준 밖에서 덧댄 방법을 chapter 19 ~ 21에서 캡처로 비교한다. 정적 디스커버리와 디스커버리 서버 (19), 멀티캐스트가 닿지 않는 네트워크를 넘는 TCP와 WAN 전송 (20), 중계와 브리지 (21)다. 이때도 각 방법이 무엇을 줄이고 무엇을 잃는지 (동적 참여, 단일 장애점, 벤더 사이 상호운용)를 본다.
 
 ## 4. 다른 선택지와 비교
 
@@ -169,6 +170,7 @@ DDS는 규격 하나가 아니라 여러 OMG 규격의 묶음이다.
 | DDS-XTypes | 1.3 (2020) | 타입 시스템, XCDR1 / XCDR2 | chapter 16 |
 | IDL | 4.2 (2018) | 타입 정의 언어 | chapter 17 |
 | DDS-Security | 1.2 (2025) | 인증, 접근 제어, 암호화 | chapter 18 (선택) |
+| (규격 밖, 벤더 기능) | - | 정적 디스커버리, 디스커버리 서버, TCP / WAN 전송, 중계 | chapter 19 ~ 21 |
 
 ```
 DDS 1.4 (개념, QoS) --> DDSI-RTPS 2.5 --> DDS-XTypes 1.3 --> DDS-Security
@@ -180,7 +182,9 @@ IDL 4.2 --> 타입 정의 (처음에는 Rust 코드로 대신하고 chapter 17�
 
 - **chapter 01 ~ 04**: 코드를 쓰기 전에 Cyclone DDS와 Fast DDS를 컨테이너로 띄우고, 둘이 주고받는 패킷을 캡처해 본다. 이 캡처가 이후 모든 chapter의 정답 데이터가 된다.
 - **chapter 05 ~ 11**: 개념 모델과 QoS, 직렬화, RTPS 메시지, best-effort 전송, 참가자 디스커버리 (SPDP), reliable 프로토콜, 엔드포인트 디스커버리 (SEDP)를 차례로 만든다. chapter 11이 끝나면 우리 구현이 두 벤더와 처음으로 통신한다.
-- **chapter 12 ~ 19**: ROS 2와 통신하기, 키 인스턴스, DCPS API와 OMG 상호운용 테스트, 단편화와 성능, XTypes, IDL 컴파일러, 보안과 그 밖의 것.
+- **chapter 12 ~ 18**: ROS 2와 통신하기, 키 인스턴스, DCPS API와 OMG 상호운용 테스트, 단편화와 성능, XTypes, IDL 컴파일러, 보안 (선택).
+- **chapter 19 ~ 21**: 규격이 정하지 않은 벤더 기능. 표준 디스커버리와 UDP만으로 막히는 곳 (큰 규모, 멀티캐스트가 없는 네트워크, NAT 너머)을 벤더들이 어떻게 넘는지, 그 대가가 무엇인지 본다.
+- **chapter 22**: 그 밖의 것 (선택).
 
 전체 목차는 [book/README.md](../README.md#목차)에 있다.
 
@@ -204,6 +208,8 @@ DDS를 쓰기만 하는 사람도 많다. ROS 2를 쓰면 DDS를 거의 의식�
 - ROS 2 alternative middleware report (2023-09-27): https://discourse.openrobotics.org/t/ros-2-alternative-middleware-report/33771
 - ROS 2 Kilted Kaiju 발표 (2025-05-23): https://www.openrobotics.org/blog/2025/5/23/ros-2-kilted-kaiju-released
 - Fast DDS Discovery Server: https://fast-dds.docs.eprosima.com/
+- eProsima DDS Router: https://eprosima-dds-router.readthedocs.io/
+- Zenoh의 DDS 브리지 (zenoh-plugin-dds): https://github.com/eclipse-zenoh/zenoh-plugin-dds
 - Zenoh의 디스커버리 설명 (벤더 글): https://zenoh.io/blog/2021-03-23-discovery/
 
 비교 대상

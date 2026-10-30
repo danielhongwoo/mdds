@@ -26,7 +26,7 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 2. DDS란 무엇인가: data-centric publish-subscribe, global data space, 토픽과 키, QoS 계약
 3. 디스커버리: 브로커 없이 서로를 찾는 방법과 그 비용. 이 저장소의 캡처에서 디스커버리가 차지하는 비중을 예로 든다
 4. 다른 선택지와 비교: MCU, 미션크리티컬, 로보틱스에서 각각 무엇이 맞는지
-5. 규격 지도와 이 책의 흐름: DCPS, RTPS, CDR, XTypes, IDL, Security와 그것을 다루는 chapter
+5. 규격 지도와 이 책의 흐름: DCPS, RTPS, CDR, XTypes, IDL, Security와 그것을 다루는 chapter. 규격 밖 벤더 기능 (chapter 19 ~ 21)과 그 밖의 것 (22)까지
 6. 왜 직접 만드는가
 
 디렉터리: `book/00-introduction/README.md`
@@ -86,7 +86,7 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 추가로 둔 것
 - 독자가 data-centric (데이터와 그 상태를 공유)과 message-centric (메시지를 전달)의 차이를 한두 문장으로 말할 수 있다. DDS를 다른 미들웨어와 가르는 기준이다.
 - 비교는 "DDS가 낫다"가 아니라 쓰임새별 선택 기준으로 끝난다. DDS의 약점 (복잡도, 디스커버리 트래픽, 무선과 대규모 환경)도 적는다.
-- 독자가 규격 지도 (DCPS / RTPS / CDR / XTypes / IDL / Security)를 보고 각 규격을 어느 chapter에서 다루는지 찾을 수 있다.
+- 독자가 규격 지도 (DCPS / RTPS / CDR / XTypes / IDL / Security)를 보고 각 규격을 어느 chapter에서 다루는지 찾을 수 있다. 규격 밖의 벤더 기능을 어디서 다루는지 (19 ~ 21)도 찾을 수 있다.
 - 표준과 상호운용이 왜 중요한지 (여러 벤더가 같은 와이어 규격으로 통신) 설명되어 있고, 그것이 이 책의 검증 기준임이 드러난다.
 - 모든 사실 진술에 출처 (규격 절 번호 또는 공식 문서와 확인 날짜)가 있다.
 - `book/README.md`, chapter 05와 내용이 겹치지 않는다.
@@ -100,3 +100,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 2026-10-30: 디스커버리 비용 근거 정리. 캡처에서 SPDP + SEDP가 바이트의 37~62% (large-sample 제외), 규모에 따른 증가는 규격 동작에서 추론, 벤더 대안과 OMG 이슈 DDSIRTP26-37 (Open) -> [discovery-scaling.md](../research/discovery-scaling.md)
 - 2026-10-30: 본문 초안 작성 (book/00-introduction/README.md). 기본 개념 용어를 glossary에 추가 -> [본문](../../book/00-introduction/README.md)
 - 2026-10-30: DDS-XRCE 1.0 PDF를 omg-specs/에 받아 Sec. 8.1을 원문으로 확인, 본문에 절 번호를 넣음 -> [본문](../../book/00-introduction/README.md)
+- 2026-10-30: 벤더 확장 chapter 19 ~ 21과 extras 22를 본문 3절 (대가)과 5절 (규격 지도, 흐름)에 반영. 대응 방법에 중계를 더함 -> [book.md](../conventions/book.md#벤더-확장-chapter)
