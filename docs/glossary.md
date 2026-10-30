@@ -2,6 +2,18 @@
 
 [roadmap](../docs-for-agent/roadmap.md)
 
+## 기본 개념
+- **data-centric / message-centric**: message-centric 미들웨어는 바이트 메시지를 나르고 뜻은 응용이 안다. data-centric 미들웨어는 데이터의 타입과 "어떤 대상의 값인가"를 알고 상태를 관리한다. DDS는 data-centric이다 (DDS 1.4 Sec. 1.2).
+- **global data space** (전역 데이터 공간): DCPS가 데이터를 보는 모델. 응용은 이 공간에 값을 쓰고 (publisher) 관심 있는 부분을 읽으며 (subscriber), 미들웨어가 값을 관심 있는 쪽으로 전한다 (DDS 1.4 Sec. 1.2).
+- **토픽 (topic)**: 전역 데이터 공간을 나누는 단위. 이름과 타입을 가진다.
+- **키 (key), 인스턴스 (instance)**: 타입 필드 가운데 대상을 가르는 필드가 키다. 키가 같은 값은 같은 인스턴스의 연속된 값이고, 키가 다르면 다른 인스턴스다 (DDS 1.4 Sec. 2.2.1.2.2).
+- **참가자 (DomainParticipant)**: 한 DDS 도메인에 참여하는 단위. 보통 프로세스 하나에 하나다. 디스커버리는 참가자 단위로 시작한다.
+- **QoS 정책**: 데이터마다 다른 요구 (신뢰성, 보관 개수, 늦게 온 reader에게 줄지, 마감 시간 등)를 정하는 설정. writer와 reader가 각자 밝히고 맞아야 짝을 짓는다.
+- **브로커 (broker)**: 모든 메시지가 거쳐 가는 중앙 서버. MQTT가 이 방식이다. DDS의 와이어 프로토콜은 브로커에 기대지 않는다 (RTPS 2.5 Sec. 7.2).
+- **단일 장애점 (single point of failure)**: 그 하나가 멈추면 전체가 멈추는 구성 요소. 이중화와 장애 조치 (failover)로 없앤다.
+- **lease**: 참가자가 SPDP 공지에 실어 보내는 유효 기간. 그 안에 소식이 없으면 상대는 그 참가자가 사라진 것으로 보고 정리한다.
+- **DDS-XRCE** (DDS for eXtremely Resource Constrained Environments): 자원이 극히 제한된 기기를 위한 OMG 규격. 작은 기기 (Client)는 Agent를 거쳐 DDS에 붙고, Agent가 대신 DDS 참가자가 된다. micro-ROS가 이 방식을 쓴다.
+
 ## 모델
 - **PIM**(Platform Independent Model): 특정 언어/전송 수단과 무관하게 개념/동작만 정의한 추상 모델. 예: "DataWriter는 write()로 샘플을 발행한다"는 수준.
 - **PSM**(Platform Specific Model): PIM을 특정 플랫폼에 맞춰 구체화한 것. 예: DDS의 C++ API(DDS-PSM-Cxx), Java API(DDS-JAVA), RTPS의 UDP/IP 매핑(RTPS 9장).

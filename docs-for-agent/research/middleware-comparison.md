@@ -26,6 +26,8 @@
 
 ## 2. 공통 기준
 
+DDS-XRCE는 "DDS for eXtremely Resource Constrained Environments"의 줄임으로, 자원이 극히 제한된 환경 (RAM 수 KB급 마이크로컨트롤러, 자주 잠드는 기기, 좁은 무선 링크)을 위한 OMG 규격이다. 작은 기기 (Client)는 DDS에 직접 참여하지 않고, 더 큰 기기에서 도는 Agent가 대신 DDS 참가자가 된다. micro-ROS가 이 방식을 쓴다.
+
 | 기준 | DDS (RTPS) | ZeroMQ | Zenoh | MQTT | SOME/IP | DDS-XRCE |
 |---|---|---|---|---|---|---|
 | 브로커 | 없음 | 없음 (필요하면 proxy를 직접 구성) | 모드에 따라 다름. peer 모드: 없음 (peer끼리 직접). client 모드: 있음 (router가 broker 역할, 모든 통신이 router 경유). router 모드: router끼리 mesh로 이어 client를 중계 | 필수 (모든 메시지가 broker 경유) | 없음 | Agent 경유 필수 |
@@ -172,6 +174,7 @@ MCU 위에서 agent 없이 RTPS 노드로 도는 구현
 - 오픈소스 구현 vsomeip (COVESA, 최신 3.7.6, 2026-09-17). https://github.com/COVESA/vsomeip [확인]
 
 ### DDS-XRCE (micro-ROS)
+- 이름: DDS for eXtremely Resource Constrained Environments. https://www.omg.org/spec/DDS-XRCE/ [확인]
 - 규격: OMG DDS-XRCE 1.0 (formal/20-02-01). Sec. 8.1: Client끼리 직접 통신하지 않고 모든 통신이 Agent를 거친다. 코드 100 KB 미만 목표. Client API는 표준이 없어 벤더 사이 이식이 안 된다. https://www.omg.org/spec/DDS-XRCE/ [확인]
 - Agent 발견: multicast GET_INFO (기본 239.255.0.2:7400) 또는 미리 설정한 주소. [확인]
 - 구현: eProsima Micro XRCE-DDS Client / Agent 3.0.2 (2026-08 / 2026-09). 전송 UDP, TCP, serial, CAN FD (Agent, Linux), custom. https://micro-xrce-dds.docs.eprosima.com/en/latest/ [확인]

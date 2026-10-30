@@ -70,12 +70,13 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 ## 작업 순서
 - [x] 비교 조사: "비교 대상과 기준"의 대상을 공통 기준과 분야별 기준으로 정리해 `research/middleware-comparison.md`에 둔다. 표의 "주로 거론되는 분야"도 출처로 확인한다. 원문으로 확인한 것과 추정을 구분하고 확인 날짜를 적는다. -> [research/middleware-comparison.md](../research/middleware-comparison.md)
 - [x] 디스커버리 비용 근거: 캡처에서 디스커버리 패킷 비중을 세고, 규모가 커질 때 문제가 되는 이유 (참가자 수에 따른 SEDP 교환, 멀티캐스트 부담)와 알려진 대안 (Fast DDS Discovery Server, Zenoh의 방식 등)을 출처와 함께 정리한다. -> [research/discovery-scaling.md](../research/discovery-scaling.md)
-- [ ] 규격 사실 확인: 규격 이름, 판, 계층 관계를 `omg-specs/` 원문으로 확인한다.
-- [ ] 본문 초안 (`book/00-introduction/README.md`), 목차 상태를 "초안"으로.
+- [x] 규격 사실 확인: 규격 이름, 판, 계층 관계를 `omg-specs/` 원문으로 확인한다.
+- [x] 본문 초안 (`book/00-introduction/README.md`), 목차 상태를 "초안"으로.
 
 ## 확인할 것
 - 저장소 루트의 int2DDS 논문 PDF (무선 다중 기기 환경의 디스커버리 트래픽 문제)를 근거로 인용할지 (저자에게 확인). 인용하면 서지 정보와 짧은 인용만 쓰고 PDF는 저장소에 넣지 않는다.
 - ROS 2가 DDS를 기본 미들웨어로 쓰다가 Zenoh 기반 rmw를 추가한 경위. 공식 출처로 확인되면 비교 절의 예로 쓴다.
+- DDS-XRCE 규격 PDF를 `omg-specs/`에 받아 Sec. 8.1 (Client끼리 직접 통신하지 않고 Agent를 거침)을 원문으로 확인한다. 확인 전이라 본문은 절 번호 없이 썼다.
 
 ## 완료 기준
 저자가 정한 것
@@ -98,3 +99,4 @@ chapter 00은 기능 chapter의 틀 (왜 필요한가 / 캡처에서 보기 / ..
 - 2026-10-30: 분야 이름 "임베디드"를 "MCU" (펌웨어 / RTOS)로 좁힘. Linux edge 기기는 빠짐 -> [비교 대상과 기준](#비교-대상과-기준)
 - 2026-10-30: 조사 노트의 MCU 표에 DDS 구현 열과 미션크리티컬 표의 DDS 안전 인증 칸을 채움. MCU와 안전 에디션은 정적 endpoint 디스커버리를 정식 기능으로 둔다 (Connext Micro DPSE) -> [middleware-comparison.md](../research/middleware-comparison.md#4-디스커버리-관점-chapter-00의-핵심-근거)
 - 2026-10-30: 디스커버리 비용 근거 정리. 캡처에서 SPDP + SEDP가 바이트의 37~62% (large-sample 제외), 규모에 따른 증가는 규격 동작에서 추론, 벤더 대안과 OMG 이슈 DDSIRTP26-37 (Open) -> [discovery-scaling.md](../research/discovery-scaling.md)
+- 2026-10-30: 본문 초안 작성 (book/00-introduction/README.md). 기본 개념 용어를 glossary에 추가 -> [본문](../../book/00-introduction/README.md)

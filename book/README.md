@@ -35,7 +35,7 @@ chapter마다 같은 순서로 간다.
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | 들어가며: DDS란 무엇이고 왜 직접 만드는가 | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 집필 전 |
+| 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 초안 |
 | 01 | 실습 환경: 벤더 DDS 두 개를 컨테이너로 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
 | 02 | 멀티캐스트가 오가는 길 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
 | 03 | 첫 DDS 통신 들여다보기 | [01-04-environment-and-captures](../docs-for-agent/notes/01-04-environment-and-captures.md) | 집필 전 |
