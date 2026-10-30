@@ -21,7 +21,7 @@ chapter마다 같은 순서로 간다.
 
 직접 실행해 보는 부분은 **lab**으로 나눈다. Lab 1-1은 chapter 1의 첫 번째 lab이다. lab마다 목표, 준비, 단계, 기대 결과, 확인 질문이 있어서 무엇이 보이면 성공인지 알 수 있다.
 
-벤더 DDS는 관찰 대상이자 검증 기준이다. 벤더 사용법을 가르치는 책은 아니다.
+벤더 DDS는 관찰 대상이자 검증 기준이다. 벤더 사용법을 가르치는 책은 아니다. 규격이 정하지 않은 벤더 기능 (정적 디스커버리, 디스커버리 서버, TCP / WAN 전송, 중계)은 chapter 19-21에서 다루는데, 이때도 사용법이 아니라 어떤 문제를 풀고 무엇을 잃는지를 본다.
 
 ## 준비물
 - Docker Desktop (Mac arm64 기준. 다른 Docker 호스트도 된다): 벤더 DDS 두 개를 컨테이너로 띄운다.
@@ -54,7 +54,10 @@ chapter마다 같은 순서로 간다.
 | 16 | 타입 시스템 (XTypes) | [16-xtypes](../docs-for-agent/notes/16-xtypes.md) | 집필 전 |
 | 17 | IDL 컴파일러 | [17-idl-compiler](../docs-for-agent/notes/17-idl-compiler.md) | 집필 전 |
 | 18 | DDS-Security | [18-security](../docs-for-agent/notes/18-security.md) | 집필 전 |
-| 19 | 그 밖의 것 (선택) | [19-extras](../docs-for-agent/notes/19-extras.md) | 집필 전 |
+| 19 | 디스커버리를 바꾸는 벤더 기능: 정적 디스커버리와 디스커버리 서버 | [19-discovery-extensions](../docs-for-agent/notes/19-discovery-extensions.md) | 집필 전 |
+| 20 | UDP 멀티캐스트 밖으로: TCP와 WAN 전송 | [20-tcp-wan](../docs-for-agent/notes/20-tcp-wan.md) | 집필 전 |
+| 21 | 도메인과 네트워크를 잇는 중계와 브리지 | [21-bridges](../docs-for-agent/notes/21-bridges.md) | 집필 전 |
+| 22 | 그 밖의 것 (선택) | [22-extras](../docs-for-agent/notes/22-extras.md) | 집필 전 |
 
 ## chapter별 내용
 chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다. 앞 chapter에서 뒤의 내용을 깊이 다루면 같은 설명을 두 번 하게 되므로, 각 chapter는 "미루는 것"을 넘지 않는다. 계획이므로 집필하면서 바뀔 수 있다. 기능 chapter (05 이후)는 모두 같은 틀 (왜 필요한가 / 캡처에서 보기 / 규격 읽기 / 구현 / 벤더와 맞춰 보기 / 두 벤더는 어떻게 하는가 / 연습 문제)을 따르고, 아래 소제목은 그 안에서 다루는 주제다.
@@ -134,14 +137,14 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - StatelessWriter와 best-effort reader
 - UDP 포트 공식, participantId, 멀티캐스트 가입
 - I/O-free core와 UDP 드라이버 나누기
-- 미루는 것: 상대를 자동으로 찾기 (09, 이 chapter는 상대 주소를 직접 적는다)
+- 미루는 것: 상대를 자동으로 찾기 (09, 이 chapter는 상대 주소를 직접 적는다), UDP 밖의 전송 (20)
 
 ### 09. 참가자 디스커버리 (SPDP)
 - SPDPdiscoveredParticipantData와 PID
 - 주기 공지와 로케이터
 - lease와 사라진 참가자 정리
 - 벤더마다 다른 공지 방식 (캡처)
-- 미루는 것: 엔드포인트 정보 교환 (11)
+- 미루는 것: 엔드포인트 정보 교환 (11), 멀티캐스트를 쓰지 않는 디스커버리와 디스커버리 서버 (19)
 
 ### 10. Reliable 프로토콜
 - StatefulWriter와 ReaderProxy의 상태
@@ -157,12 +160,13 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 매칭: 토픽, 타입, RxO, 파티션
 - 최소 사용자 API
 - ShapesDemo의 Square 토픽으로 두 벤더와 양방향 통신
-- 미루는 것: 키 인스턴스 관리 (13), 타입 정보 교환 PID_TYPE_INFORMATION (16)
+- 미루는 것: 키 인스턴스 관리 (13), 타입 정보 교환 PID_TYPE_INFORMATION (16), SEDP를 설정으로 대신하는 정적 디스커버리 (19)
 
 ### 12. ROS 2와 통신하기
 - ROS 2의 토픽 이름과 타입 이름 규칙
 - ROS 2의 기본 QoS
 - talker / listener와 양방향 통신 (Fast DDS, Cyclone DDS RMW)
+- 미루는 것: ROS 2에서 쓰는 Discovery Server (19), Zenoh 브리지 (21)
 
 ### 13. 키 인스턴스와 수명주기
 - 인스턴스와 KeyHash
@@ -203,12 +207,44 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - Governance / Permissions
 - 보안 디스커버리
 
-### 19. 그 밖의 것 (선택)
+### 19. 디스커버리를 바꾸는 벤더 기능: 정적 디스커버리와 디스커버리 서버
+- 표준 디스커버리가 막히는 곳: 규모, 멀티캐스트가 없는 네트워크
+- 프로토콜은 그대로, 주소만 바꾸기: 유니캐스트 peer (Cyclone, Fast DDS)
+- Lab 19-1 멀티캐스트 없이 표준 디스커버리
+- 정적 디스커버리: Fast DDS STATIC EDP, RTI Connext Micro DPSE (비교)
+- Lab 19-2 정적 디스커버리
+- 중앙 디스커버리 서버: Fast DDS Discovery Server, RTI Cloud Discovery Service (비교)
+- Lab 19-3 Discovery Server
+- Lab 19-4 서버가 죽으면: 단일 장애점과 backup 서버
+- 무엇을 잃는가: 동적 참여, 벤더 사이 상호운용. 표준화 상태 (OMG 이슈)
+- 미루는 것: 멀티캐스트가 없는 네트워크 너머의 전송 (20), 네트워크를 잇는 중계 (21)
+
+### 20. UDP 멀티캐스트 밖으로: TCP와 WAN 전송
+- 규격이 정한 전송: UDP PSM과 로케이터
+- NAT와 conntrack이 디스커버리를 막는 이유
+- Lab 20-1 NAT 너머에서는
+- Fast DDS TCP transport, Cyclone DDS의 TCP
+- Lab 20-2 TCP로 넘기
+- Lab 20-3 TCP를 모르는 상대
+- RTI Real-Time WAN Transport (비교)
+- Lab 20-4 나쁜 링크: 지연과 손실
+- 미루는 것: 중계로 네트워크 잇기 (21), 보안 채널 (18)
+
+### 21. 도메인과 네트워크를 잇는 중계와 브리지
+- 중계는 보통의 참가자다: 한쪽은 reader, 한쪽은 writer
+- DDS <-> DDS: eProsima DDS Router, RTI Routing Service (비교)
+- Lab 21-1 도메인 잇기
+- DDS <-> Zenoh: zenoh-bridge-dds, zenoh-bridge-ros2dds
+- Lab 21-2 섬 잇기
+- 중계가 바꾸는 것: GUID, 타임스탬프, 구간 단위 reliable, TRANSIENT_LOCAL, OWNERSHIP
+- Lab 21-3 중계가 바꾸는 것
+- Lab 21-4 mdds를 한쪽에
+
+### 22. 그 밖의 것 (선택)
 - ContentFilteredTopic, QueryCondition
 - DDS-XML QoS 프로파일
 - DDS-RPC
 - 공유 메모리 전송
-- 규모를 키우는 디스커버리 (중앙 서버, 정적 디스커버리)
 
 ## 저자를 위한 안내
 chapter를 쓰는 규칙 (틀, 번호, 코드 스냅샷, 언어, 라이선스)은 [conventions/book.md](../docs-for-agent/conventions/book.md)에 있다. 작업 계획과 결정은 [docs-for-agent/notes/](../docs-for-agent/notes/)에 두고, 이 디렉터리에는 독자용 본문만 둔다.

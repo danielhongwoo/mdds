@@ -34,7 +34,10 @@
 | 16 | DDS-XTypes | [16-xtypes](notes/16-xtypes.md) | 대기 |
 | 17 | IDL 4.2 컴파일러 | [17-idl-compiler](notes/17-idl-compiler.md) | 대기 |
 | 18 | DDS-Security (선택) | [18-security](notes/18-security.md) | 대기 |
-| 19 | 기타 (선택) | [19-extras](notes/19-extras.md) | 대기 |
+| 19 | 디스커버리 벤더 확장 (정적 디스커버리, Discovery Server) | [19-discovery-extensions](notes/19-discovery-extensions.md) | 대기 |
+| 20 | TCP와 WAN 전송 (벤더 확장) | [20-tcp-wan](notes/20-tcp-wan.md) | 대기 |
+| 21 | 중계와 브리지 (DDS Router, Zenoh 브리지) | [21-bridges](notes/21-bridges.md) | 대기 |
+| 22 | 기타 (선택) | [22-extras](notes/22-extras.md) | 대기 |
 
 ---
 
