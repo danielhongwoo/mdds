@@ -43,7 +43,7 @@ docker/
 ### 1. 빌드와 실행
 ```
 mkdir -p ../captures/cyclone-fastdds        # 없으면 Docker가 root 소유로 만든다. 컨테이너에는 captures 전체가 /captures 로 붙는다
-docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 3분. 두 번째부터는 바뀐 단계만
+docker compose build --progress plain     # 첫 빌드는 Apple Silicon에서 약 5분 (캐시 없이). 두 번째부터는 바뀐 단계만
 docker compose up -d
 docker compose ps                         # cyclone, fastdds 두 개가 running
 ```
@@ -81,7 +81,7 @@ docker compose down                       # 컨테이너와 dds-net 제거. 이�
 ## 빌드 소스와 버전
 태그로 clone한 뒤 커밋 해시를 검사하므로, 태그가 옮겨지면 빌드가 멈춘다. 해시는 2026-10-28 `git ls-remote`로 확인했다 (모두 lightweight 태그라 태그 해시가 곧 커밋 해시다).
 
-Cyclone만 릴리스 태그가 아니라 master 커밋이다. dds-rtps의 C판 shape_main이 11.0.1 이후에 추가된 API (`dds_read_next_instance`, `dds_take_next_instance`)를 쓰기 때문이다. 자세한 근거는 [vendor-build.md](../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유).
+Cyclone만 릴리스 태그가 아니라 master 커밋이다. dds-rtps의 shape_main C 언어 구현이 11.0.1 이후에 추가된 API (`dds_read_next_instance`, `dds_take_next_instance`)를 쓰기 때문이다. 자세한 근거는 [vendor-build.md](../docs/environment/vendor-build.md#cyclone을-master-커밋으로-고정하는-이유).
 
 | 구성 요소 | 이미지 | 태그 / 커밋 |
 |---|---|---|

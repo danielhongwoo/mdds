@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# OMG shape_main (C++판, srcCxx/) 을 Fast DDS 3.6.1 로 소스에서 빌드한다.
+# OMG shape_main (C++ 언어 구현, srcCxx/) 을 Fast DDS 3.6.1 로 소스에서 빌드한다.
 # 설계와 버전 근거: docs/environment/vendor-build.md
 #
 # 결과 이미지: /usr/local/bin/fastdds_shape

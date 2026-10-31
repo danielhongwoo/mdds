@@ -50,7 +50,7 @@
 
 ## 7. 결론 (채택한 방식)
 - 2026-10-28 변경: OMG 배포 실행 파일 대신 **Docker 안에서 소스로 빌드**한다. 위 1절의 실행 파일 조사 (x86-64, 의존 라이브러리)는 배경 정보로만 남긴다. 빌드 설계는 [environment/vendor-build.md](../../docs/environment/vendor-build.md).
-  - 빌드 파일 위치 (확인함): Cyclone은 `srcC/` (C판. 릴리스 태그 v2.1.2026에는 없고 2026-04 이후 master에만 있다), Fast DDS는 `srcCxx/fast-dds-cmake/CMakeLists.txt` (C++판, `fastddsgen`). 상세는 vendor-build.md
+  - 빌드 파일 위치 (확인함): Cyclone은 `srcC/` (C 언어 구현. 릴리스 태그 v2.1.2026에는 없고 2026-04 이후 master에만 있다), Fast DDS는 `srcCxx/fast-dds-cmake/CMakeLists.txt` (C++ 언어 구현, `fastddsgen`). 상세는 vendor-build.md
   - 버전: Cyclone 11.0.1, Fast DDS v3.6.1 (Fast-CDR v2.3.5, foonathan_memory_vendor v1.4.1, Fast-DDS-Gen v4.3.0. Fast DDS의 `fastdds.repos` 기준)
 0. 실행 호스트는 별도 x86_64 Linux 머신 + Docker Engine이다 (빌드 부하 때문). Mac은 편집, 커밋, Wireshark 용도다. 같은 Dockerfile이 Mac (arm64)에서도 네이티브로 빌드된다.
 1. 모든 시나리오를 shape_main 이미지 하나 (Cyclone, Fast DDS 실행 파일 두 개)로 만든다. 큰 샘플은 `--additional-payload-size`로 만들므로 `ddsperf`와 arm64 이미지는 필요 없다.

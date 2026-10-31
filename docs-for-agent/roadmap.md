@@ -28,7 +28,7 @@
 | 10 | Reliable 프로토콜 | [10-reliable](notes/10-reliable.md) | 대기 |
 | 11 | SEDP + 매칭 (첫 상호운용) | [11-sedp-matching](notes/11-sedp-matching.md) | 대기 |
 | 12 | ROS 2 상호운용 (권장) | [12-ros2-interop](notes/12-ros2-interop.md) | 대기 |
-| 13 | 키 인스턴스와 수명주기 | [13-instances](notes/13-instances.md) | 대기 |
+| 13 | key 인스턴스와 수명주기 | [13-instances](notes/13-instances.md) | 대기 |
 | 14 | DCPS API 완성 + OMG 상호운용 테스트 | [14-dcps-api](notes/14-dcps-api.md) | 대기 |
 | 15 | 단편화 + 성능 | [15-fragmentation-perf](notes/15-fragmentation-perf.md) | 대기 |
 | 16 | DDS-XTypes | [16-xtypes](notes/16-xtypes.md) | 대기 |

@@ -1,13 +1,14 @@
 # DDS를 직접 만들며 배우기
 
-OMG DDS를 Rust로 처음부터 구현하면서 규격과 동작을 배우는 교재다. 참고 구현인 Cyclone DDS와 Fast DDS를 컨테이너로 띄워 실제 트래픽을 보고, 규격을 읽고, 같은 일을 하는 코드를 직접 쓰고, 두 벤더와 통신이 되는지로 확인한다.
+OMG DDS를 Rust로 처음부터 구현하면서 규격과 동작을 배우는 교재다. 참고 구현인 Cyclone DDS와 Fast DDS를 컨테이너로 실행해 실제 트래픽을 관찰하고, 규격을 읽고, 같은 기능을 하는 코드를 직접 작성한 뒤, 두 벤더와 통신할 수 있는지로 검증한다.
 
 이 책에서 만드는 구현의 이름은 mdds (my DDS)다. 독자가 책을 따라 직접 만드는 자기만의 DDS라는 뜻이다.
 
 본문 라이선스는 [CC BY-SA 4.0](LICENSE.md)이고, 코드 (chapter 안의 `code/` 포함)는 저장소와 같은 `MIT OR Apache-2.0`이다.
 
 ## 누구를 위한 책인가
-- Rust 코드를 읽고 쓸 수 있다 (소유권, trait, 모듈 정도).
+통신 미들웨어가 안에서 어떻게 움직이는지 알고 싶은 소프트웨어 엔지니어를 위한 책이다.
+- Rust 코드를 읽고 쓸 수 있다 (소유권, trait, 모듈 정도). Rust 언어 자체는 설명하지 않는다.
 - IP, UDP, 멀티캐스트가 무엇인지 안다. 패킷을 Wireshark로 본 적이 있으면 좋지만 없어도 된다.
 - DDS는 몰라도 된다. 이 책이 처음부터 설명한다.
 
@@ -28,11 +29,11 @@ chapter마다 같은 순서로 간다.
 벤더 DDS는 관찰 대상이자 검증 기준이다. 벤더 사용법을 가르치는 책은 아니다. 규격이 정하지 않은 벤더 기능 (정적 디스커버리, 디스커버리 서버, TCP / WAN 전송, 중계)은 chapter 19-21에서 다루는데, 이때도 사용법이 아니라 어떤 문제를 풀고 무엇을 잃는지를 본다.
 
 ## 준비물
-- Docker Desktop (Mac arm64 기준. 다른 Docker 호스트도 된다): 벤더 DDS 두 개를 컨테이너로 띄운다.
-- Deno 2: 캡처 스크립트 실행.
-- Rust (버전은 저장소의 `rust-toolchain.toml`이 정한다).
+- Docker Desktop (Mac arm64 기준. 다른 Docker 호스트도 쓸 수 있다): 벤더 DDS 두 개를 컨테이너로 실행한다.
+- Deno 2: 캡처 시나리오 스크립트 (TypeScript) 실행.
+- Rust: 설치되어 있다고 본다. 버전은 저장소의 `rust-toolchain.toml`이 정한다.
 - Wireshark: 캡처를 열어 본다.
-설치와 설정은 chapter 1에서 한다.
+Rust를 뺀 나머지의 설치와 설정은 chapter 01에서 한다.
 
 ## 목차
 상태: 집필 전 / 초안 / 완료. 뒤쪽 chapter의 제목과 나눔은 그 chapter의 작업을 하면서 바뀔 수 있다. 저자 노트는 chapter의 작업 계획이다 (독자는 읽지 않아도 된다). 책에 나오는 용어는 [용어 정리](glossary.md)에 모아 두었다.
@@ -40,7 +41,7 @@ chapter마다 같은 순서로 간다.
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
 | 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 완료 |
-| 01 | 실습 환경: 벤더 DDS 두 개를 컨테이너로 | [01-environment](../docs-for-agent/notes/01-environment.md) | 집필 전 |
+| 01 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) | 초안 |
 | 02 | 멀티캐스트가 오가는 길 | [02-multicast](../docs-for-agent/notes/02-multicast.md) | 집필 전 |
 | 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) | 집필 전 |
 | 04 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) | 집필 전 |
@@ -52,7 +53,7 @@ chapter마다 같은 순서로 간다.
 | 10 | Reliable 프로토콜 | [10-reliable](../docs-for-agent/notes/10-reliable.md) | 집필 전 |
 | 11 | 엔드포인트 디스커버리와 매칭 (SEDP): 첫 상호운용 | [11-sedp-matching](../docs-for-agent/notes/11-sedp-matching.md) | 집필 전 |
 | 12 | ROS 2와 통신하기 | [12-ros2-interop](../docs-for-agent/notes/12-ros2-interop.md) | 집필 전 |
-| 13 | 키 인스턴스와 수명주기 | [13-instances](../docs-for-agent/notes/13-instances.md) | 집필 전 |
+| 13 | key 인스턴스와 수명주기 | [13-instances](../docs-for-agent/notes/13-instances.md) | 집필 전 |
 | 14 | DCPS API와 OMG 상호운용 테스트 | [14-dcps-api](../docs-for-agent/notes/14-dcps-api.md) | 집필 전 |
 | 15 | 단편화와 성능 | [15-fragmentation-perf](../docs-for-agent/notes/15-fragmentation-perf.md) | 집필 전 |
 | 16 | 타입 시스템 (XTypes) | [16-xtypes](../docs-for-agent/notes/16-xtypes.md) | 집필 전 |
@@ -68,7 +69,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 
 ### 00. 들어가며: DDS란 무엇이고 왜 직접 만드는가
 - 1 DDS가 푸는 문제
-- 2 DDS란 무엇인가: message-centric과 data-centric (누가 그 일을 하는가), 토픽과 키 (상태와 사건), QoS, DCPS와 RTPS
+- 2 DDS란 무엇인가: message-centric과 data-centric (누가 그 일을 하는가), 토픽과 key (상태와 사건), QoS, DCPS와 RTPS
 - 3 디스커버리: 규격의 요구, SPDP와 SEDP, 그 대가
 - 4 다른 선택지와 비교: MCU, 미션크리티컬, 로보틱스, DDS가 맞는 곳과 다른 선택이 나은 곳
 - 5 규격 지도와 이 책의 흐름
@@ -77,13 +78,13 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: QoS 정책 전체와 매칭 규칙 (05, 11), SPDP / SEDP의 동작과 메시지 (09, 11), 디스커버리 비용을 줄이는 벤더 기능의 동작 (19 ~ 21. 00에서는 이름과 대가만), OWNERSHIP의 자세한 규칙 (14. 00에서는 failover 예 하나만)
 
 ### 01. 실습 환경: 벤더 DDS 두 개를 컨테이너로
-- 실행 호스트와 준비물
-- 벤더 DDS를 소스에서 빌드하는 이유와 이미지 구성 (Cyclone DDS, Fast DDS, shape_main)
-- compose와 고정 주소의 bridge 네트워크
-- Lab 1-1 벤더 이미지 빌드와 컨테이너 띄우기
-- Lab 1-2 shape_main 확인
-- Rust 워크스페이스 뼈대
-- 미루는 것: 멀티캐스트가 오가는 원리 (02), DDS 통신과 캡처 (03)
+- 1 왜 이런 환경인가: shape_main으로 하는 통신, Docker가 하는 일, compose를 쓰는 이유
+- 2 준비물과 설치: Docker Desktop, Deno, Wireshark, 저장소 clone
+- 3 벤더 이미지: dds-rtps 저장소, 소스에서 빌드하는 이유, 이미지 구성 (Cyclone DDS, Fast DDS, shape_main), 버전 고정
+- 4 네트워크: compose와 고정 주소의 bridge
+- 5 직접 실행해 보기: Lab 1-1 벤더 이미지 빌드와 컨테이너 실행, Lab 1-2 shape_main 확인
+- 6 스스로 확인하기
+- 미루는 것: 멀티캐스트가 오가는 원리 (02), DDS 통신과 캡처 (03), 워크스페이스와 crate (06 ~ 08)
 
 ### 02. 멀티캐스트가 오가는 길
 - 멀티캐스트 주소와 그룹 가입 (IGMP join, leave)
@@ -120,6 +121,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: 인스턴스 수명주기 구현 (13), Listener / WaitSet과 나머지 QoS 동작 (14)
 
 ### 06. CDR 직렬화
+- 워크스페이스와 crate 세 개, `mdds-cdr`
 - CDR의 정렬 규칙과 엔디안
 - 캡슐화 헤더 (CDR_BE / CDR_LE, PL_CDR)
 - 원시 타입, string, sequence, array, enum, union
@@ -128,6 +130,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: ParameterList 해석 (07, 09), XCDR2와 appendable / mutable 타입 (16)
 
 ### 07. RTPS 메시지
+- `mdds-rtps` crate: I/O-free core
 - 메시지 구조: 헤더와 서브메시지, 서브메시지마다 정하는 엔디안
 - 기본 타입: GUID, SequenceNumber, SequenceNumberSet, Locator, Time
 - 서브메시지: DATA, HEARTBEAT, ACKNACK, GAP, INFO_TS, INFO_DST, INFO_SRC
@@ -141,7 +144,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - HistoryCache와 CacheChange
 - StatelessWriter와 best-effort reader
 - UDP 포트 공식, participantId, 멀티캐스트 가입
-- I/O-free core와 UDP 드라이버 나누기
+- I/O-free core (`mdds-rtps`)와 UDP 드라이버 (`mdds`) 나누기
 - 미루는 것: 상대를 자동으로 찾기 (09, 이 chapter는 상대 주소를 직접 적는다), UDP 밖의 전송 (20)
 
 ### 09. 참가자 디스커버리 (SPDP)
@@ -165,7 +168,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 매칭: 토픽, 타입, RxO, 파티션
 - 최소 사용자 API
 - ShapesDemo의 Square 토픽으로 두 벤더와 양방향 통신
-- 미루는 것: 키 인스턴스 관리 (13), 타입 정보 교환 PID_TYPE_INFORMATION (16), SEDP를 설정으로 대신하는 정적 디스커버리 (19)
+- 미루는 것: key 인스턴스 관리 (13), 타입 정보 교환 PID_TYPE_INFORMATION (16), SEDP를 설정으로 대신하는 정적 디스커버리 (19)
 
 ### 12. ROS 2와 통신하기
 - ROS 2의 토픽 이름과 타입 이름 규칙
@@ -173,7 +176,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - talker / listener와 양방향 통신 (Fast DDS, Cyclone DDS RMW)
 - 미루는 것: ROS 2에서 쓰는 Discovery Server (19), Zenoh 브리지 (21)
 
-### 13. 키 인스턴스와 수명주기
+### 13. key 인스턴스와 수명주기
 - 인스턴스와 KeyHash
 - register / unregister / dispose와 STATUS_INFO
 - read / take와 SampleInfo

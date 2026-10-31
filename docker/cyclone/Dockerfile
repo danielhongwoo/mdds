@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# OMG shape_main (C판, srcC/) 을 Cyclone DDS master (f2aaccb4, 버전 번호 11.0.1) 로 소스에서 빌드한다.
+# OMG shape_main (C 언어 구현, srcC/) 을 Cyclone DDS master (f2aaccb4, 버전 번호 11.0.1) 로 소스에서 빌드한다.
 # 설계와 버전 근거: docs/environment/vendor-build.md
 #
 # 결과 이미지: /usr/local/bin/cyclone_shape
@@ -75,7 +75,7 @@ RUN git init cyclonedds \
 # OMG cyclone-dds-cmake 대신 idlc + gcc 로 직접 빌드한다 (vendor-build.md "설계 메모").
 # -Wno-implicit-extensibility: OMG CMakeLists 의 WARNINGS no-implicit-extensibility 와 같다
 #   (Cyclone 11.0.1 Generate.cmake 가 WARNINGS 를 "-W<값>" 으로 넘기는 것을 확인).
-# -DCYCLONE_DDS: shape_main.c 가 이 매크로로 Cyclone 용 코드를 고른다.
+# -DCYCLONE_DDS: OMG 의 cyclone-dds-cmake 와 같게 정의한다. 고정한 커밋의 shape_main.c 와 설정 헤더는 이 매크로를 쓰지 않는다.
 COPY --from=src /src/dds-rtps/srcC /work/srcC
 WORKDIR /work/srcC
 RUN /opt/cyclone/bin/idlc -Wno-implicit-extensibility shape.idl \

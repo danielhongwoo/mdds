@@ -6,8 +6,8 @@
 - **data-centric / message-centric**: message-centric 미들웨어는 바이트 메시지를 나르고 뜻은 응용이 안다. data-centric 미들웨어는 데이터의 타입과 "어떤 대상의 값인가"를 알고 상태를 관리한다. DDS는 data-centric이다 (DDS 1.4 Sec. 1.2).
 - **global data space**: DCPS가 데이터를 보는 모델. 응용은 이 공간에 값을 쓰고 (publisher) 관심 있는 부분을 읽으며 (subscriber), 미들웨어가 값을 관심 있는 쪽으로 전한다 (DDS 1.4 Sec. 1.2).
 - **토픽 (topic)**: global data space를 나누는 단위. 이름과 타입을 가진다.
-- **키 (key), 인스턴스 (instance)**: 타입 필드 가운데 대상을 가르는 필드가 키다. 키가 같은 값은 같은 인스턴스의 연속된 값이고, 키가 다르면 다른 인스턴스다 (DDS 1.4 Sec. 2.2.1.2.2).
-- **도메인 (domain)**: 서로 통신하는 응용들의 묶음. 같은 도메인 번호 (domainId)를 쓰는 참가자끼리만 서로를 찾고 통신한다. 그래서 같은 네트워크에서 여러 시스템이 서로 간섭하지 않고 함께 돈다 (DDS 1.4 Sec. 2.2.2.2.1).
+- **key, 인스턴스 (instance)**: 타입 필드 가운데 대상을 가르는 필드가 key다. key가 같은 값은 같은 인스턴스의 연속된 값이고, key가 다르면 다른 인스턴스다 (DDS 1.4 Sec. 2.2.1.2.2).
+- **도메인 (domain)**: 서로 통신하는 응용들의 묶음. 같은 도메인 번호 (domainId)를 쓰는 참가자끼리만 서로를 찾고 통신한다. 그래서 같은 네트워크에서 여러 시스템이 서로 간섭하지 않고 함께 동작한다 (DDS 1.4 Sec. 2.2.2.2.1).
 - **참가자 (DomainParticipant)**: 한 DDS 도메인에 참여하는 단위. 보통 프로세스 하나에 하나다. 디스커버리는 참가자 단위로 시작한다.
 - **QoS 정책**: 데이터마다 다른 요구 (신뢰성, 보관 개수, 늦게 온 reader에게 줄지, 마감 시간 등)를 정하는 설정. writer와 reader가 각자 밝히고 맞아야 매칭한다.
 - **브로커 (broker)**: 모든 메시지가 거쳐 가는 중앙 서버. MQTT가 이 방식이다. DDS의 와이어 프로토콜은 브로커에 기대지 않는다 (RTPS 2.5 Sec. 7.2).
@@ -17,7 +17,7 @@
 
 ## 모델
 - **PIM**(Platform Independent Model): 특정 언어/전송 수단과 무관하게 개념/동작만 정의한 추상 모델. 예: "DataWriter는 write()로 샘플을 발행한다"는 수준.
-- **PSM**(Platform Specific Model): PIM을 특정 플랫폼에 맞춰 구체화한 것. 예: DDS의 C++ API(DDS-PSM-Cxx), Java API(DDS-JAVA), RTPS의 UDP/IP 매핑(RTPS 9장).
+- **PSM**(Platform Specific Model): PIM을 특정 플랫폼에 맞춰 구체화한 것. 예: DDS의 C++ API(DDS-PSM-Cxx), Java API(DDS-JAVA), RTPS의 UDP/IP 매핑(RTPS 2.5 Sec. 9).
 - **DCPS**(Data-Centric Publish-Subscribe): DDS 1.4 규격의 본체. 토픽/DataWriter/DataReader/QoS로 구성되는 발행/구독 API의 PIM이다. DDS 1.4 2.2절이 PIM이고, 2.3절 IDL PSM은 그 PIM을 IDL 인터페이스로 옮긴 것이다.
 - **IDL4 -> Rust 언어 매핑**: IDL로 정의한 타입/인터페이스를 Rust 코드로 어떻게 옮길지 정하는 규격. 2026년 RFP(mars/2026-3-6) 단계로 아직 표준이 아니다. DDS API(DCPS PSM)를 정하는 규격도 아니다.
 
@@ -37,7 +37,7 @@
 - **XCDR2**(Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더(DHEADER)와 멤버별 헤더(EMHEADER)를 도입한 개선판. 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
 
 ## 도구
-- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 소스는 하나(`omg-dds/dds-rtps`의 `srcCxx/shape_main.cxx`)이고, 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다. Cyclone용은 C판(`srcC/shape_main.c`), 나머지 벤더는 C++판이다.
+- **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@key string color; long x; long y; long shapesize;`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 구현은 `omg-dds/dds-rtps` 저장소에 언어별로 있다: Cyclone DDS용 C 언어 구현 (`srcC/shape_main.c`), Connext, Fast DDS, OpenDDS 등이 함께 쓰는 C++ 언어 구현 (`srcCxx/shape_main.cxx`, 벤더별 분기는 `#if defined(...)`), Rust로 만든 DDS 구현 (Dust DDS, HDDS, RustDDS)용 Rust 구현 (`srcRs/`, `RustDDS/`). 코드는 다르지만 명령행 옵션, 동작, 출력 형식이 같도록 맞춰져 있다. 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다.
 - **ShapesDemo**: 같은 ShapeType 토픽을 GUI로 보여 주는 각 벤더의 데모 프로그램 (RTI, eProsima 등). shape_main은 이것의 CLI판이라고 보면 된다.
 - **bridge 네트워크 (Docker)**: Docker가 호스트 안에 만드는 가상 L2 스위치. 컨테이너의 `eth0`가 여기에 꽂힌다. 같은 bridge 안에서는 유니캐스트와 멀티캐스트가 모두 통하고, 바깥으로는 NAT를 거친다. 사용자 정의 bridge는 기본 bridge와 달리 컨테이너 이름으로 서로를 찾을 수 있다.
 - **네트워크 네임스페이스 (network namespace)**: Linux 커널이 네트워크 스택 (인터페이스, IP 주소, 라우팅 표, 소켓)을 프로세스 묶음마다 따로 두는 기능. Docker 컨테이너가 각자 `eth0`과 IP를 갖는 것이 이것 덕분이다. 다른 컨테이너의 네임스페이스를 빌려 쓰면 (`--network container:<id>`) 같은 `eth0`과 IP를 공유한다.
