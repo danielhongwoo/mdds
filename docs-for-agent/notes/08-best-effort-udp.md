@@ -13,7 +13,7 @@
 - UDP 포트 공식: PB=7400, DG=250, PG=2, d0=0, d1=10, d2=1, d3=11
 - 멀티캐스트 239.255.0.1 가입, SO_REUSEADDR / SO_REUSEPORT
 - participantId 탐색 (0부터 유니캐스트 포트 바인딩 시도)
-- 코어는 I/O-free core로 만들고, UDP 드라이버를 바깥에 둔다 ([roadmap](../roadmap.md) 설계 원칙 참고).
+- 코어는 I/O-free core로 만들고, UDP 드라이버를 바깥에 둔다 ([roadmap](../roadmap.md) 설계 원칙 참고). 본문: `mdds` crate (응용 API와 UDP 드라이버)를 소개하고, `mdds-rtps`와 나눈 이유 (네트워크 없이 시험, 손실과 타이머 만료의 결정적 재현)를 설명한다.
 
 ## 완료 기준
 - 피어 로케이터를 하드코딩한 mdds 프로세스 두 개가 DATA를 주고받는다.

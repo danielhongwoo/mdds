@@ -8,6 +8,7 @@
 - RTPS 2.5: 8.2 (구조), 8.3 (메시지, Receiver 규칙 8.3.4), 9.3 (타입 매핑), 9.4 (와이어 레이아웃), 9.6.2.2 / 9.4.2.11 (ParameterList)
 
 ## 구현
+- 본문: `mdds-rtps` crate를 소개한다. 소켓, 시계, 스레드를 쓰지 않는 I/O-free core라는 것까지만 말하고, 드라이버와 나누는 이유는 08에서.
 - 타입
   - GuidPrefix(12) + EntityId(4), 내장 EntityId 표
   - SequenceNumber (high i32 + low u32)

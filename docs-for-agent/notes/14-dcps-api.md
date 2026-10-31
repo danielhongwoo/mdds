@@ -15,7 +15,7 @@
 - Status (PUBLICATION_MATCHED, REQUESTED_INCOMPATIBLE_QOS 등), Listener, StatusCondition / ReadCondition / GuardCondition, WaitSet
 - DEADLINE, LIFESPAN, LIVELINESS (AUTOMATIC, MANUAL_BY_PARTICIPANT)
 - 내장 토픽 (DCPSParticipant, DCPSPublication, DCPSSubscription)
-- `tools/shape_main` (OMG 상호운용 테스트 규약에 맞춘 CLI)
+- `tools/shape_main` (OMG 상호운용 테스트 규약에 맞춘 CLI) - dds-rtps 커밋 526dc56e에 Rust 구현용 shape_main이 있다 (`srcRs/DustDDS`, `srcRs/HDDS`, `RustDDS/`). 옵션 처리와 출력 문자열의 참고 코드로 본다
 
 ## 완료 기준
 - `tools/shape_main`이 `omg-dds/dds-rtps`의 `interoperability_report.py`로 주요 시나리오를 Cyclone / Fast DDS와 양방향 통과한다.
