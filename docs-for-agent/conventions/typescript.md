@@ -20,7 +20,7 @@
 - 버린 대안: chapter 번호 접두 (`ch01-capture.ts`). 번호가 바뀌면 파일 이름과 모든 링크를 고쳐야 한다. 일반 이름 (`run-scenario.ts`, `capture.ts`). 무엇의 시나리오인지, 무엇을 캡처하는지 드러나지 않는다.
 
 ## 설정 (`deno.json`)
-스크립트가 있는 디렉터리에 둔다. 지금은 [docker/deno.json](../../docker/deno.json) 하나다.
+스크립트가 있는 디렉터리에 둔다. 지금은 [docker/deno.json](../../docker/deno.json)과 `.claude/hooks/deno.json` 두 개이고 내용이 같다.
 - fmt: 대상은 `*.ts`와 `deno.json`만 (Markdown은 다시 줄바꿈하지 않게 뺀다). 줄 폭 100.
 - lint: `recommended` 규칙에 `explicit-function-return-type`을 더한다.
 

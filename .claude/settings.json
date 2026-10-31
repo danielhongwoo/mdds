@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-docs-markdown.ts",
+            "timeout": 30,
+            "statusMessage": "문서 규칙 검사"
+          }
+        ]
+      }
+    ]
+  }
+}

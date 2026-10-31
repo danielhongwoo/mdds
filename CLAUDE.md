@@ -12,6 +12,8 @@ OMG DDS 표준을 Rust로 직접 구현하며 이해하는 학습용 프로젝�
 - `docs-for-agent/research/`: 조사 노트. 원문으로 확인한 내용과 추정을 구분해 표시한다.
 - `docs-for-agent/conventions/`: 프로젝트 규약. 대상별로 나눈다 (`rust.md`, `typescript.md`, `markdown.md`, `captures.md`, `book.md`).
 - `omg-specs/`: OMG 규격 PDF와 `pdftotext -layout` 추출본. git에 넣지 않는다. 규격 내용을 인용할 때는 기억이 아니라 이 원문을 확인한다.
+- 하네스: `.claude/hooks/check-docs-markdown.ts`는 `book/`, `docs/`의 Markdown을 저장할 때마다 기계 규칙 (문자, 링크와 anchor, 제목 번호, 참고 자료, 바꾸기로 한 표현)을 검사하는 PostToolUse 훅이다 (`.claude/settings.json`). 판단이 필요한 규칙은 chapter를 마쳤다고 보고하기 전에 `.claude/skills/chapter-review`로 점검한다.
+- 사실 확인: 문서에 쓰는 사실은 원래 자료 (규격 원문, 고정한 커밋의 소스, 실제 출력)로 확인한다. 저장소 안의 다른 문서는 단서일 뿐 출처가 아니다. 자세한 규칙은 `docs-for-agent/conventions/book.md` "작성 원칙: 사실 확인".
 - 문서 갱신 규칙
   - 본문은 항상 현재 상태만 적는다. 바뀌면 덮어쓰고, 폐기된 내용은 지운다. 과거 경위는 git 히스토리 (커밋 메시지)에 둔다.
   - 결정은 그 결정이 적용되는 문서에 "무엇을 / 왜 / 버린 대안과 이유"로 적는다. 버린 대안은 누군가 다시 시도할 만한 것만 적는다.
