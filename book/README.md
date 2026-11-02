@@ -43,7 +43,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter 01에서 한다.
 | 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) |
 | 01 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) |
 | 02 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) |
-| 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
+| 03 | [첫 DDS 통신 들여다보기](03-first-communication/README.md) | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
 | 04 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
 | 05 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
 | 06 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
@@ -94,12 +94,11 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: DDS가 멀티캐스트를 쓰는 방식 (03에서 관찰, 09에서 구현), 벤더별 SPDP TTL (04), RTPS 포트 공식과 포트 공유 (08)
 
 ### 03. 첫 DDS 통신 들여다보기
-- shape_main과 시나리오 스크립트 (`capture-shape-scenario.ts`)
-- Lab 3-1 첫 DDS 통신
-- 캡처를 읽는 법: Wireshark `rtps` 필터, 프레임 번호, 흐름도
-- Lab 3-2 캡처에서 RTPS 메시지 찾기 (SPDP, SEDP, DATA, HEARTBEAT, ACKNACK), 디스커버리가 차지하는 몫
-- Lab 3-3 best-effort와 비교
-- 미루는 것: 메시지의 바이트 해석 (07), reliable 동작 원리 (10), 매칭 규칙 (11)
+- 1 왜 필요한가: chapter 00의 그림 (SPDP -> SEDP -> DATA)을 실제 패킷으로 본다, shape_main 실행과 출력 읽기
+- 2 캡처에서 보기: Lab 3-1 첫 DDS 통신 (손으로 캡처), Lab 3-2 캡처에서 RTPS 메시지 찾기 (다섯 구간, 내장 엔드포인트 트래픽과 사용자 트래픽 세기), Lab 3-3 best-effort와 비교
+- 3 규격 읽기: 디스커버리도 같은 프로토콜로 한다 (내장 엔드포인트, entityId), reliable과 best-effort (HEARTBEAT와 ACKNACK)
+- 4 스스로 확인하기
+- 미루는 것: 벤더 차이 (04), 메시지의 바이트 해석 (07), 포트 공식 (08), SPDP의 동작 (09), reliable 동작 원리 (10), 매칭 규칙 (11), 인스턴스 상태와 dispose (13), liveliness (14)
 
 ### 04. 같은 규격, 다른 구현
 - Lab 4-1 방향을 바꾸면: 벤더 ID, 프로토콜 버전, 포트, lease, 벤더 전용 PID

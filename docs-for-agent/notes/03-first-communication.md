@@ -11,9 +11,10 @@ Cyclone DDS와 Fast DDS가 처음 통신하는 과정을 캡처하고, Wireshark
 하는 것
 - 시나리오 실행 스크립트 (`docker/capture-shape-scenario.ts`)와 시나리오 표
 - reliable / best-effort 기본 시나리오 4개의 캡처와 흐름도 (`captures/cyclone-fastdds/`)
+- 교재 chapter 03: 독자가 손으로 첫 통신을 캡처하고 (Lab 3-1), 참고 캡처 `rel-cyclone-pub`에서 다섯 구간을 찾고 (Lab 3-2), `be-cyclone-pub`과 비교한다 (Lab 3-3)
 
 하지 않는 것
-- 메시지의 바이트 해석 (chapter 07), reliable 동작 원리 (chapter 10), 매칭 규칙 (chapter 11)
+- 메시지의 바이트 해석 (chapter 07), 포트 공식 (chapter 08), SPDP의 동작 (chapter 09), reliable 동작 원리 (chapter 10), 매칭 규칙 (chapter 11), 인스턴스 상태와 dispose (chapter 13), liveliness (chapter 14)
 - 벤더 차이와 나머지 시나리오 (chapter 04)
 
 ## 산출물
@@ -23,6 +24,24 @@ Cyclone DDS와 Fast DDS가 처음 통신하는 과정을 캡처하고, Wireshark
 | 시나리오별 캡처, 양쪽 stdout 로그 | `captures/cyclone-fastdds/{rel,be}-{cyclone,fastdds}-pub.{pcap,pub.log,sub.log}` |
 | 캡처 분석 메모 (흐름도, 질문) | [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md) |
 | 교재 chapter | [book/](../../book/README.md) 03 |
+
+## 틀
+관찰 chapter의 틀 ([book.md](../conventions/book.md#chapter))에서 4, 5, 6을 뺐다. 6 (두 벤더는 어떻게 하는가)은 벤더 소스를 읽는 절이고 이 chapter는 캡처만 본다. 캡처에 보이는 벤더 차이는 chapter 04가 맡는다.
+1. 왜 필요한가: chapter 00 3.2절의 그림 (SPDP -> SEDP -> DATA)을 실제 패킷으로 본다는 것, 끝나면 할 수 있는 것 (캡처의 프레임이 어느 단계인지 Info 열과 필터로 가른다), 이 캡처가 뒤 chapter의 정답 데이터라는 것. 1.1 shape_main 실행과 출력 읽기 (이 chapter에서 쓰는 옵션과 로그 줄의 뜻만. 옵션 목록 자체는 chapter 01)
+2. 캡처에서 보기: Lab 3-1 (손으로 첫 통신 캡처), Lab 3-2 (참고 캡처에서 다섯 구간 찾기, 내장 엔드포인트 트래픽과 사용자 트래픽 세기), Lab 3-3 (best-effort 캡처와 비교)
+3. 규격 읽기: 3.1 디스커버리도 같은 프로토콜로 한다 (내장 엔드포인트, entityId와 GUID, SPDP는 best-effort이고 주기적, SEDP와 참가자 메시지 writer는 reliable, 포트와 주소는 SPDP / SEDP의 로케이터로 안다), 3.2 reliable과 best-effort (HEARTBEAT와 ACKNACK의 의무, pre-emptive ACKNACK)
+4. 스스로 확인하기: 질문 네 개 (best-effort인데 HEARTBEAT / ACKNACK가 있다, 내 데이터만 어떻게 가리나, 구독자만 오래 두면 무엇이 흐르나, 참가자가 셋이면 어느 구간이 느나)
+
+**결정: Lab 3-1은 스크립트가 아니라 손으로 한다 (터미널 세 개, Lab 2-1과 같은 방식).** 독자가 구독자 혼자일 때의 출력, 발행자가 시작되고 matched가 찍히는 순간, 발행자가 끝난 뒤의 `NOT_ALIVE_NO_WRITERS`를 터미널에서 직접 본다. 독자의 캡처는 `my-rel-cyclone-pub.pcap`이고, 참고 캡처는 스크립트가 같은 순서를 정해진 간격으로 실행해 만든 것이다. 정답 데이터는 여전히 스크립트로 만든 참고 캡처뿐이다 ([captures.md](../conventions/captures.md)).
+- 버린 대안: 스크립트에 `--my` 같은 이름 접두 옵션을 넣어 독자가 스크립트로 캡처하기. 재현성은 좋지만 터미널에서 진행을 보지 못하고, 스크립트와 노트를 함께 고쳐야 한다. 필요해지면 chapter 04 이후에 넣는다.
+
+**결정: 프레임 번호와 수치는 Lab 3-2의 구간 표와 수치 표에만 둔다.** 본문 문장은 "구간 3"처럼 표를 가리킨다. 참고 캡처 `rel-cyclone-pub`, `be-cyclone-pub`은 03 본문, 캡처 README, 09 / 10 / 11 노트가 같은 프레임 번호로 인용하므로 사실상 고정된 데이터다. 다시 만들면 고칠 곳이 이 네 곳이다.
+
+**결정: 참고 캡처 `rel-cyclone-pub`을 바꾸지 않는다.** 이 캡처는 Cyclone이 Fast DDS의 첫 SEDP HEARTBEAT에 답하지 않아 SEDP 구간이 1.1초 늘어진 경우다 (Cyclone 발행 캡처 6개 중 2개가 이렇다. [11 노트](11-sedp-matching.md#확인할-것)). 깨끗한 캡처로 바꾸면 결과를 골라 쓰는 일이 되고, 뒤 노트가 이 번호를 이미 인용한다. 대신 본문에 "SEDP 구간의 HEARTBEAT / ACKNACK 왕복 횟수와 첫 사용자 seq는 실행마다 다르다"를 적고, 구간 경계는 `DATA(p)`, writer 정보, reader 정보, 첫 사용자 DATA, `[UD]` 같은 표지로 정한다. 저자가 손으로 돌린 캡처 (2026-11-02)는 seq 3부터, 내장 엔드포인트 트래픽 57 프레임이었다.
+
+**결정: 캡처 README의 질문은 lab 끝의 "이 chapter에서 답하지 않는 것" 목록으로 보여 주고, 스스로 확인하기에는 이 chapter만으로 답할 수 있는 질문을 둔다.** 규칙은 [book.md](../conventions/book.md#lab).
+
+**결정: "디스커버리가 차지하는 몫"은 비율이 아니라 묶음별 프레임 수와 바이트 수의 표로 보인다.** 비율은 실행 길이 (사용자 데이터는 약 9초, SPDP는 캡처 내내), loopback 복사본, reliable의 ACKNACK, Fast DDS의 60바이트 벤더 전용 서브메시지, frame.len에 든 42바이트 헤더에 따라 달라져서 DDS의 성질처럼 읽히면 안 된다. 표는 한 번 드는 비용 (SEDP)과 계속 드는 비용 (SPDP)을 나누어 보인다. chapter 00 3.3절의 "적지 않은 몫"을 측정으로 뒷받침하되 일반화하지 않는다.
 
 ## 작업 순서
 
@@ -43,9 +62,9 @@ Cyclone DDS와 Fast DDS가 처음 통신하는 과정을 캡처하고, Wireshark
 
 | lab | 제목 | 하는 일 -> 기대 결과 | 쓰는 산출물 |
 |---|---|---|---|
-| Lab 3-1 | 첫 DDS 통신 | `capture-shape-scenario.ts rel-cyclone-pub` -> 구독 로그에 샘플이 찍히고 pcap이 생김 | `docker/capture-shape-scenario.ts` |
-| Lab 3-2 | 캡처에서 RTPS 메시지 찾기 | Wireshark 필터 `rtps` -> SPDP, SEDP, DATA, HEARTBEAT, ACKNACK를 캡처 README의 흐름도 프레임 번호와 맞춰 찾음. 디스커버리 패킷 (SPDP, SEDP)이 전체에서 차지하는 몫도 셈 (chapter 00 3.3절 "대가"를 직접 확인) | `captures/cyclone-fastdds/rel-cyclone-pub.*` |
-| Lab 3-3 | best-effort와 비교 | `be-cyclone-pub`을 같은 방법으로 봄 -> HEARTBEAT, ACKNACK가 없음 | `be-cyclone-pub.*` |
+| Lab 3-1 | 첫 DDS 통신 | 터미널 세 개 (fastdds tcpdump, fastdds_shape -S, cyclone_shape -P)로 손으로 실행 -> 구독 터미널에 matched, 샘플 줄, NOT_ALIVE_NO_WRITERS, Done.이 차례로 찍히고 `my-rel-cyclone-pub.pcap`이 생김 | 벤더 컨테이너의 shape_main. 참고 캡처를 만든 방법으로 `docker/capture-shape-scenario.ts`를 링크 |
+| Lab 3-2 | 캡처에서 RTPS 메시지 찾기 | 참고 캡처를 Wireshark 필터 `rtps`와 entityId 필터로 봄 -> 다섯 구간 (구독자 혼자, 서로 찾기, 엔드포인트 교환, 사용자 데이터, 종료)을 프레임 번호로 찾음. 내장 엔드포인트 트래픽 (SPDP, SEDP, 참가자 메시지)과 사용자 트래픽을 프레임 수와 바이트로 셈 (chapter 00 3.3절 "대가"를 직접 확인) | `captures/cyclone-fastdds/rel-cyclone-pub.*` |
+| Lab 3-3 | best-effort와 비교 | `be-cyclone-pub`을 같은 필터로 봄 -> 사용자 트래픽에는 DATA만 있고, HEARTBEAT / ACKNACK는 SEDP와 참가자 메시지 엔드포인트에만 남음 | `be-cyclone-pub.*` |
 
 ## 시나리오 실행 흐름 (`capture-shape-scenario.ts`)
 스크립트는 [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)다. `./capture-shape-scenario.ts <이름>`으로 실행하고, `--list`로 이름을 본다. 결과 파일이 이미 있으면 멈추며 `--force`로 덮어쓴다 (캡처는 커밋되는 정답 데이터라 실수로 지우지 않게). 시작 전에 두 컨테이너가 떠 있는지, 이전 실행의 shape_main이나 tcpdump가 남아 있는지 검사한다. 아래 흐름과 시나리오 표를 바꾸면 스크립트의 `SCENARIOS`도 함께 고친다. chapter 04의 시나리오도 같은 스크립트와 표를 쓴다.
@@ -103,7 +122,7 @@ chapter 03과 04의 시나리오를 모두 여기에 둔다 (스크립트의 `SC
 |---|---|---|---|---|---|---|---|---|
 | be-cyclone-pub | 03 | cyclone | fastdds | `-b` | 기본값 | wait | 5 | best-effort DATA, HEARTBEAT 없음 |
 | be-fastdds-pub | 03, 04 | fastdds | cyclone | `-b` | 기본값 | wait | 5 | 벤더별 차이 비교 |
-| rel-cyclone-pub | 03 | cyclone | fastdds | `-r` | 기본값 | wait | 5 | HEARTBEAT / ACKNACK 왕복, GAP |
+| rel-cyclone-pub | 03 | cyclone | fastdds | `-r` | 기본값 | wait | 5 | HEARTBEAT / ACKNACK 왕복 (이 캡처에 GAP은 없다) |
 | rel-fastdds-pub | 03, 04 | fastdds | cyclone | `-r` | 기본값 | wait | 5 | 위와 같음 |
 | dispose-on-exit | 04 | cyclone | fastdds | `-r` | 기본값 + `--final-instance-state d` | wait | 10 | DATA에 STATUS_INFO dispose 비트, 이어서 unregister, SEDP의 writer 제거. 구독 로그의 instance state 변화 |
 | lease-expiry | 04 | cyclone | fastdds | `-r` | `--write-period 100` 만 (`--num-iterations` 없음) | kill9 | 25 (Cyclone lease 10초 + 여유) | dispose 없이 사라진 참가자를 구독자가 lease 만료로 정리. 증거는 캡처의 마지막 SPDP 시각과 그 뒤 구독자의 동작 (ACKNACK 중단 등) |
@@ -124,6 +143,12 @@ chapter 03과 04의 시나리오를 모두 여기에 둔다 (스크립트의 `SC
 | 스크립트에서 "input device is not a TTY" | `docker compose exec`에 `-T` 누락 | `-T`를 붙인다 |
 | SPDP는 보이는데 매칭이 안 됨 | QoS 불일치, 데이터 표현 불일치 (`-x`) | 양쪽 옵션을 같게 맞춘다. 이것 자체도 좋은 캡처다 |
 
+## 확인할 것
+- Wireshark GUI의 Statistics > Capture File Properties의 Displayed 열 Bytes가 tshark의 `frame.len` 합 (사용자 트래픽 30,132 등)과 같은지. tshark로는 확인했고 GUI는 보지 않았다.
+- Ubuntu 24.04의 apt Wireshark (4.2 계열)에서 Info 열 표기 (`DATA(p[UD])`, `Unknown[80]`, `Malformed Packet`의 위치)가 4.6.9와 같은지. 본문은 4.6.9 기준이라고 밝혔다.
+- 7400을 다른 프로세스 (chapter 02의 `mcast-check recv`)가 잡고 있을 때 fastdds_shape는 오류 없이 시작하지만 7400 소켓을 열지 않는다 (2026-11-02, `ss -ulpn`으로 확인). 그 상태에서 디스커버리가 되는지 (상대의 유니캐스트 응답으로 될 수도 있다)는 시험하지 않았다. 본문에는 관찰한 사실만 적었다.
+- 손으로 한 Lab 3-1에서 터미널 Ctrl+C가 pty를 거쳐 shape_main에 SIGINT로 가는 것은 Lab 2-1의 tcpdump와 같은 경로다. 저자는 `pkill -INT`로 같은 결과 (`DATA(p[UD])`, IGMP leave)를 확인했고, 터미널에서 직접 Ctrl+C를 누른 확인은 하지 않았다.
+
 ## 완료 기준
 - `docker compose up -d`와 `capture-shape-scenario.ts <이름>`만으로 (Deno 2 필요) 누구나 같은 캡처를 재현할 수 있다.
 - rel / be 시나리오 4개의 캡처와 로그가 저장소에 있고, README에 흐름 (프레임 번호가 붙은 다이어그램)과 질문이 적혀 있다.
@@ -138,3 +163,4 @@ chapter 03과 04의 시나리오를 모두 여기에 둔다 (스크립트의 `SC
 - 2026-10-29: 산출물을 서술형 이름으로 바꿈 (`capture-shape-scenario.ts`, `captures/cyclone-fastdds/`) -> [typescript.md](../conventions/typescript.md)
 - 2026-10-30: 캡처를 `tests/captures/`에서 저장소 루트 `captures/`로 옮김 (테스트가 아니라 lab과 chapter가 함께 쓰는 관찰 자료) -> [captures.md](../conventions/captures.md)
 - 2026-10-30: chapter 01-04를 함께 맡던 노트에서 나눔. 시나리오 표는 스크립트와 일대일이라 이 노트에만 두고 chapter 열을 더함
+- 2026-11-02: 아키텍트, DDS 전문가, 시니어 엔지니어, 독자 네 관점의 검토로 틀을 정하고 본문 초안 작성 -> [틀](#틀). Lab 3-1은 손으로, 규격 읽기는 내장 엔드포인트와 reliable / best-effort 둘로 줄임 (헤더 필드와 포트 공식은 04, 07, 08의 몫). 관찰 chapter가 6절을 빼는 것과 "답하지 않는 것" 목록을 [book.md](../conventions/book.md#chapter)에 적음
