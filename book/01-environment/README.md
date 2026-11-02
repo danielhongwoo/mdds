@@ -1,6 +1,6 @@
 # 01. 실습 환경: 벤더 DDS 두 개를 컨테이너로
 
-[목차](../README.md) | 이전: [00 들어가며](../00-introduction/README.md) | 다음: chapter 02 멀티캐스트가 오가는 길
+[목차](../README.md) | 이전: [00 들어가며](../00-introduction/README.md) | 다음: [02 멀티캐스트가 오가는 길](../02-multicast/README.md)
 
 이 chapter에서는 Cyclone DDS와 Fast DDS를 Docker 컨테이너 두 개로 실행한다. 이 두 컨테이너가 이후 모든 chapter의 실험실이다. 다음 chapter에서 두 컨테이너 사이에 멀티캐스트가 전달되는지 확인하고, 그 뒤의 chapter에서 두 컨테이너 사이의 통신 패킷을 캡처한다. 이후 mdds를 구현할 때마다 mdds도 컨테이너로 실행해 같은 네트워크에 세 번째 참가자로 연결하고, 두 벤더와 통신할 수 있는지로 구현을 검증한다. 이 chapter에는 DDS 코드도 규격 읽기도 없다. 환경을 어떻게 왜 이렇게 구성했는지에 대한 설명과, 그 환경을 직접 실행해 보는 lab 두 개로 이루어진다.
 

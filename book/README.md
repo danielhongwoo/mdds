@@ -42,7 +42,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter 01에서 한다.
 |---|---|---|---|
 | 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 완료 |
 | 01 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) | 초안 |
-| 02 | 멀티캐스트가 오가는 길 | [02-multicast](../docs-for-agent/notes/02-multicast.md) | 집필 전 |
+| 02 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) | 초안 |
 | 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) | 집필 전 |
 | 04 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) | 집필 전 |
 | 05 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) | 집필 전 |
@@ -87,13 +87,11 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: 멀티캐스트가 오가는 원리 (02), DDS 통신과 캡처 (03), 워크스페이스와 crate (06 ~ 08)
 
 ### 02. 멀티캐스트가 오가는 길
-- 멀티캐스트 주소와 그룹 가입 (IGMP join, leave)
-- bridge가 멀티캐스트를 전달하는 방식: snooping, querier, flooding
-- Lab 2-1 컨테이너 사이 연결
-- Lab 2-2 멀티캐스트 보내고 받기 (`mcast-check`)
-- Lab 2-3 가입하지 않으면
-- 네트워크를 먼저 의심할 때의 확인 순서
-- 미루는 것: DDS가 멀티캐스트를 쓰는 방식 (03에서 관찰, 09에서 구현), RTPS 포트 공식 (08)
+- 1 왜 필요한가: 상대 주소를 모를 때 찾는 방법, RTPS의 기본 멀티캐스트 주소, lab 전에 알아 둘 것, mcast-check가 하는 일
+- 2 캡처에서 보기: Lab 2-1 멀티캐스트 보내고 받기, Lab 2-2 가입하지 않으면
+- 3 규격 읽기: 멀티캐스트 주소와 MAC 주소, 그룹 가입 (IGMPv3), 스위치가 멀티캐스트를 전달하는 방식 (snooping, querier, flooding), 네트워크를 먼저 의심할 때
+- 4 스스로 확인하기
+- 미루는 것: DDS가 멀티캐스트를 쓰는 방식 (03에서 관찰, 09에서 구현), 벤더별 SPDP TTL (04), RTPS 포트 공식과 포트 공유 (08)
 
 ### 03. 첫 DDS 통신 들여다보기
 - shape_main과 시나리오 스크립트 (`capture-shape-scenario.ts`)

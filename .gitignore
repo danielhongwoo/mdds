@@ -2,3 +2,6 @@
 .DS_Store
 omg-specs/
 papers/
+
+# 독자가 lab에서 직접 만드는 캡처 (커밋하는 참고 캡처와 구분)
+captures/**/my-*

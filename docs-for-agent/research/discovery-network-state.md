@@ -205,7 +205,7 @@ sequenceDiagram
   - 소켓 하나가 가입할 수 있는 그룹 수 상한 `igmp_max_memberships` 기본 20 [R5]. [확인, 조사 결과]
 
 ## 6. book에 넣는다면 (결정은 나중에)
-- chapter 02 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾고, SIGKILL 뒤에도 leave가 나가는 것을 확인한다. querier가 없는 Docker bridge가 모든 포트로 flooding하는 것을 `mcast-check.nojoin.pcap`으로 본다.
+- chapter 02 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾는 것, querier가 없는 Docker bridge가 모든 포트로 flooding하는 것 (`captures/mcast-check/nojoin.fastdds.pcap`)은 chapter 02 Lab 2-1, 2-2에 반영했다. SIGKILL 뒤에도 leave가 나가는 것은 반영하지 않았다 (DDS 프로세스를 다루는 chapter 04나 09의 후보).
 - chapter 04 (같은 규격 다른 구현): SPDP 멀티캐스트 TTL이 벤더마다 다르다 (32 / 1).
 - chapter 09 (SPDP): lease와 네트워크 장비 timeout의 수명 차이 (2.2절과 3절 그림).
 

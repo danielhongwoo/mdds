@@ -13,6 +13,7 @@ docker/
   tools/Dockerfile      -> 이미지 mdds/tools   (/usr/local/bin/mcast-check, 저장소 루트를 컨텍스트로 빌드)
   mcast-check.sh        벤더 컨테이너의 네트워크 네임스페이스에서 mcast-check 실행
   capture-shape-scenario.ts  shape_main 시나리오 하나 실행: 캡처, 구독, 발행, 정리 (Deno 2)
+  capture-mcast-check.ts     mcast-check 로 멀티캐스트 참고 캡처 (join, nojoin) 만들기 (Deno 2)
   deno.json             Deno fmt / lint 설정 (규약: docs-for-agent/conventions/typescript.md)
 ```
 - 벤더마다 이미지와 컨테이너가 따로 있다. `cyclone` 컨테이너에는 `cyclone_shape`만, `fastdds` 컨테이너에는 `fastdds_shape`만 있다.

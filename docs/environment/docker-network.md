@@ -103,19 +103,19 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 - 컨테이너는 이미지의 `CMD ["sleep", "infinity"]`로 떠 있고, 실제 명령은 `docker compose exec`로 실행한다. 그래야 **캡처를 먼저 켜고 나서 DDS를 시작**할 수 있어 첫 IGMP 가입과 첫 SPDP 패킷부터 잡힌다. 발행자 프로세스만 죽이고 컨테이너는 살려 둘 수도 있다.
 
 ## 멀티캐스트가 컨테이너 사이를 넘어가는 원리
-- 사용자 정의 bridge 네트워크는 호스트 커널 (Mac이면 VM 안)의 Linux bridge (가상 L2 스위치)다. 각 컨테이너의 `eth0`은 veth 쌍으로 이 스위치의 포트에 꽂혀 있다.
-- DDS 구현이 239.255.0.1 그룹에 가입하면 커널이 IGMP Membership Report를 `eth0`으로 내보낸다. 가입은 두 곳에 영향을 준다.
-  - **받는 쪽 커널**: 가입한 그룹의 패킷만 소켓으로 올린다. 가입하지 않으면 `eth0`에 도착해도 (tcpdump에는 보여도) 버린다. 이것이 가입이 꼭 필요한 이유다.
-  - **bridge**: multicast snooping이 켜져 있고 IGMP querier가 있으면 report를 보고 그 포트로만 전달한다. querier가 없으면 Linux bridge는 가입과 무관하게 모든 포트로 flooding한다 (`multicast_flood` 기본 켜짐).
-- **이 환경의 bridge는 가입과 무관하게 모든 포트로 flooding한다.** Docker Desktop VM의 `br-<id>`는 `multicast_snooping=1`, `multicast_querier=0`이고, 아무도 가입하지 않은 상태에서 보낸 패킷이 상대 컨테이너의 `eth0`까지 왔다 (`captures/mcast-check/mcast-check.nojoin.pcap`). 따라서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. snooping으로 전달을 거르는 환경 (Linux 호스트에 querier가 있는 경우)과 혼동하지 않는다.
-- SPDP 멀티캐스트의 IP TTL은 벤더마다 다르다 (캡처에서 Fast DDS 1, Cyclone DDS 32). 1이어도 같은 L2 세그먼트라 라우터를 지나지 않으므로 문제없다. 장비에 남는 상태는 [discovery-network-state.md](../../docs-for-agent/research/discovery-network-state.md).
-- 캡처로 본 것 (`captures/mcast-check/mcast-check.{fastdds,cyclone}.pcap`, fastdds가 받고 cyclone이 보냄):
-  - 가입 직후 IGMPv3 Membership Report (목적지 224.0.0.22)가 두 번 나간다 (0초, 0.65초 뒤). RFC 3376의 Robustness Variable 기본값 2 때문이다. 종료 때 Leave도 두 번이다.
-  - 상대 컨테이너의 `eth0`에서도 이 report가 보인다. 224.0.0.0/24 (link-local)는 bridge가 항상 모든 포트로 flooding하기 때문이다.
-  - 보낸 쪽 캡처에는 자기 패킷이 두 개씩 잡힌다 (나가는 것과 `IP_MULTICAST_LOOP` 기본값 1로 되돌아온 것. 두 개는 IP id까지 같은 바이트이고 수십에서 수백 마이크로초 차이다). 받는 쪽에는 하나씩이다. 발행자 쪽에서 캡처하면 멀티캐스트가 두 배로 보이는 이유다. 자기가 만든 IGMP report도 같아서, 가입한 쪽 캡처에는 IGMPv3 report가 2회 전송 x 2 = 4개로 보인다. 방향을 나눠 보려면 `tcpdump -Q out` / `-Q in`을 쓴다 (확인: 2개 송신 시 out 2, in 2).
-  - 목적지 MAC은 01:00:5e:7f:00:01이다 (239.255.0.1의 하위 23비트를 01:00:5e 뒤에 붙인 것). IGMP는 01:00:5e:00:00:16 (224.0.0.22). IP TTL은 1.
+원리와 캡처 읽는 법은 [chapter 02](../../book/02-multicast/README.md)에 있다. 여기에는 이 환경의 사실만 둔다.
+- 사용자 정의 bridge 네트워크는 Docker 호스트 커널 (Mac이면 Docker Desktop VM 안)의 Linux bridge다. 각 컨테이너의 `eth0`은 veth 쌍으로 이 bridge의 포트에 꽂혀 있다.
+- **이 환경의 bridge는 가입과 무관하게 멀티캐스트를 모든 스위치 포트로 flooding한다.** `dds-net`의 bridge는 `multicast_snooping=1`, `multicast_querier=0`이다 (2026-10-31, Docker Desktop Mac arm64). Linux bridge는 querier가 없으면 가입 기록을 전달에 쓰지 않는다. 그래서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 원리는 [chapter 02의 3.3절](../../book/02-multicast/README.md#33-스위치가-멀티캐스트를-전달하는-방식).
+  - 읽는 명령 (`docker/`에서). 첫 줄은 bridge 이름 (`br-` 뒤에 네트워크 id 앞 12자)을 구한다. bridge의 설정 파일은 Docker 호스트 (Mac이면 Docker Desktop VM)에 있으므로, `--network host` 컨테이너로 읽는다. Linux 호스트에서는 컨테이너 없이 `cat`으로 읽어도 된다.
+    ```bash
+    BR=br-$(docker network inspect dds-net -f '{{.Id}}' | cut -c1-12)
+    docker run --rm --network host mdds/tools sh -c "cat /sys/class/net/$BR/bridge/multicast_snooping /sys/class/net/$BR/bridge/multicast_querier"
+    ```
+- querier가 있는 Linux 호스트에서는 가입자가 있는 그룹을 가입자가 있는 스위치 포트 (와 router 포트)로만 보낸다. 가입자가 없는 그룹은 여전히 flooding한다. 물리 스위치는 제품마다 다르다.
+- SPDP 멀티캐스트의 IP TTL은 벤더마다 다르다 (캡처에서 Fast DDS 1, Cyclone DDS 32). 같은 L2 세그먼트라 어느 값이든 문제없다. 장비에 남는 상태는 [discovery-network-state.md](../../docs-for-agent/research/discovery-network-state.md).
+- 자기가 보낸 멀티캐스트 (IGMP report 포함)는 커널의 multicast loopback으로 같은 컨테이너의 수신 방향에도 잡힌다. 그래서 보낸 쪽 캡처에는 같은 패킷이 두 개씩 보인다 (`tcpdump -Q out`과 `-Q in`에 하나씩). 멀티캐스트 패킷 수는 받는 쪽 캡처로 센다.
 - 다른 bridge 네트워크, 호스트의 물리 NIC 바깥, (Mac의 경우) VM 바깥으로는 넘어가지 않는다. 그래서 캡처는 반드시 같은 네트워크 안에서 한다.
-- 디버깅 순서: (1) `ip maddr show eth0`로 가입 여부, (2) tcpdump에서 `igmp` 패킷, (3) `mcast-check`로 전달 여부. 이 셋이 되면 네트워크는 정상이고 문제는 DDS 쪽이다.
+- 참고 캡처: `captures/mcast-check/` ([README](../../captures/mcast-check/README.md)).
 
 ## RTPS 트래픽이 이 네트워크에서 흐르는 방식
 - **참가자 발견 (SPDP)**: 각 컨테이너가 239.255.0.1:7400 (도메인 0)으로 주기적으로 멀티캐스트한다. 주기는 Cyclone 약 8초 (lease 10초의 80%), Fast DDS 3초 (lease 20초).
@@ -144,12 +144,7 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 ```
 터미널 1에 `26 bytes from 172.28.0.10:<포트>: hello 1/3 from 172.28.0.10`이 세 번 찍히면 bridge가 멀티캐스트를 전달하는 것이다.
 
-캡처까지 함께 확인하려면 터미널 1을 띄우기 전에 받는 쪽에서 tcpdump를 켜 둔다. IGMP join과 leave, hello 세 건이 잡힌다.
-```
-docker compose exec -T fastdds tcpdump -i eth0 -U -w /captures/mcast-check/mcast-check.fastdds.pcap 'igmp or udp port 7400'
-# 끝낼 때: docker compose exec fastdds pkill -INT tcpdump
-tshark -r ../captures/mcast-check/mcast-check.fastdds.pcap          # Mac 에서
-```
+캡처까지 함께 확인하는 절차는 [chapter 02 Lab 2-1](../../book/02-multicast/README.md#21-lab-2-1-멀티캐스트-보내고-받기)에 있다. 참고 캡처는 `docker/capture-mcast-check.ts join` (또는 `nojoin`)으로 다시 만든다.
 
 ### 도구를 벤더 컨테이너 밖에서 돌리는 방법
 `mcast-check.sh`는 `docker run --network container:<벤더 컨테이너 id>`로 도구 컨테이너를 띄운다. 도구 컨테이너는 따로 있지만 벤더 컨테이너의 네트워크 네임스페이스를 빌려 쓰므로 같은 `eth0`, 같은 IP에서 돈다 (위 "검토한 다른 방식"의 네임스페이스 공유).
@@ -162,6 +157,7 @@ tshark -r ../captures/mcast-check/mcast-check.fastdds.pcap          # Mac 에서
 | 증상 | 원인 후보 | 대응 |
 |---|---|---|
 | `mcast-check` 멀티캐스트가 안 넘어감 | bridge가 멀티캐스트를 전달하지 않음 | (1) `ip maddr`와 tcpdump의 igmp로 가입은 됐는지 확인. (2) Linux 머신: `cat /sys/class/net/br-<id>/bridge/multicast_snooping` 확인, 1이면 `echo 0 \| sudo tee` 로 0으로 바꿔 시험. (3) Mac: Docker Desktop 버전과 네트워킹 설정 확인. (4) 대안 A: 컨테이너 하나에서 두 프로세스를 띄운다 (loopback 멀티캐스트는 항상 된다. 단 "한 호스트"가 되어 participantId가 갈린다). (5) 대안 B (Mac): OrbStack이나 Lima 같은 다른 Linux VM 환경 |
+| `mcast-check recv`가 `Address already in use`로 실패. 벤더 컨테이너 안에는 7400을 쓰는 프로세스가 없음 | 끝내지 않은 이전 `mcast-check recv` 도구 컨테이너가 같은 네트워크 네임스페이스에서 7400을 잡고 있음 (벤더 컨테이너의 `ps`에는 보이지 않는다) | `docker ps --filter ancestor=mdds/tools`로 찾아 `docker stop`. 그동안 `ip maddr`에는 239.255.0.1이 계속 보인다 |
 | 통신은 되는데 캡처가 비어 있음 | 캡처가 늦게 시작됨, 인터페이스 이름이 eth0가 아님, tcpdump가 파일에 못 씀 | `ip addr`로 인터페이스 확인. 캡처를 DDS보다 먼저 켠다. `tcpdump -Z root`를 확인한다 |
 | 유니캐스트 목적지가 엉뚱한 IP | 컨테이너에 인터페이스가 여러 개 | `docker network inspect`로 확인. compose에서 네트워크를 하나만 붙인다 |
 | Cyclone 유니캐스트 포트가 7410이 아님 | 정상. Cyclone은 멀티캐스트 발견 시 임의 포트 | SPDP 로케이터 값으로 확인 |

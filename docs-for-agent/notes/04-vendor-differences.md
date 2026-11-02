@@ -35,7 +35,7 @@
 
 ### Step 2. 캡처 분석 메모
 - [x] 시나리오마다 실행 명령, 흐름 (Mermaid 다이어그램), 질문을 캡처 README에 적는다 ([captures.md](../conventions/captures.md#readme-형식)).
-- [x] 두 벤더의 차이를 메모한다: 벤더 ID, 프로토콜 버전, 벤더 전용 PID, 데이터 표현 ID, SPDP의 lease 기간 값, 유니캐스트 포트 (Fast DDS 7410 / 7411, Cyclone은 임의 포트), Fast DDS SPDP에 실리는 공유 메모리 로케이터 (벤더 전용 kind).
+- [x] 두 벤더의 차이를 메모한다: 벤더 ID, 프로토콜 버전, 벤더 전용 PID, 데이터 표현 ID, SPDP의 lease 기간 값, 유니캐스트 포트 (Fast DDS 7410 / 7411, Cyclone은 임의 포트), Fast DDS SPDP에 실리는 공유 메모리 로케이터 (벤더 전용 kind), SPDP 멀티캐스트의 IP TTL (Fast DDS 1, Cyclone 32. chapter 02에서 TTL과 서브넷 경계를 설명하고 벤더 차이는 여기로 미뤘다).
 
 ## lab
 규칙은 [conventions/book.md](../conventions/book.md#lab).

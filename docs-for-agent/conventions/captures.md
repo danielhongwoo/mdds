@@ -6,7 +6,12 @@
 
 ## 위치와 파일
 - `captures/<누가-누구>/` 아래에 (예: `cyclone-fastdds/`, 나중에 `mdds-cyclone/`) 시나리오마다 `<시나리오>.pcap` (구독자 컨테이너 `eth0`), `<시나리오>.pub.log`, `<시나리오>.sub.log` (양쪽 stdout/stderr)를 둔다. 같은 디렉터리의 `README.md`가 설명이다.
-- 캡처는 스크립트로만 만든다 (예: [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)). 누구나 같은 명령으로 다시 만들 수 있어야 한다. 기존 파일은 명시적으로 덮어쓸 때만 바꾼다 (`--force`).
+- 네트워크만 보는 캡처 (DDS 없음)는 `captures/mcast-check/`에 `<시나리오>.<컨테이너>.pcap`과 도구 출력 `<시나리오>.recv.log`, `<시나리오>.send.log`로 둔다 ([docker/capture-mcast-check.ts](../../docker/capture-mcast-check.ts)). 보내는 쪽과 받는 쪽에서 보이는 것이 다르므로 (multicast loopback) 양쪽을 따로 캡처한다.
+- 캡처는 스크립트로만 만든다 (예: [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)). 누구나 같은 명령으로 다시 만들 수 있어야 한다. 기존 파일은 명시적으로 덮어쓸 때만 바꾼다 (`--force`). 다시 만드는 때는 캡처 내용에 영향을 주는 것이 바뀌었을 때다: 벤더 버전이나 빌드 소스 커밋, 캡처에 쓰는 도구 (mcast-check 등), 스크립트의 시나리오, 실행 환경 (Docker Desktop, 네트워크 설정). 다시 만들면 캡처 README의 공통 조건과 흐름, 본문에 옮긴 프레임 번호와 시각도 함께 고친다.
+
+**결정: lab에서 독자가 직접 만드는 캡처는 `my-` 접두로 이름 짓고 커밋하지 않는다 (`.gitignore`의 `captures/**/my-*`).**
+- 왜: 독자가 손으로 만든 캡처가 저장소의 참고 캡처를 덮어쓰거나, clone한 저장소에 변경으로 남지 않게 하기 위해서다. 참고 캡처는 스크립트로 만들고, 독자는 자기 캡처와 비교만 한다.
+- 버린 대안: lab 번호를 넣은 이름 (`lab-2-1.pcap`). 산출물 이름에 lab 번호를 넣지 않는다는 규칙 ([book.md](book.md#lab))과 맞지 않고, lab 번호가 바뀌면 이름도 바꿔야 한다.
 
 **결정: 디렉터리 이름은 `captures`다.**
 - 왜: 내용이 전부 캡처와 그 로그다. 컨테이너 안 마운트 경로 `/captures`와 이름이 같다.
