@@ -36,7 +36,7 @@ sequenceDiagram
 
 다음 두 환경을 기준으로 설명한다. macOS (Apple Silicon)에서는 Docker Desktop을, Ubuntu (24.04, x86_64 또는 arm64)에서는 Docker Engine을 쓴다. 이미지를 소스에서 빌드하므로 (3.2절) 두 환경 모두 같은 Dockerfile과 compose 파일로 동작한다. 설치가 끝나면 이후의 명령은 두 환경에서 같다. 이 판의 명령과 출력은 macOS에서 실행해 확인했고, Ubuntu 절차는 Docker, Deno 공식 문서와 Ubuntu 24.04 패키지 정보를 근거로 작성했다.
 
-### 2.1. Docker
+### 2.1 Docker
 
 macOS
 - Docker Desktop을 설치한다.
@@ -50,7 +50,7 @@ Ubuntu
 
 두 환경 모두 디스크는 빌드 중간 산출물을 포함해 10 GB 정도의 여유 공간이 필요하다. `docker compose version`이 버전을 출력하면 준비가 끝난 것이다.
 
-### 2.2. Deno
+### 2.2 Deno
 
 캡처 시나리오 스크립트를 실행하는 데 쓴다 (chapter 03부터). Deno는 TypeScript를 별도의 컴파일 단계 없이 직접 실행하는 런타임이다. 시스템 소프트웨어를 다루는 엔지니어에게는 낯설 수 있으므로 쓰는 이유를 밝혀 둔다. 캡처 하나를 만들려면 tcpdump를 먼저 시작하고, 구독자와 발행자를 차례로 실행한 뒤, 정해진 시간이 지나면 역순으로 종료해야 한다. 이 절차를 셸 스크립트로 작성하면 인용 부호 처리와 프로세스 관리 때문에 가독성이 떨어진다. TypeScript로 작성하면 시나리오 표와 실행 흐름이 코드에 그대로 드러난다. 외부 모듈은 쓰지 않고, 스크립트에 허용하는 권한도 `docker` 실행과 파일 읽기, 쓰기로 제한한다.
 
@@ -59,20 +59,20 @@ Ubuntu
 
 `deno --version`이 2.x를 출력하면 된다.
 
-### 2.3. Wireshark
+### 2.3 Wireshark
 
 캡처 파일을 분석하는 데만 쓴다. 캡처는 컨테이너 안에서 수행하므로 Wireshark가 네트워크 인터페이스에 접근할 필요는 없다.
 
 - macOS: `brew install --cask wireshark`
 - Ubuntu: `sudo apt install wireshark`. 설치 중에 일반 사용자의 패킷 캡처를 허용할지 묻는데, 이 책에서는 파일만 열므로 어느 쪽을 선택해도 된다.
 
-### 2.4. 프로젝트 받기
+### 2.4 프로젝트 받기
 
 이 책의 저장소를 clone한다. 실습 환경 (`docker/`), 캡처 (`captures/`), mdds의 빈 crate들 (`crates/`. 코드는 chapter 06부터 쓴다)이 모두 들어 있다. 이 책에서는 clone한 디렉터리를 **프로젝트 디렉터리**라고 부른다. 이후의 명령은 프로젝트 디렉터리나 그 안의 `docker/`에서 실행한다.
 
 ## 3. 벤더 이미지
 
-### 3.1. dds-rtps 저장소
+### 3.1 dds-rtps 저장소
 
 shape_main은 OMG의 [dds-rtps 저장소](https://github.com/omg-dds/dds-rtps)에 있다. DDS 구현 사이의 상호운용 시험을 위한 저장소로, 시험에 쓰는 shape_main과 시험 실행 스크립트가 들어 있다. shape_main 소스는 언어별로 있고 (C, C++, Rust), 각 벤더가 이 소스를 자기 DDS 라이브러리로 빌드한다. 이 책이 쓰는 Cyclone DDS와 Fast DDS도 이 저장소에 shape_main 빌드 파일이 있고, 릴리스에 두 벤더의 실행 파일이 올라와 있다.
 
@@ -80,7 +80,7 @@ shape_main 실행 파일은 벤더의 DDS 라이브러리, IDL 컴파일러가 `
 
 이 책은 shape_main 소스를 분석하지 않는다. 명령행 옵션과 출력만 사용하고, 패킷에서 이해되지 않는 동작이 보일 때 해당 부분만 찾아 읽는다.
 
-### 3.2. 소스에서 빌드하는 이유
+### 3.2 소스에서 빌드하는 이유
 
 OMG는 상호운용 시험용으로 벤더별 shape_main 실행 파일을 [dds-rtps 저장소의 릴리스](https://github.com/omg-dds/dds-rtps/releases)에 올린다. 그러나 이 실행 파일은 모두 Linux용이고 (확인한 Cyclone, Fast DDS 실행 파일은 x86-64용이었다), 릴리스 노트에는 어떤 소스 커밋과 빌드 환경으로 만들었는지가 나와 있지 않다. 따라서 이 책은 shape_main과 두 벤더의 DDS 라이브러리를 모두 Docker 이미지 안에서 소스로 빌드한다.
 
@@ -90,7 +90,7 @@ OMG는 상호운용 시험용으로 벤더별 shape_main 실행 파일을 [dds-r
 
 단점은 첫 빌드에 걸리는 시간이다. 캐시 없이 처음부터 빌드하면 Apple Silicon Mac (10코어, Docker Desktop 메모리 16 GB)에서 약 5분이 걸리고 (Ubuntu에서는 CPU와 메모리에 따라 다르다), 그 대부분은 Fast DDS의 C++ 컴파일 시간이다. Docker가 단계별 결과를 캐시하므로 두 번째 빌드부터는 바뀐 단계만 다시 빌드한다.
 
-### 3.3. 이미지 구성
+### 3.3 이미지 구성
 
 벤더마다 Dockerfile과 이미지를 따로 둔다.
 
@@ -112,7 +112,7 @@ runtime 단계에 빌드 도구를 포함하지 않으므로 이미지 크기는
 
 Dockerfile 각 단계의 명령은 Dockerfile과 그 주석에, 이렇게 설계한 이유는 [vendor-build.md "설계 메모"](../../docs/environment/vendor-build.md#설계-메모)에 있다.
 
-### 3.4. 버전 고정
+### 3.4 버전 고정
 
 빌드에 쓰는 소스는 모두 커밋 해시로 고정한다. shape_main 소스와 Cyclone DDS는 커밋 해시를 지정해 내려받는다. Fast DDS 쪽 저장소는 태그로 내려받는데, 태그는 나중에 다른 커밋으로 옮겨질 수 있으므로 내려받은 뒤 커밋 해시를 검사해 다르면 빌드를 중단한다. 베이스 이미지 (Ubuntu 24.04)도 날짜 태그와 다이제스트로 고정한다.
 
@@ -161,7 +161,7 @@ flowchart LR
 
 ## 5. 직접 실행해 보기
 
-### Lab 1-1: 벤더 이미지 빌드와 컨테이너 실행
+### 5.1 Lab 1-1: 벤더 이미지 빌드와 컨테이너 실행
 
 **목표**: 두 벤더 이미지를 소스에서 빌드하고 컨테이너 두 개를 실행한다.
 
@@ -203,7 +203,7 @@ flowchart LR
 
 빌드가 실패하면 [vendor-build.md "빌드 문제와 대응"](../../docs/environment/vendor-build.md#빌드-문제와-대응)을 참고한다. 실습을 마치고 컨테이너를 종료하고 삭제할 때는 `docker compose down`을 실행한다. 이미지와 캡처 파일은 그대로 남는다.
 
-### Lab 1-2: shape_main 확인
+### 5.2 Lab 1-2: shape_main 확인
 
 **목표**: 두 컨테이너의 shape_main이 실행되는지, 어떤 버전으로 빌드되었는지 확인한다.
 

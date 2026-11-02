@@ -51,7 +51,7 @@ OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 �
 - Fast DDS 원래 실행 파일 이름은 `eprosima_fastdds-3.6.1.0_shape_main_linux`다 (`fastdds_VERSION`이 4자리). OMG 릴리스 자산 이름 `eprosima_fastdds-3.6.1`과 끝자리가 다르다.
 
 ## 빌드 후 확인
-Dockerfile이나 버전을 바꿔 다시 빌드했을 때 한다. 이미지 빌드가 성공해도 실행할 때 문제가 드러날 수 있어서다. [chapter 01 Lab 1-2](../../book/01-environment/README.md#lab-1-2-shape_main-확인)의 명령 (`ldd`, `-h`, `fastdds_shape.origname`, Cyclone 이미지 라벨)을 다시 실행하고, 다음을 더 확인한다. 위 "빌드 결과"는 이 확인을 마지막으로 한 결과다.
+Dockerfile이나 버전을 바꿔 다시 빌드했을 때 한다. 이미지 빌드가 성공해도 실행할 때 문제가 드러날 수 있어서다. [chapter 01 Lab 1-2](../../book/01-environment/README.md#52-lab-1-2-shape_main-확인)의 명령 (`ldd`, `-h`, `fastdds_shape.origname`, Cyclone 이미지 라벨)을 다시 실행하고, 다음을 더 확인한다. 위 "빌드 결과"는 이 확인을 마지막으로 한 결과다.
 ```
 docker image inspect mdds/fastdds-shape:3.6.1 --format '{{json .Config.Labels}}'
 docker image ls 'mdds/*'

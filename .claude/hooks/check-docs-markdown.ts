@@ -156,11 +156,17 @@ function checkHeadings(lines: string[], report: Report): void {
         message: '절 제목은 "## N. 제목" (참고 자료만 번호 없음)',
       });
     }
-    if (line.startsWith("### ") && !/^### (\d+\.\d+\. .+|Lab \d+-\d+: .+)$/.test(line)) {
+    if (line.startsWith("### ") && !/^### \d+\.\d+ .+$/.test(line)) {
       report.errors.push({
         line: i + 1,
-        message: '소절 제목은 "### N.M. 제목" 또는 "### Lab C-N: 제목"',
+        message: '소절 제목은 "### N.M 제목" (lab은 "### N.M Lab C-N: 제목")',
       });
+    }
+    if (line.startsWith("#### ") && !/^#### \d+\.\d+\.\d+ .+$/.test(line)) {
+      report.errors.push({ line: i + 1, message: '제목은 "#### N.M.K 제목"' });
+    }
+    if (line.startsWith("##### ") && !/^##### \d+\.\d+\.\d+\.\d+ .+$/.test(line)) {
+      report.errors.push({ line: i + 1, message: '제목은 "##### N.M.K.L 제목"' });
     }
   });
 }
