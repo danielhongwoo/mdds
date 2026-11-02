@@ -27,14 +27,18 @@ type Vendor = "cyclone" | "fastdds";
 interface Scenario {
   /** 발행 컨테이너. 구독은 항상 상대 벤더이고, 캡처도 구독자 쪽에서 한다. */
   pub: Vendor;
-  /** -r: RELIABLE, -b: BEST_EFFORT */
+  /** 발행자의 신뢰성. -r: RELIABLE, -b: BEST_EFFORT. 구독자도 같다 (subReliability 가 없으면) */
   reliability: "-r" | "-b";
+  /** 구독자의 신뢰성이 발행자와 다를 때만 적는다 */
+  subReliability?: "-r" | "-b";
   /** -x: 데이터 표현. 1 = XCDR1, 2 = XCDR2. 기본 1 */
   representation?: 1 | 2;
   /** 발행 횟수 (--num-iterations). null 이면 스스로 끝나지 않는다. 기본 100 */
   iterations?: number | null;
   /** 발행 전용 옵션 추가분 */
   pubExtra?: string[];
+  /** 구독 전용 옵션 추가분 */
+  subExtra?: string[];
   /** 발행자 종료 방식. wait: 스스로 끝날 때까지 기다림, kill9: 10초 뒤 SIGKILL. 기본 wait */
   end?: "wait" | "kill9";
   /** 발행자 종료 뒤 관찰 시간 (초). 기본 5 */
@@ -66,6 +70,10 @@ const SCENARIOS: Record<string, Scenario> = {
     pubExtra: ["--additional-payload-size", "100000"],
   },
   "xcdr2": { pub: "cyclone", reliability: "-r", representation: 2 },
+  // 구독자가 RELIABLE 을 요구하는데 발행자는 BEST_EFFORT 만 제공한다 (RxO 불일치)
+  "qos-mismatch": { pub: "cyclone", reliability: "-b", subReliability: "-r" },
+  // 구독자만 파티션 "A" 에 있다. 발행자는 기본 (빈) 파티션
+  "partition-mismatch": { pub: "cyclone", reliability: "-r", subExtra: ["-p", "A"] },
 };
 
 /** 시나리오 한 줄을 푼 실행 계획. 기본값이 모두 채워져 있다. */
@@ -96,7 +104,6 @@ function plan(name: string, s: Scenario): Plan {
     "-d", "0",
     "-t", "Square",
     "-x", String(s.representation ?? 1),
-    s.reliability,
   ];
   // deno-fmt-ignore
   const pubOnly = [
@@ -105,6 +112,7 @@ function plan(name: string, s: Scenario): Plan {
     ...(iterations === null ? [] : ["--num-iterations", String(iterations)]),
     ...(s.pubExtra ?? []),
   ];
+  const subOnly = s.subExtra ?? [];
 
   return {
     name,
@@ -112,8 +120,8 @@ function plan(name: string, s: Scenario): Plan {
     sub,
     pubBin: `${s.pub}_shape`,
     subBin: `${sub}_shape`,
-    pubArgs: ["-P", ...common, ...pubOnly],
-    subArgs: ["-S", ...common],
+    pubArgs: ["-P", ...common, s.reliability, ...pubOnly],
+    subArgs: ["-S", ...common, s.subReliability ?? s.reliability, ...subOnly],
     end: s.end ?? "wait",
     after: s.after ?? 5,
   };

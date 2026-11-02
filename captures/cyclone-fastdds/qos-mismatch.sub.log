@@ -1,0 +1,4 @@
+Create topic: Square
+Create reader for topic: Square
+on_requested_incompatible_qos() topic: 'Square'  type: 'ShapeType' : 11 (RELIABILITY)
+Done.

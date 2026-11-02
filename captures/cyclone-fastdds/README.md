@@ -23,6 +23,8 @@ Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다
 | `lease-expiry.*` | Cyclone 발행자를 SIGKILL. 참가자 제거 메시지 없이 lease 만료로 사라진다. 캡처는 fastdds |
 | `large-sample.*` | Cyclone 발행, 샘플 약 100KB x 30회. DATA_FRAG (조각 1344바이트), HEARTBEAT_FRAG. 캡처는 fastdds |
 | `xcdr2.*` | Cyclone 발행, XCDR2 (`D_CDR2_LE`, PID_DATA_REPRESENTATION XCDR2). 캡처는 fastdds |
+| `qos-mismatch.*` | Cyclone 발행 BEST_EFFORT, Fast DDS 구독 RELIABLE. SEDP는 오가지만 사용자 DATA가 없고 양쪽 로그에 `11 (RELIABILITY)`. 캡처는 fastdds |
+| `partition-mismatch.*` | Cyclone 발행 (파티션 없음), Fast DDS 구독 파티션 `A`. 사용자 DATA가 없고 로그에 알림도 없다. 캡처는 fastdds |
 
 ## rel-cyclone-pub
 ```
@@ -430,6 +432,75 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 - `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나 (예: DHEADER)? -> chapter 6, chapter 16
 - 양쪽의 PID_DATA_REPRESENTATION이 다르면 매칭되나? -> chapter 16
 - 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> chapter 13
+
+## qos-mismatch
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -r
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -b -c BLUE --write-period 100 --num-iterations 100
+```
+구독자는 RELIABLE을 요구하고 발행자는 BEST_EFFORT만 제공한다.
+
+### 흐름
+프레임 71개: 디스커버리 59개, IGMP 12개. 사용자 데이터는 0개다. SPDP와 SEDP는 rel-cyclone-pub과 같은 순서로 오가고, 그 뒤에 사용자 writer의 DATA도 HEARTBEAT도 없다.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note over F,C: SPDP 교환 (3-18)
+    F->>C: 20, 22 (3.08s) HB pub, HB sub
+    C->>F: 23 (3.08s) ACKNACK x2
+    C->>F: 25 (3.09s) HB x3
+    C->>F: 28 (3.10s) DATA(w) seq 1: Square writer, PID_RELIABILITY BEST_EFFORT
+    F->>C: 35 (3.19s) DATA(r) seq 1: Square reader, PID_RELIABILITY RELIABLE
+    Note over F,C: 사용자 데이터 없음. SPDP와 참가자 메시지만 (41-56)
+    C->>F: 57 (13.69s) DATA(w[UD]) status_info 0x3 (발행자 종료)
+    C->>F: 58-59 (13.69s) SPDP DATA(p[UD])
+    Note left of F: 19.03s, 66-67: SPDP DATA(p[UD]) (구독자 SIGINT)
+```
+
+로그 (원문 그대로):
+```
+cyclone (pub.log): on_offered_incompatible_qos() topic: 'Square'  type: 'ShapeType' : 11 (RELIABILITY)
+fastdds (sub.log): on_requested_incompatible_qos() topic: 'Square'  type: 'ShapeType' : 11 (RELIABILITY)
+```
+
+### 질문
+- 28의 writer 정보와 35의 reader 정보는 모두 상대에게 전달됐다 (각각 ACKNACK으로 확인됨). 그런데 사용자 DATA가 없다. 무엇이 전달을 막았나? -> chapter 5
+- 로그의 `11`은 무엇인가? -> chapter 5
+- 매칭되지 않은 reader에게 writer는 HEARTBEAT를 보내지 않는다. writer는 누구에게 HEARTBEAT를 보내는가? -> chapter 10, chapter 11
+
+## partition-mismatch
+```
+fastdds: fastdds_shape -S -d 0 -t Square -x 1 -r -p A
+cyclone: cyclone_shape -P -d 0 -t Square -x 1 -r -c BLUE --write-period 100 --num-iterations 100
+```
+구독자만 파티션 `A`에 있다. 발행자는 파티션 옵션이 없다.
+
+### 흐름
+프레임 71개: 디스커버리 59개, IGMP 12개. 사용자 데이터는 0개다. qos-mismatch와 같은 모양이다.
+
+```mermaid
+sequenceDiagram
+    participant F as Fast DDS (구독, .11)
+    participant C as Cyclone (발행, .10)
+
+    Note over F,C: SPDP 교환 (1-18)
+    F->>C: 19-21 (3.08s) HB x3
+    C->>F: 22 (3.08s) ACKNACK x3
+    C->>F: 23 (3.08s) DATA(w) seq 1: Square writer, PID_PARTITION 없음
+    F->>C: 33 (3.18s) DATA(r) seq 1: Square reader, PID_PARTITION "A"
+    Note over F,C: 사용자 데이터 없음. SPDP와 참가자 메시지만 (40-56)
+    C->>F: 57 (13.63s) DATA(w[UD]) status_info 0x3 (발행자 종료)
+    Note left of F: 19.02s, 66-67: SPDP DATA(p[UD]) (구독자 SIGINT)
+```
+
+로그: 양쪽 모두 `Create topic`, `Create writer` / `Create reader` 줄뿐이다. matched도 incompatible도 찍히지 않았다.
+
+### 질문
+- qos-mismatch에서는 양쪽 로그에 `incompatible_qos`가 찍혔는데 여기서는 아무것도 없다. 무엇이 다른가? -> chapter 5
+- 23의 writer 정보에는 PID_PARTITION이 없다. 발행자의 파티션은 무엇인가? -> chapter 5
 
 ## 두 벤더의 차이 (지금까지 확인한 것)
 독자용 정본은 [chapter 4 Lab 4-1의 기대 결과](../../book/04-vendor-differences/README.md#214-기대-결과-두-벤더의-차이)다. 이 표는 그 원자료이고, 두 표를 함께 고친다.

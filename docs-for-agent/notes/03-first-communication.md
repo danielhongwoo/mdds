@@ -67,7 +67,7 @@ Cyclone DDS와 Fast DDS가 처음 통신하는 과정을 캡처하고, Wireshark
 | Lab 3-3 | best-effort와 비교 | `be-cyclone-pub`을 같은 필터로 봄 -> 사용자 트래픽에는 DATA만 있고, HEARTBEAT / ACKNACK는 SEDP와 참가자 메시지 엔드포인트에만 남음 | `be-cyclone-pub.*` |
 
 ## 시나리오 실행 흐름 (`capture-shape-scenario.ts`)
-스크립트는 [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)다. `./capture-shape-scenario.ts <이름>`으로 실행하고, `--list`로 이름을 본다. 결과 파일이 이미 있으면 멈추며 `--force`로 덮어쓴다 (캡처는 커밋되는 정답 데이터라 실수로 지우지 않게). 시작 전에 두 컨테이너가 떠 있는지, 이전 실행의 shape_main이나 tcpdump가 남아 있는지 검사한다. 아래 흐름과 시나리오 표를 바꾸면 스크립트의 `SCENARIOS`도 함께 고친다. chapter 4의 시나리오도 같은 스크립트와 표를 쓴다.
+스크립트는 [docker/capture-shape-scenario.ts](../../docker/capture-shape-scenario.ts)다. `./capture-shape-scenario.ts <이름>`으로 실행하고, `--list`로 이름을 본다. 결과 파일이 이미 있으면 멈추며 `--force`로 덮어쓴다 (캡처는 커밋되는 정답 데이터라 실수로 지우지 않게). 시작 전에 두 컨테이너가 떠 있는지, 이전 실행의 shape_main이나 tcpdump가 남아 있는지 검사한다. 아래 흐름과 시나리오 표를 바꾸면 스크립트의 `SCENARIOS`도 함께 고친다. chapter 4와 5의 시나리오도 같은 스크립트와 표를 쓴다.
 
 스크립트 언어 (TypeScript + Deno), 파일 이름 ("하는 일 + 대상"), 통과해야 하는 검사는 [typescript.md](../conventions/typescript.md)를 따른다.
 
@@ -110,13 +110,13 @@ X="docker compose exec -T"      # 스크립트에서는 TTY가 없으므로 -T �
 - 캡처는 구독자 컨테이너에서 한다. 발행자를 바꾸는 시나리오에서는 캡처 컨테이너도 바뀐다.
 
 ## 시나리오 표
-chapter 3과 4의 시나리오를 모두 여기에 둔다 (스크립트의 `SCENARIOS`와 일대일). 옵션은 OMG dds-rtps README (2026-10-28 확인)의 shape_main 옵션이고, `-h`로 실행 파일과 같은지 확인했다.
+chapter 3, 4, 5의 시나리오를 모두 여기에 둔다 (스크립트의 `SCENARIOS`와 일대일). 옵션은 OMG dds-rtps README (2026-10-28 확인)의 shape_main 옵션이고, `-h`로 실행 파일과 같은지 확인했다.
 
 - COMMON 기본값: `-d 0 -t Square -x 1`에 표의 신뢰성 옵션을 더한다. xcdr2 시나리오만 `-x 2`. 데이터 표현을 명시하는 이유는 실행 파일의 기본값을 모르기 때문이다.
 - PUB_ONLY 기본값: `-c BLUE --write-period 100 --num-iterations 100` (10 Hz로 약 10초 보내고 스스로 끝난다). 표의 값은 여기에 더하거나 대체한다.
 - **`-c`는 발행 전용이다.** 구독자에게 주면 ContentFilteredTopic이 되어 토픽 이름이 `Square_filtered`로 바뀌고 SEDP에 `PID_CONTENT_FILTER_PROPERTY` (DDSSQL `color = %0`)가 실린다. 색이 하나뿐이라 거르는 것은 없고 기본 캡처만 복잡해지므로 뺐다. ContentFilteredTopic 자체를 볼 캡처가 필요해지면 별도 시나리오로 추가한다.
 - **구독 로그의 샘플 수는 실제 전달 수보다 적을 수 있다.** 구독자는 기본 history (KEEP_LAST)로 100ms마다 읽는데 발행도 100ms 주기라, 한 주기에 둘이 들어오면 앞의 것이 덮어써진다. 전달 여부는 캡처의 DATA seq와 ACKNACK로 판단한다. 또 발행자는 구독자를 발견하기 전부터 쓰므로 (VOLATILE) 앞쪽 seq 몇 개는 전달 대상이 아니다.
-- SUB_ONLY: 모든 시나리오에서 없음.
+- SUB_ONLY: chapter 5의 partition-mismatch만 `-p A`. 신뢰성 옵션은 양쪽이 같은 것이 기본이고, 다를 때는 표에 "발행 `-b`, 구독 `-r`"처럼 적는다 (스크립트의 `subReliability`).
 
 | 이름 | chapter | 발행 (PUB) | 구독 (SUB) | COMMON 추가 | PUB_ONLY 변경 | END | AFTER | 관찰 목표 |
 |---|---|---|---|---|---|---|---|---|
@@ -128,10 +128,12 @@ chapter 3과 4의 시나리오를 모두 여기에 둔다 (스크립트의 `SCEN
 | lease-expiry | 4 | cyclone | fastdds | `-r` | `--write-period 100` 만 (`--num-iterations` 없음) | kill9 | 25 (Cyclone lease 10초 + 여유) | dispose 없이 사라진 참가자를 구독자가 lease 만료로 정리. 증거는 캡처의 마지막 SPDP 시각과 그 뒤 구독자의 동작 (ACKNACK 중단 등) |
 | large-sample | 4 | cyclone | fastdds | `-r` | 기본값 + `--additional-payload-size 100000`, `--num-iterations 30` | wait | 5 | DATA_FRAG, HEARTBEAT_FRAG, NACK_FRAG (두 벤더 사이). IP 단편화도 섞이므로 Wireshark에서 IP 재조립 설정을 켜고 본다 |
 | xcdr2 | 4 | cyclone | fastdds | `-r -x 2` (`-x 1` 대체) | 기본값 | wait | 5 | 캡슐화 식별자 0x0007 (CDR2_LE) 등 XCDR2 페이로드 |
+| qos-mismatch | 5 | cyclone | fastdds | 발행 `-b`, 구독 `-r` | 기본값 | wait | 5 | RxO 불일치. SEDP는 오가지만 사용자 DATA가 없고 양쪽 로그에 `incompatible_qos ... 11 (RELIABILITY)` |
+| partition-mismatch | 5 | cyclone | fastdds | `-r`, 구독에만 `-p A` (SUB_ONLY) | 기본값 | wait | 5 | 파티션 불일치. 사용자 DATA가 없고 로그에 알림도 없다. reader 정보에 PID_PARTITION |
 
 - lease 기본값: Cyclone `Discovery/LeaseDuration` 10초, Fast DDS 20초 (공식 문서로 확인). 구독자는 상대가 SPDP로 광고한 lease 값을 쓰므로, Cyclone 발행자를 죽이면 Fast DDS 구독자는 약 10초 뒤에 정리한다.
 - 각 시나리오는 한 번에 참가자 둘만 띄운다. 실행 흐름 10번의 `pgrep`이 비어 있는지 확인하고 시작한다.
-- 선택: dispose-on-exit의 `d`를 `u`로 바꾼 unregister-only 캡처, 발행 `-r` + 구독 `-b` 같은 QoS 불일치 캡처 (REQUESTED_INCOMPATIBLE_QOS 관찰)는 시간이 남으면 추가한다.
+- 선택: dispose-on-exit의 `d`를 `u`로 바꾼 unregister-only 캡처는 시간이 남으면 추가한다.
 
 ## 예상 문제와 대응
 빌드 문제는 [vendor-build.md](../../docs/environment/vendor-build.md#빌드-문제와-대응), 네트워크와 캡처 문제는 [docker-network.md](../../docs/environment/docker-network.md#문제와-대응)를 본다. 시나리오 실행에 관한 것만 적는다.

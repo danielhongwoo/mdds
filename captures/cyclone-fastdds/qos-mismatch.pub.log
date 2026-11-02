@@ -1,0 +1,3 @@
+Create topic: Square
+Create writer for topic: Square color: BLUE
+on_offered_incompatible_qos() topic: 'Square'  type: 'ShapeType' : 11 (RELIABILITY)
