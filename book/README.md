@@ -36,33 +36,33 @@ chapter마다 같은 순서로 간다.
 Rust를 뺀 나머지의 설치와 설정은 chapter 01에서 한다.
 
 ## 목차
-상태: 집필 전 / 초안 / 완료. 뒤쪽 chapter의 제목과 나눔은 그 chapter의 작업을 하면서 바뀔 수 있다. 저자 노트는 chapter의 작업 계획이다 (독자는 읽지 않아도 된다). 책에 나오는 용어는 [용어 정리](glossary.md)에 모아 두었다.
+뒤쪽 chapter의 제목과 나눔은 그 chapter의 작업을 하면서 바뀔 수 있다. 저자 노트는 chapter의 작업 계획이다 (독자는 읽지 않아도 된다). 책에 나오는 용어는 [용어 정리](glossary.md)에 모아 두었다.
 
-| chapter | 제목 | 저자 노트 | 상태 |
-|---|---|---|---|
-| 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) | 완료 |
-| 01 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) | 초안 |
-| 02 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) | 초안 |
-| 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) | 집필 전 |
-| 04 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) | 집필 전 |
-| 05 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) | 집필 전 |
-| 06 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) | 집필 전 |
-| 07 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) | 집필 전 |
-| 08 | Best-effort 전송과 UDP | [08-best-effort-udp](../docs-for-agent/notes/08-best-effort-udp.md) | 집필 전 |
-| 09 | 참가자 디스커버리 (SPDP) | [09-spdp](../docs-for-agent/notes/09-spdp.md) | 집필 전 |
-| 10 | Reliable 프로토콜 | [10-reliable](../docs-for-agent/notes/10-reliable.md) | 집필 전 |
-| 11 | 엔드포인트 디스커버리와 매칭 (SEDP): 첫 상호운용 | [11-sedp-matching](../docs-for-agent/notes/11-sedp-matching.md) | 집필 전 |
-| 12 | ROS 2와 통신하기 | [12-ros2-interop](../docs-for-agent/notes/12-ros2-interop.md) | 집필 전 |
-| 13 | key 인스턴스와 수명주기 | [13-instances](../docs-for-agent/notes/13-instances.md) | 집필 전 |
-| 14 | DCPS API와 OMG 상호운용 테스트 | [14-dcps-api](../docs-for-agent/notes/14-dcps-api.md) | 집필 전 |
-| 15 | 단편화와 성능 | [15-fragmentation-perf](../docs-for-agent/notes/15-fragmentation-perf.md) | 집필 전 |
-| 16 | 타입 시스템 (XTypes) | [16-xtypes](../docs-for-agent/notes/16-xtypes.md) | 집필 전 |
-| 17 | IDL 컴파일러 | [17-idl-compiler](../docs-for-agent/notes/17-idl-compiler.md) | 집필 전 |
-| 18 | DDS-Security | [18-security](../docs-for-agent/notes/18-security.md) | 집필 전 |
-| 19 | 디스커버리를 바꾸는 벤더 기능: 정적 디스커버리와 디스커버리 서버 | [19-discovery-extensions](../docs-for-agent/notes/19-discovery-extensions.md) | 집필 전 |
-| 20 | UDP 멀티캐스트 밖으로: TCP와 WAN 전송 | [20-tcp-wan](../docs-for-agent/notes/20-tcp-wan.md) | 집필 전 |
-| 21 | 도메인과 네트워크를 잇는 중계와 브리지 | [21-bridges](../docs-for-agent/notes/21-bridges.md) | 집필 전 |
-| 22 | 그 밖의 것 (선택) | [22-extras](../docs-for-agent/notes/22-extras.md) | 집필 전 |
+| chapter | 제목 | 저자 노트 |
+|---|---|---|
+| 00 | [들어가며: DDS란 무엇이고 왜 직접 만드는가](00-introduction/README.md) | [00-introduction](../docs-for-agent/notes/00-introduction.md) |
+| 01 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) |
+| 02 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) |
+| 03 | 첫 DDS 통신 들여다보기 | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
+| 04 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
+| 05 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
+| 06 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
+| 07 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) |
+| 08 | Best-effort 전송과 UDP | [08-best-effort-udp](../docs-for-agent/notes/08-best-effort-udp.md) |
+| 09 | 참가자 디스커버리 (SPDP) | [09-spdp](../docs-for-agent/notes/09-spdp.md) |
+| 10 | Reliable 프로토콜 | [10-reliable](../docs-for-agent/notes/10-reliable.md) |
+| 11 | 엔드포인트 디스커버리와 매칭 (SEDP): 첫 상호운용 | [11-sedp-matching](../docs-for-agent/notes/11-sedp-matching.md) |
+| 12 | ROS 2와 통신하기 | [12-ros2-interop](../docs-for-agent/notes/12-ros2-interop.md) |
+| 13 | key 인스턴스와 수명주기 | [13-instances](../docs-for-agent/notes/13-instances.md) |
+| 14 | DCPS API와 OMG 상호운용 테스트 | [14-dcps-api](../docs-for-agent/notes/14-dcps-api.md) |
+| 15 | 단편화와 성능 | [15-fragmentation-perf](../docs-for-agent/notes/15-fragmentation-perf.md) |
+| 16 | 타입 시스템 (XTypes) | [16-xtypes](../docs-for-agent/notes/16-xtypes.md) |
+| 17 | IDL 컴파일러 | [17-idl-compiler](../docs-for-agent/notes/17-idl-compiler.md) |
+| 18 | DDS-Security | [18-security](../docs-for-agent/notes/18-security.md) |
+| 19 | 디스커버리를 바꾸는 벤더 기능: 정적 디스커버리와 디스커버리 서버 | [19-discovery-extensions](../docs-for-agent/notes/19-discovery-extensions.md) |
+| 20 | UDP 멀티캐스트 밖으로: TCP와 WAN 전송 | [20-tcp-wan](../docs-for-agent/notes/20-tcp-wan.md) |
+| 21 | 도메인과 네트워크를 잇는 중계와 브리지 | [21-bridges](../docs-for-agent/notes/21-bridges.md) |
+| 22 | 그 밖의 것 (선택) | [22-extras](../docs-for-agent/notes/22-extras.md) |
 
 ## chapter별 내용
 chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다. 앞 chapter에서 뒤의 내용을 깊이 다루면 같은 설명을 두 번 하게 되므로, 각 chapter는 "미루는 것"을 넘지 않는다. 계획이므로 집필하면서 바뀔 수 있다. 기능 chapter (05 이후)는 모두 같은 틀 (왜 필요한가 / 캡처에서 보기 / 규격 읽기 / 구현 / 벤더와 맞춰 보기 / 두 벤더는 어떻게 하는가 / 연습 문제)을 따르고, 아래 소제목은 그 안에서 다루는 주제다.
