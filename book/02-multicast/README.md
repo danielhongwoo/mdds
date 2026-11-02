@@ -55,7 +55,7 @@ flowchart LR
 | 3 | `recvfrom()`: 받은 패킷의 출발 주소와 내용 출력 | `sendto(239.255.0.1:7400)`을 1초 간격으로 3번 |
 | 4 | Ctrl+C로 끝나면 소켓을 닫는다. 커널이 그룹에서 탈퇴한다 | 끝나면 소켓을 닫는다 |
 
-소스는 [`tools/mcast-check/src/main.rs`](../../tools/mcast-check/src/main.rs)에 있다. mdds 코드는 chapter 6부터 쓰므로, 이 chapter에서는 위 순서만 알면 된다.
+소스는 [`tools/mcast-check/src/main.rs`](../../tools/mcast-check/src/main.rs)에 있다. mdds 코드는 chapter 5부터 쓰므로, 이 chapter에서는 위 순서만 알면 된다.
 
 **어디서 실행하는가.** mcast-check는 벤더 이미지에 들어 있지 않고 별도 이미지 `mdds/tools`에 있다. 그래서 벤더 컨테이너 안에서 실행하지 않고, 이 이미지로 컨테이너를 하나 더 시작해 실행한다. 이때 새 컨테이너가 벤더 컨테이너의 네트워크를 함께 쓰게 한다 (`docker run --network container:<벤더 컨테이너>`). 새 컨테이너는 자기 네트워크 인터페이스를 따로 갖지 않고 벤더 컨테이너의 `eth0`과 IP 주소를 그대로 쓴다. 그래서 네트워크에서 보면 벤더 컨테이너가 보내고 받는 것과 같고, 벤더 이미지를 고치지 않고도 벤더 DDS와 같은 네트워크 조건에서 시험할 수 있다. 도구 컨테이너는 mcast-check가 끝나면 지워진다.
 

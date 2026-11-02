@@ -32,6 +32,7 @@
 - RepresentationIdentifier 값의 불일치. RTPS 2.5 표 10.3은 CDR2_LE {0x00, 0x11}, D_CDR_LE {0x00, 0x15}를 적고 (열 머리는 XTypes 표 60을 가리킨다), XTypes 1.3의 7.4.3.4 표 39도 0x10-0x15를 쓰는데, XTypes 1.3의 7.6.3.1.2 표 60은 CDR2 0x06 / 0x07, D_CDR2 0x08 / 0x09, PL_CDR2 0x0a / 0x0b를 적는다. 캡처의 Cyclone (`-x 2`)과 Wireshark 4.6.9는 표 60의 D_CDR2_LE 0x0009를 쓴다. 7.6.3.1.2는 RTPS DATA의 식별자를 표 60대로 두라고 쓰므로 와이어에서는 표 60이 규범으로 보인다 [추정]. OMG issue 번호는 확인하지 못했다. mdds는 표 60을 따른다.
 - Wireshark 4.6.9는 Cyclone의 SEDP writer 정보를 PID_TYPE_INFORMATION (0x0075)에서 Malformed로 표시한다. Cyclone의 TypeInformation 바이트 (앞부분 DHEADER 0x60, EMHEADER 0x40001001)가 XTypes 1.3에 맞는지 확인한다. PID_TYPE_INFORMATION은 @optional이고 (XTypes 1.3 Sec. 7.6.3.2.2), 없으면 타입 이름으로만 매칭한다. Fast DDS 3.6.1은 싣지 않는다.
 - XTypes 1.4 beta 진행 상황
+- writer만 XCDR2 (`-x 2`), reader는 XCDR1만 받을 때 (chapter 5의 5.1.5 확인 질문): `check_rxo`는 DATA_REPRESENTATION 불일치. 두 벤더가 같은 판정을 내리는지 상호운용으로 확인. TYPE_CONSISTENCY_ENFORCEMENT (QosPolicyId 24)가 타입 검사 방식을 정하므로 (XTypes 1.3 Sec. 7.6.3.4.2) 매칭 함수 (chapter 11)에 타입 검사가 들어갈 때 함께 본다.
 
 ## 완료 기준
 - `shape_main -x 2` (XCDR2) 상호운용

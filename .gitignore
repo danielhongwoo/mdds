@@ -1,4 +1,6 @@
 /target
+/my-code/
+book/*/code/target/
 .DS_Store
 omg-specs/
 papers/

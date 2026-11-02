@@ -1,6 +1,6 @@
 # 4. 같은 규격, 다른 구현
 
-[목차](../README.md) | 이전: [3 첫 DDS 통신 들여다보기](../03-first-communication/README.md) | 다음: 5 DCPS 개념 모델
+[목차](../README.md) | 이전: [3 첫 DDS 통신 들여다보기](../03-first-communication/README.md) | 다음: [5 DCPS 개념 모델](../05-dcps-concepts/README.md)
 
 chapter 3에서는 두 벤더에 공통인 흐름을 보았다. 이 chapter에서는 같은 규격을 따르는 두 구현이 와이어에서 어떻게 다른지 본다. 그리고 뒤 chapter에서 풀 네 가지 문제, 곧 인스턴스를 거두고 떠나는 법, 말없이 사라진 참가자를 아는 법, 큰 샘플을 나르는 법, 바이트 표현을 바꾸는 법이 와이어에서 어떻게 보이는지 미리 본다. 원리와 구현은 뒤 chapter의 몫이다.
 

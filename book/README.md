@@ -45,7 +45,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter 1에서 한다.
 | 2 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) |
 | 3 | [첫 DDS 통신 들여다보기](03-first-communication/README.md) | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
 | 4 | [같은 규격, 다른 구현](04-vendor-differences/README.md) | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
-| 5 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
+| 5 | [DCPS 개념 모델](05-dcps-concepts/README.md) | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
 | 6 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
 | 7 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) |
 | 8 | Best-effort 전송과 UDP | [08-best-effort-udp](../docs-for-agent/notes/08-best-effort-udp.md) |
@@ -84,7 +84,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 4 네트워크: compose와 고정 주소의 bridge
 - 5 직접 실행해 보기: Lab 1-1 벤더 이미지 빌드와 컨테이너 실행, Lab 1-2 shape_main 확인
 - 6 스스로 확인하기
-- 미루는 것: 멀티캐스트가 오가는 원리 (2), DDS 통신과 캡처 (3), 워크스페이스와 crate (6 ~ 8)
+- 미루는 것: 멀티캐스트가 오가는 원리 (2), DDS 통신과 캡처 (3), 워크스페이스와 crate (5 ~ 8)
 
 ### 2. 멀티캐스트가 오가는 길
 - 1 왜 필요한가: 상대 주소를 모를 때 찾는 방법, RTPS의 기본 멀티캐스트 주소, lab 전에 알아 둘 것, mcast-check가 하는 일
@@ -108,15 +108,17 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: 각 현상의 규격 근거와 구현. INFO_DST (7), 포트 공식 (8), 유니캐스트 SPDP와 lease 갱신 (9), HEARTBEAT 빈도 (10), 매칭 시점 (11), 인스턴스 상태와 dispose (13), 단편화 (15), XCDR2와 TypeInformation (16)
 
 ### 5. DCPS 개념 모델
-- 엔티티 계층: DomainParticipant, Publisher / Subscriber, Topic, DataWriter / DataReader
-- 샘플, 뷰, 인스턴스 상태 (개요)
-- QoS 정책 전체 지도: 적용 엔티티, RxO, 변경 가능 여부, 와이어 전송 여부
-- RxO 호환성 검사 구현
-- 적합성 프로파일과 이 책의 범위
-- 미루는 것: 인스턴스 수명주기 구현 (13), Listener / WaitSet과 나머지 QoS 동작 (14)
+- 1 왜 필요한가: 패킷은 정상인데 데이터가 오지 않는 경우, 이 책의 코드가 사는 곳 (crate 세 개, 독자의 작업 디렉터리 `my-code/`, 스냅샷 `code/`)
+- 2 캡처에서 보기: Lab 5-1 와이어에 실리는 QoS (SEDP의 QoS PID, 기본값 생략), Lab 5-2 QoS가 맞지 않으면 (incompatible_qos 로그, 파티션 불일치는 로그 없음)
+- 3 규격 읽기: 엔티티와 와이어 (Publisher / Subscriber는 와이어에 없다), requested / offered와 매칭 검사 9개 (RxO 8개와 DATA_REPRESENTATION), PARTITION, QoS 정책 지도 (24행), 이 책이 구현하는 범위 (적합성 프로파일)
+- 4 구현: Lab 5-3 `mdds-rtps`의 `qos` 모듈 (`PublicationQos` / `SubscriptionQos`, `check_rxo`, `partitions_match`, 단위 테스트)
+- 5 벤더와 맞춰 보기: Lab 5-4 캡처의 QoS 쌍을 테스트로
+- 6 두 벤더는 어떻게 하는가: `EDP::valid_matching`, `ddsi_qos_match_mask_p`의 검사 항목과 순서
+- 7 스스로 확인하기
+- 미루는 것: 토픽 / 타입 / 파티션 / RxO를 묶는 매칭 함수와 검사 순서 (11), 인스턴스 수명주기와 SampleInfo (13), 상태와 Listener, API 쪽 QoS 타입, 파티션 와일드카드 `[...]` (14), 타입 호환 (16)
 
 ### 6. CDR 직렬화
-- 워크스페이스와 crate 세 개, `mdds-cdr`
+- `mdds-cdr` crate
 - CDR의 정렬 규칙과 엔디안
 - 캡슐화 헤더 (CDR_BE / CDR_LE, PL_CDR)
 - 원시 타입, string, sequence, array, enum, union
@@ -125,7 +127,7 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: ParameterList 해석 (7, 9), XCDR2와 appendable / mutable 타입 (16)
 
 ### 7. RTPS 메시지
-- `mdds-rtps` crate: I/O-free core
+- `mdds-rtps`의 메시지 모듈. I/O-free core 원칙 (소켓, 시계, 스레드 없이 바이트만 다룬다)
 - 메시지 구조: 헤더와 서브메시지, 서브메시지마다 정하는 엔디안
 - 기본 타입: GUID, SequenceNumber, SequenceNumberSet, Locator, Time
 - 서브메시지: DATA, HEARTBEAT, ACKNACK, GAP, INFO_TS, INFO_DST, INFO_SRC

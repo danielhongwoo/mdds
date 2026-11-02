@@ -14,6 +14,7 @@
   - SequenceNumber (high i32 + low u32)
   - **SequenceNumberSet**: bit 0 = 첫 워드의 MSB. 버그 단골.
   - Locator (kind, port, 16B addr), Time_t (초 + 2^-32 분수)
+  - 와이어의 Duration_t (초 + 2^-32 분수, 무한대 {0x7fffffff, 0xffffffff})는 chapter 5의 `qos::Duration` (DDS 의미, 무한대 변이)과 다른 타입이다. 같은 crate에 둘이 있게 되므로 와이어 쪽 이름을 다르게 짓는다 (예: `DurationT`). 변환은 chapter 11.
 - 헤더 20B, 서브메시지 헤더 4B (**서브메시지마다 E 플래그로 엔디안 결정**)
 - 서브메시지: DATA / HEARTBEAT / ACKNACK / GAP / INFO_TS / INFO_DST / INFO_SRC / PAD, 이후 DATA_FRAG / NACK_FRAG / HEARTBEAT_FRAG, RTPS_HE (2.5)
 - Receiver 상태 (sourceGuidPrefix, destGuidPrefix, timestamp ...)

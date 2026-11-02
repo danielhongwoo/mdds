@@ -11,7 +11,9 @@
 - RTPS 2.5: 8.4.13 (Liveliness, ParticipantMessage 엔드포인트)
 
 ## 구현
-- 엔티티 계층과 생성/삭제 규칙, QoS 설정과 변경 가능 여부 검사
+- 엔티티 계층과 생성/삭제 규칙, QoS 설정과 변경 가능 여부 검사 (변경 가능 열은 chapter 5의 3.4절 표). 한 엔티티 안의 정책 일관성 (DEADLINE >= TIME_BASED_FILTER 등, INCONSISTENT_POLICY)
+- API 쪽 QoS 묶음 (DataWriterQos, DataReaderQos, PublisherQos, SubscriberQos, TopicQos)을 여기서 만들고, 매칭용 `mdds_rtps::qos::PublicationQos` / `SubscriptionQos` (chapter 5)로 바꾸는 함수를 둔다. chapter 11의 최소 API는 매칭용 타입을 그대로 받는다.
+- 파티션 와일드카드 `[...]` (chapter 5의 `partitions_match`는 `*`, `?`만 해석하고 `[`는 문자 그대로 비교한다). fnmatch의 `[!...]`, 범위, 이스케이프까지 두 벤더와 맞춘다.
 - Status (PUBLICATION_MATCHED, REQUESTED_INCOMPATIBLE_QOS 등), Listener, StatusCondition / ReadCondition / GuardCondition, WaitSet
 - DEADLINE, LIFESPAN, LIVELINESS (AUTOMATIC, MANUAL_BY_PARTICIPANT)
 - 내장 토픽 (DCPSParticipant, DCPSPublication, DCPSSubscription)

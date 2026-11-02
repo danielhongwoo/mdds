@@ -114,7 +114,8 @@
 - 왜: 독자가 본문과 그 chapter의 코드를 나란히 본다. git을 쓰지 않고도 그 시점의 전체 코드를 받을 수 있다.
 - 비용: 같은 코드가 여러 chapter에 중복된다. 코드를 고치면 그 코드가 들어간 chapter를 모두 고쳐야 한다. 이 비용을 줄이기 위해 스냅샷은 chapter 본문의 일부로 취급한다. chapter를 고칠 때만 함께 고치고, `crates/`의 코드가 바뀌었다고 해서 스냅샷을 따라 고치지 않는다.
 - 버린 대안: chapter 끝 커밋에 git 태그. 저장소 하나로 관리되지만 독자가 `git checkout`을 해야 하고 본문과 코드를 나란히 볼 수 없다.
-- 스냅샷에는 자기 `Cargo.toml`에 빈 `[workspace]` 표를 둔다 (루트 워크스페이스에 속하지 않게). 검사는 스냅샷 디렉터리에서 [rust.md](rust.md)의 명령을 따로 돌린다.
+- 스냅샷은 그 시점의 `crates/` 전체를 복사한 작은 워크스페이스다: `code/Cargo.toml` (`[workspace]` members는 루트의 `crates/` 멤버만. `tools/`는 뺀다. `[workspace.package]`는 루트와 같게), `code/Cargo.lock`, `code/rust-toolchain.toml`, `code/crates/...`. 루트 워크스페이스에 속하지 않고 (자기 `[workspace]`가 있으므로), 그 안에서 `cargo test --workspace`가 그대로 된다. 검사는 스냅샷 디렉터리에서 [rust.md](rust.md)의 명령을 따로 실행한다. `code/target/`은 `.gitignore`로 뺀다. 버린 대안: 바뀐 crate 하나만 복사. crate 사이에 path 의존이 생기면 바로 깨진다.
+- **독자는 루트 `crates/`가 아니라 자기 작업 디렉터리 `my-code/`에서 코드를 쓴다.** 루트 `crates/`에는 저자의 코드가 마지막 chapter까지 들어 있어서, clone한 독자가 거기에 쓰면 이미 있는 완성본을 만나고 스냅샷과의 diff도 뜻이 없다. 각 chapter는 1.1절 (또는 첫 구현 lab의 준비)에서 작업 디렉터리를 만드는 법을 적는다: 이전 chapter의 `code/`를 `my-code/`로 복사한다 (첫 코드 chapter인 5는 자기 `code/`를 복사한 뒤 그 chapter가 만드는 파일을 지운다). 명령은 `my-code/`에서 실행하고, 비교는 `diff -r my-code/crates book/NN-slug/code/crates`다. `my-code/`는 루트 `.gitignore`에 있다. 버린 대안: 루트 `crates/`에서 쓰고 chapter마다 그 chapter의 파일만 지우기. 뒤 chapter의 코드가 함께 있어 diff가 되지 않는다. 시작 시점의 git 태그: 독자가 git을 다뤄야 하고 본문과 코드를 나란히 볼 수 없다.
 - 본문에 옮겨 적는 코드 조각은 스냅샷에서 가져온다. 조각 위에 파일 경로를 적는다.
 
 ## 라이선스

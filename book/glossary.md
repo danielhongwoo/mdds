@@ -9,7 +9,11 @@
 - **key, 인스턴스 (instance)**: 타입 필드 가운데 대상을 가르는 필드가 key다. key가 같은 값은 같은 인스턴스의 연속된 값이고, key가 다르면 다른 인스턴스다 (DDS 1.4 Sec. 2.2.1.2.2).
 - **도메인 (domain)**: 서로 통신하는 응용들의 묶음. 같은 도메인 번호 (domainId)를 쓰는 참가자끼리만 서로를 찾고 통신한다. 그래서 같은 네트워크에서 여러 시스템이 서로 간섭하지 않고 함께 동작한다 (DDS 1.4 Sec. 2.2.2.2.1).
 - **참가자 (DomainParticipant)**: 한 DDS 도메인에 참여하는 단위. 보통 프로세스 하나에 하나다. 디스커버리는 참가자 단위로 시작한다.
-- **QoS 정책**: 데이터마다 다른 요구 (신뢰성, 보관 개수, 늦게 온 reader에게 줄지, 마감 시간 등)를 정하는 설정. writer와 reader가 각자 밝히고 맞아야 매칭한다.
+- **QoS 정책**: 데이터마다 다른 요구 (신뢰성, 보관 개수, 늦게 온 reader에게 줄지, 마감 시간 등)를 정하는 설정. DDS 1.4 Sec. 2.2.3에 22종이 있고 DDS-XTypes 1.3이 2종을 더한다. writer와 reader가 각자 밝히고 맞아야 매칭한다. 정책마다 번호 (QosPolicyId, DDS 1.4 Sec. 2.3.3)가 있어 incompatible 상태와 로그에 쓰인다 (예: RELIABILITY = 11).
+- **requested / offered, RxO**: reader는 QoS를 요구하고 (requested) writer는 제공한다 (offered). DDS 1.4 Sec. 2.2.3의 표는 정책마다 양쪽 값이 호환되어야 하는지 (RxO = requested / offered) 표시한다. Yes인 8개 (DURABILITY, PRESENTATION, DEADLINE, LATENCY_BUDGET, OWNERSHIP, LIVELINESS, RELIABILITY, DESTINATION_ORDER)는 정책마다 "offered 값이 requested 값과 호환될 조건" (예: RELIABILITY는 offered kind >= requested kind, BEST_EFFORT < RELIABLE)이 있고, 하나라도 어긋나면 매칭되지 않으며 양쪽에 OFFERED / REQUESTED_INCOMPATIBLE_QOS 상태가 생긴다. No는 양쪽 값이 서로 무관하다는 뜻, N/A는 한쪽에만 있는 정책이다. DDS-XTypes의 DATA_REPRESENTATION도 같은 방식 (writer가 제공하는 표현이 reader의 목록에 있어야 함)으로 매칭을 가른다.
+- **파티션 (PARTITION QoS)**: Publisher / Subscriber의 QoS로, 문자열 목록이다. writer와 reader는 토픽이 같아도 공통 파티션 이름이 있어야 매칭된다. 빈 목록은 빈 문자열 `""` 하나와 같다. 이름에 POSIX fnmatch 와일드카드를 쓸 수 있지만 두 이름이 모두 와일드카드를 가지면 맞지 않는다. 파티션 불일치는 incompatible QoS가 아니라서 listener도 condition도 울리지 않는다 (DDS 1.4 Sec. 2.2.3.13).
+- **적합성 프로파일 (compliance profile)**: DDS 1.4 Annex A가 구현의 범위를 나눈 다섯 묶음. Minimum (필수 기능 전부), Content-subscription (ContentFilteredTopic, QueryCondition, MultiTopic), Persistence (DURABILITY TRANSIENT / PERSISTENT, DURABILITY_SERVICE), Ownership (OWNERSHIP EXCLUSIVE, OWNERSHIP_STRENGTH, HISTORY depth > 1), Group access (PRESENTATION GROUP).
+- **SampleInfo**: reader가 샘플마다 함께 받는 정보. sample_state (READ / NOT_READ: 이 샘플을 읽은 적이 있는가), view_state (NEW / NOT_NEW: 이 인스턴스를 처음 보는가), instance_state (ALIVE / NOT_ALIVE_DISPOSED / NOT_ALIVE_NO_WRITERS), valid_data (샘플에 값이 있는가, key뿐인가) 등 (DDS 1.4 Sec. 2.2.2.5.1).
 - **브로커 (broker)**: 모든 메시지가 거쳐 가는 중앙 서버. MQTT가 이 방식이다. DDS의 와이어 프로토콜은 브로커에 기대지 않는다 (RTPS 2.5 Sec. 7.2).
 - **단일 장애점 (single point of failure)**: 그 하나가 멈추면 전체가 멈추는 구성 요소. 이중화와 failover로 없앤다.
 - **lease**: 참가자가 SPDP 공지에 실어 보내는 유효 기간 (leaseDuration). 상대는 그 참가자의 공지가 이 기간 넘게 갱신되지 않으면 사라진 것으로 보고 정리한다 (RTPS 2.5 Sec. 8.5.3.3, 8.5.5.2). 기간은 구현의 설정값이고 (예: Cyclone DDS 10초, Fast DDS 20초), 공지에 값이 없으면 100초로 본다 (RTPS 2.5 표 9.19).
@@ -19,6 +23,7 @@
 - **PIM**(Platform Independent Model): 특정 언어/전송 수단과 무관하게 개념/동작만 정의한 추상 모델. 예: "DataWriter는 write()로 샘플을 발행한다"는 수준.
 - **PSM**(Platform Specific Model): PIM을 특정 플랫폼에 맞춰 구체화한 것. 예: DDS의 C++ API(DDS-PSM-Cxx), Java API(DDS-JAVA), RTPS의 UDP/IP 매핑(RTPS 2.5 Sec. 9).
 - **DCPS**(Data-Centric Publish-Subscribe): DDS 1.4 규격의 본체. 토픽/DataWriter/DataReader/QoS로 구성되는 발행/구독 API의 PIM이다. DDS 1.4 2.2절이 PIM이고, 2.3절 IDL PSM은 그 PIM을 IDL 인터페이스로 옮긴 것이다.
+- **DCPS 엔티티**: DomainParticipant가 Publisher, Subscriber, Topic을 만들고, Publisher가 DataWriter를, Subscriber가 DataReader를 만든다. 모든 엔티티가 QoS, Listener (상태 변화를 받는 콜백), StatusCondition (상태 변화를 기다리는 객체)을 갖는다 (DDS 1.4 Sec. 2.2.1.2.2, 2.2.2). 와이어 (SPDP, SEDP)에 알려지는 것은 참가자와 DataWriter / DataReader뿐이고, Publisher / Subscriber / Topic의 QoS 가운데 매칭에 필요한 것 (PARTITION, PRESENTATION, GROUP_DATA, TOPIC_DATA)은 소속 writer / reader의 정보에 실린다 (RTPS 2.5 표 9.19).
 - **IDL4 -> Rust 언어 매핑**: IDL로 정의한 타입/인터페이스를 Rust 코드로 어떻게 옮길지 정하는 규격. 2026년 RFP(mars/2026-3-6) 단계로 아직 표준이 아니다. DDS API(DCPS PSM)를 정하는 규격도 아니다.
 
 ## 프로토콜

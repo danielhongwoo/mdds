@@ -20,7 +20,7 @@
 | 2 | 멀티캐스트 (구현 없음) | [02-multicast](notes/02-multicast.md) | 완료 |
 | 3 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |
 | 4 | 같은 규격, 다른 구현 (구현 없음, 관찰) | [04-vendor-differences](notes/04-vendor-differences.md) | 완료 |
-| 5 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 대기 |
+| 5 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 완료 |
 | 6 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
 | 7 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |
 | 8 | Best-effort 전송 + UDP | [08-best-effort-udp](notes/08-best-effort-udp.md) | 대기 |

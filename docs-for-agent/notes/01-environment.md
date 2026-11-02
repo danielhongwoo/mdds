@@ -19,7 +19,7 @@
 - Rust 설치와 Rust 언어 설명. 독자가 Rust를 쓸 수 있다고 본다 ([book/README.md](../../book/README.md#누구를-위한-책인가)).
 - 버전 표, 빌드 문제 대응, 검토한 다른 네트워크 방식 같은 세부 사항을 본문에 옮기지 않는다. `docs/environment/`와 `docker/README.md`로 링크한다.
 - 멀티캐스트 동작 확인 (chapter 2), DDS 통신과 캡처 (chapter 3, 4)
-- RTPS / CDR 코드 작성 (chapter 6, 7부터), 규격 정독 (chapter 5부터)
+- mdds 코드 작성과 규격 정독 (chapter 5부터)
 - ROS 2 환경 (chapter 12)
 - `ddsperf` 등 벤더 고유 도구. 모든 시나리오는 OMG `shape_main` 하나로 만든다.
 
@@ -45,7 +45,7 @@
 - 버린 근거: "가장 널리 쓰인다", "인지도가 가장 높다". 구현별 사용량의 독립 통계가 없다. GitHub 별 (2026-10-30)은 Fast DDS 2940, OpenDDS 1520, Cyclone DDS 1356으로 약한 지표일 뿐이다.
 
 ## 독자가 시작하는 곳
-**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`, 빈 crate 세 개가 있는 워크스페이스를 그대로 쓰고, chapter 6부터 그 crate에 자기 코드를 쓰며 각 chapter의 `code/` 스냅샷과 비교한다.
+**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`를 그대로 쓴다. `crates/`에는 저자의 코드 (마지막 chapter까지)가 들어 있으므로 독자는 그것을 고치지 않고, chapter 5부터 이전 chapter의 `code/` 스냅샷을 복사한 자기 작업 디렉터리 (`my-code/`, git이 무시)에서 코드를 쓰며 각 chapter의 `code/`와 비교한다 ([book.md "코드 스냅샷"](../conventions/book.md#코드-스냅샷)).
 - 왜: 실행 환경은 관찰 도구일 뿐 학습 대상이 아니다. 독자가 처음부터 만들게 하면 DDS와 관계없는 Docker와 Cargo 설정에 시간을 쓴다.
 - 버린 대안: 빈 디렉터리에서 워크스페이스와 Docker 환경을 직접 만들게 하기. 위 이유로 버림.
 - 1 본문은 워크스페이스와 crate를 다루지 않는다. 각 crate는 처음 코드를 쓰는 chapter에서 소개한다: 워크스페이스와 `mdds-cdr`는 6, `mdds-rtps`는 7, `mdds`와 I/O-free core로 나눈 이유는 08. 1에서 독자가 할 일이 없고 (빈 crate를 빌드해 볼 뿐), 역할을 미리 설명하면 쓸 때 다시 설명하게 된다.
