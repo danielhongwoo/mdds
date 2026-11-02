@@ -71,7 +71,7 @@ gantt
     MAC table 300s              :0, 300
 ```
 
-- 근거: DDS lease는 [chapter 03 노트의 시나리오 표](../notes/03-first-communication.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
+- 근거: DDS lease는 [chapter 3 노트의 시나리오 표](../notes/03-first-communication.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
 - IGMP의 2초는 leave를 받은 뒤 querier가 group-specific query를 1초 간격으로 2번 보내고 정리할 때다 [R4]. leave 없이 사라지면 260초 쪽이다.
 
 ### 2.3 요약 표
@@ -205,9 +205,9 @@ sequenceDiagram
   - 소켓 하나가 가입할 수 있는 그룹 수 상한 `igmp_max_memberships` 기본 20 [R5]. [확인, 조사 결과]
 
 ## 6. book에 넣는다면 (결정은 나중에)
-- chapter 02 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾는 것, querier가 없는 Docker bridge가 모든 포트로 flooding하는 것 (`captures/mcast-check/nojoin.fastdds.pcap`)은 chapter 02 Lab 2-1, 2-2에 반영했다. SIGKILL 뒤에도 leave가 나가는 것은 반영하지 않았다 (DDS 프로세스를 다루는 chapter 04나 09의 후보).
-- chapter 04 (같은 규격 다른 구현): SPDP 멀티캐스트 TTL이 벤더마다 다르다 (32 / 1).
-- chapter 09 (SPDP): lease와 네트워크 장비 timeout의 수명 차이 (2.2절과 3절 그림).
+- chapter 2 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾는 것, querier가 없는 Docker bridge가 모든 포트로 flooding하는 것 (`captures/mcast-check/nojoin.fastdds.pcap`)은 chapter 2 Lab 2-1, 2-2에 반영했다. SIGKILL 뒤에도 leave가 나가는 것은 반영하지 않았다 (DDS 프로세스를 다루는 chapter 4나 9의 후보).
+- chapter 4 (같은 규격 다른 구현): SPDP 멀티캐스트 TTL이 벤더마다 다르다 (32 / 1).
+- chapter 9 (SPDP): lease와 네트워크 장비 timeout의 수명 차이 (2.2절과 3절 그림).
 
 ## 7. 확인하지 못한 것
 - 프로세스가 죽을 때 커널이 leave report를 보내는 경로 (Linux 소스나 man page로 확인).

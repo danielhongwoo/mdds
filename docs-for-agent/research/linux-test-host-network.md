@@ -83,8 +83,8 @@ flowchart LR
 - **Mac과 Linux 사이 DDS 디스커버리는 지금 구성으로는 되지 않는다.** SPDP 멀티캐스트가 공유기를 넘지 못한다. 유니캐스트 peer를 설정해도 Linux -> Mac 방향이 NAT에 막힌다. [추정]
 - **Mac의 Docker Desktop 컨테이너는 원래 LAN과 멀티캐스트를 주고받지 못한다.** 컨테이너 트래픽은 Docker Desktop VM 안에 머문다 ([docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)). Mac과 연동하려면 Mac에서 DDS를 컨테이너 밖 (네이티브)으로 실행해야 한다.
 - **연동하려면 Mac을 192.168.55.0/24에 둔다.** 예: Mac을 유선으로 그 LAN에 연결하거나, 그 LAN의 Wi-Fi에 연결한다. 그러면 NAT 없이 같은 서브넷이 되어 TTL 1 멀티캐스트도 오간다. [추정, 미시험]
-- **querier가 있는 환경의 시험은 Linux만으로도 할 수 있다.** Linux의 LAN에는 IGMPv2 querier가 있다. chapter 02 노트의 "확인할 것" (querier가 있을 때 Lab 2-2의 결과)을 시험할 후보다. 다만 Linux의 Docker 기본 bridge는 LAN과 다른 L2라서 LAN querier의 Query가 닿지 않는다. LAN의 querier와 스위치를 시험하려면 컨테이너를 macvlan 네트워크나 `--network host`로 실행해 LAN에 직접 붙여야 한다. [추정]
-- **querier가 IGMPv2다.** 그 LAN의 호스트는 v2 호환 모드로 Report를 보낸다. chapter 02에서 본 IGMPv3 Report (224.0.0.22, TO_EX / TO_IN)와 달리, 호스트는 들은 General Query의 버전에 맞춰 v2 호환 모드로 동작하고 (RFC 3376 Sec. 7.2.1), v2 Report는 그룹 주소로, 탈퇴는 Leave Group 메시지로 224.0.0.2에 보낸다 (RFC 2236 Sec. 3, 9). 캡처를 비교할 때 이 차이를 고려한다. [추정, 캡처 미확인]
+- **querier가 있는 환경의 시험은 Linux만으로도 할 수 있다.** Linux의 LAN에는 IGMPv2 querier가 있다. chapter 2 노트의 "확인할 것" (querier가 있을 때 Lab 2-2의 결과)을 시험할 후보다. 다만 Linux의 Docker 기본 bridge는 LAN과 다른 L2라서 LAN querier의 Query가 닿지 않는다. LAN의 querier와 스위치를 시험하려면 컨테이너를 macvlan 네트워크나 `--network host`로 실행해 LAN에 직접 붙여야 한다. [추정]
+- **querier가 IGMPv2다.** 그 LAN의 호스트는 v2 호환 모드로 Report를 보낸다. chapter 2에서 본 IGMPv3 Report (224.0.0.22, TO_EX / TO_IN)와 달리, 호스트는 들은 General Query의 버전에 맞춰 v2 호환 모드로 동작하고 (RFC 3376 Sec. 7.2.1), v2 Report는 그룹 주소로, 탈퇴는 Leave Group 메시지로 224.0.0.2에 보낸다 (RFC 2236 Sec. 3, 9). 캡처를 비교할 때 이 차이를 고려한다. [추정, 캡처 미확인]
 
 ## 5. 확인하지 못한 것
 - UFW 규칙의 내용 (`sudo ufw status verbose`가 필요하다).

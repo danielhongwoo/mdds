@@ -16,7 +16,7 @@ DDS 도메인 사이, 네트워크 사이, 또는 DDS와 다른 프로토콜 사
 
 하지 않는 것
 - 중앙 디스커버리 서버 (chapter 19), 벤더 TCP / WAN 전송 자체 (chapter 20). 중계가 WAN 구간에 그 전송을 쓰는 경우는 링크한다
-- Zenoh 프로토콜 자체의 설명. 비교는 chapter 00과 [research/middleware-comparison.md](../research/middleware-comparison.md)
+- Zenoh 프로토콜 자체의 설명. 비교는 chapter 0과 [research/middleware-comparison.md](../research/middleware-comparison.md)
 - rmw_zenoh (DDS를 쓰지 않는 ROS 2 RMW). DDS 와이어가 없으므로 chapter 12의 범위 밖에 둔다
 
 ## 읽을 규격과 문서

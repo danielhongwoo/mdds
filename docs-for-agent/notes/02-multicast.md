@@ -1,8 +1,8 @@
-# 저자 노트: 멀티캐스트 (chapter 02, 구현 없음)
+# 저자 노트: 멀티캐스트 (chapter 2, 구현 없음)
 
 상태: 완료
 
-[roadmap](../roadmap.md) | chapter: 02 ([목차](../../book/README.md#목차)) | 이전: [01-environment](01-environment.md) | 다음: [03-first-communication](03-first-communication.md)
+[roadmap](../roadmap.md) | chapter: 2 ([목차](../../book/README.md#목차)) | 이전: [01-environment](01-environment.md) | 다음: [03-first-communication](03-first-communication.md)
 
 ## 목표
 DDS를 실행하기 전에, 컨테이너 사이에서 멀티캐스트가 오가는지와 그 원리 (그룹 가입, IGMP, bridge의 동작)를 확인한다. DDS의 참가자 디스커버리 (SPDP)가 멀티캐스트에 기대므로, 여기서 막히면 DDS도 서로를 찾지 못한다.
@@ -14,8 +14,8 @@ DDS를 실행하기 전에, 컨테이너 사이에서 멀티캐스트가 오가�
 
 하지 않는 것
 - 컨테이너 사이 유니캐스트 연결 (Lab 1-1의 ping이 맡는다)
-- DDS가 멀티캐스트를 쓰는 방식 (SPDP)의 상세 (chapter 03에서 관찰, chapter 09에서 구현)
-- 벤더별 SPDP TTL (chapter 04), RTPS 포트 공식과 여러 참가자의 포트 공유 (`SO_REUSEADDR`, chapter 08)
+- DDS가 멀티캐스트를 쓰는 방식 (SPDP)의 상세 (chapter 3에서 관찰, chapter 9에서 구현)
+- 벤더별 SPDP TTL (chapter 4), RTPS 포트 공식과 여러 참가자의 포트 공유 (`SO_REUSEADDR`, chapter 8)
 - `IP_MULTICAST_ALL`, IGMPv3 source filtering, querier 선출, 멀티캐스트 라우팅: 이 chapter의 목표 (네트워크와 DDS를 나눠 확인)에 필요 없다
 - 네트워크 장비에 남는 상태의 상세 ([research/discovery-network-state.md](../research/discovery-network-state.md))
 
@@ -33,7 +33,7 @@ DDS를 실행하기 전에, 컨테이너 사이에서 멀티캐스트가 오가�
 1. 왜 필요한가: 상대 주소를 모를 때 찾는 세 방법, RTPS 기본 주소 (Sec. 9.6.2.4, 9.6.2.3), 멀티캐스트가 막혔을 때의 증상, UDP라 전달 보장 없음 (-> chapter 10), lab 전에 알아 둘 용어, mcast-check의 소켓 호출 순서 (C 함수 이름 표, Rust 코드는 싣지 않음)
 2. 캡처에서 보기: Lab 2-1, Lab 2-2
 3. 규격 읽기: 3.1 주소와 MAC (RFC 1112, 2365, IP 그룹 32개가 MAC 하나를 나눠 쓰므로 커널이 IP 단계에서 거름), 3.2 IGMPv3 (RFC 3376: 가입과 탈퇴 모두 Report, 재전송 규칙), 3.3 snooping, querier, flooding (RFC 4541은 Informational, Linux bridge는 querier가 없으면 flooding, querier가 있어도 가입자 없는 그룹은 flooding), 3.4 네트워크를 먼저 의심할 때
-4. 스스로 확인하기: 질문 네 개 (보내는 쪽도 가입해야 하는가, 가입 없이 eth0에 도착했으면 가입은 필요 없는가, 서브넷이 다른 두 노트북, chapter 03에서 서로 못 찾을 때의 순서)
+4. 스스로 확인하기: 질문 네 개 (보내는 쪽도 가입해야 하는가, 가입 없이 eth0에 도착했으면 가입은 필요 없는가, 서브넷이 다른 두 노트북, chapter 3에서 서로 못 찾을 때의 순서)
 
 **결정: lab을 원리보다 먼저 둔다 (관찰 틀 그대로).** 1절 끝에 lab에 필요한 최소 용어만 두고, 규칙은 3절에서 lab 결과를 근거로 설명한다.
 - 왜: 원리를 먼저 쓰면 lab 전에 RFC 네 개의 용어가 한꺼번에 나온다. 책 전체의 방식 (본다 -> 규격으로 설명한다)과도 맞다.
@@ -43,7 +43,7 @@ DDS를 실행하기 전에, 컨테이너 사이에서 멀티캐스트가 오가�
 
 **결정: 기존 계획의 Lab 2-1 "컨테이너 사이 연결 (ping)"은 뺐다.** Lab 1-1이 같은 확인을 한다.
 
-**결정: 참고 캡처는 받는 쪽과 보내는 쪽을 따로 둔다 (`join.fastdds`, `join.cyclone`).** multicast loopback 때문에 보낸 쪽 캡처에는 자기 패킷이 두 개씩 보인다. 이 차이를 chapter 03에서 패킷 수를 셀 때 쓴다.
+**결정: 참고 캡처는 받는 쪽과 보내는 쪽을 따로 둔다 (`join.fastdds`, `join.cyclone`).** multicast loopback 때문에 보낸 쪽 캡처에는 자기 패킷이 두 개씩 보인다. 이 차이를 chapter 3에서 패킷 수를 셀 때 쓴다.
 
 ## 작업 순서
 
@@ -92,8 +92,8 @@ DDS를 실행하기 전에, 컨테이너 사이에서 멀티캐스트가 오가�
 결정과 막힌 점만 한 줄씩 적고 근거 문서로 링크한다. 세부 경위는 커밋 메시지에 둔다.
 - 2026-10-28: 멀티캐스트 확인 도구를 socat 대신 Rust로 만듦 (`tools/mcast-check`, 이미지 `mdds/tools`) -> [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령)
 - 2026-10-28: Docker Desktop (Mac arm64) VM 안 bridge가 querier 없이 멀티캐스트를 모든 포트로 flooding함을 확인 -> [docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
-- 2026-10-30: chapter 01-04를 함께 맡던 노트에서 나눔
-- 2026-10-31: 아키텍트, 시니어 엔지니어, DDS 전문가, 독자 네 관점의 검토와 협의로 틀을 정하고 본문 초안 작성 -> [틀](#틀). 참고 캡처를 스크립트로 다시 만들고 이름을 `join`, `nojoin`으로 바꿈. docker-network.md의 원리 설명은 chapter 02로 옮기고 틀린 문장 (querier가 있으면 가입 포트로만, Leave 표현, 재전송 시각)을 고침
+- 2026-10-30: chapter 1-4를 함께 맡던 노트에서 나눔
+- 2026-10-31: 아키텍트, 시니어 엔지니어, DDS 전문가, 독자 네 관점의 검토와 협의로 틀을 정하고 본문 초안 작성 -> [틀](#틀). 참고 캡처를 스크립트로 다시 만들고 이름을 `join`, `nojoin`으로 바꿈. docker-network.md의 원리 설명은 chapter 2로 옮기고 틀린 문장 (querier가 있으면 가입 포트로만, Leave 표현, 재전송 시각)을 고침
 - 2026-11-01: Lab 2-2에서 bridge 설정 읽기를 빼고 3.3절 querier 설명으로 옮김. lab 시점에는 snooping, querier를 설명하기 전이라 값을 해석할 수 없다. 읽는 명령은 [docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)
 - 2026-11-01: 네트워크 지식이 적은 독자를 기준으로 고쳐 씀. 1.1절에 lab 네트워크 그림과 기본 개념 (호스트, 스위치와 포트, IP/MAC 주소, 커널과 소켓, 서브넷)을 넣고, 3.1절에 그룹 MAC 주소를 ARP로 묻지 않고 계산하는 이유를 넣음. 주소 범위 (Local Scope 등)는 DDS 이해에 필요하지 않아 RFC 2365 링크만 남김
 - 2026-11-02: 사실 확인 (RFC, 커널 원문)과 독자 관점 검토를 거쳐 고침. Lab 2-2는 querier 유무를 가르지 못한다 (가입자 없는 그룹은 어느 경우든 flooding)는 점을 2.2.4와 3.3.3에 밝힘. veth에는 MAC 필터가 없어 가입하지 않은 eth0에서도 그룹 패킷이 보이는 이유를 3.1.2에 넣음. 3.4의 순서를 "DDS 없이 전달 확인 -> DDS 실행 후 가입 확인"으로 바꿈. 질문 3에서 TTL과 chapter 21을 뺌 (3.1.1만으로 답할 수 있다). 참고 캡처를 다시 만들어 본문의 시각을 맞춤. 끝내지 않은 `mcast-check recv` 도구 컨테이너가 7400을 잡고 있던 사례를 2.1.6과 docker-network.md에 적음. 3.3.2의 Query 반복 그림과 수치 (125초, 0-10초, 260초)는 이 환경에서 관찰할 수 없어 한 문단으로 줄임

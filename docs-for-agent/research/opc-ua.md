@@ -1,12 +1,12 @@
 # 조사 노트: OPC UA와 DDS 비교
 
-[roadmap](../roadmap.md) | 사용처: 없음 (참고용) | 함께 보기: [middleware-comparison.md](middleware-comparison.md), [chapter 00 노트](../notes/00-introduction.md)
+[roadmap](../roadmap.md) | 사용처: 없음 (참고용) | 함께 보기: [middleware-comparison.md](middleware-comparison.md), [chapter 0 노트](../notes/00-introduction.md)
 
-확인일: 2026-10-30. 목적: data-centric에 가장 가까운 다른 산업 표준인 OPC UA를 DDS와 비교해 둔다. chapter 00 본문에는 넣지 않는다 (분량). 표시는 [확인] (원문에서 읽음), [추정] (기억, 검색 요약, 간접 근거), [벤더 주장].
+확인일: 2026-10-30. 목적: data-centric에 가장 가까운 다른 산업 표준인 OPC UA를 DDS와 비교해 둔다. chapter 0 본문에는 넣지 않는다 (분량). 표시는 [확인] (원문에서 읽음), [추정] (기억, 검색 요약, 간접 근거), [벤더 주장].
 
 ## 1. 요약
 - OPC UA는 OPC Foundation이 만드는 산업 자동화용 통신 표준이고 IEC 62541로도 나온다. 중심은 **서버의 주소 공간 (address space)** 이다. 서버가 장비를 타입이 있는 노드의 그래프로 드러내고, 클라이언트가 노드의 현재 값을 읽거나 구독한다.
-- data-centric 기준 ([chapter 00 2.1절](../../book/00-introduction/README.md))으로 보면 데이터에 이름을 붙이고, 타입을 알고, 대상 (노드)마다 현재 값을 들고 있다는 점은 DDS와 같다. 다른 점은 **값을 들고 있는 것이 서버**라는 것이다. DDS는 같은 일을 서버 없이 참가자들이 나눠 한다.
+- data-centric 기준 ([chapter 0 2.1절](../../book/00-introduction/README.md))으로 보면 데이터에 이름을 붙이고, 타입을 알고, 대상 (노드)마다 현재 값을 들고 있다는 점은 DDS와 같다. 다른 점은 **값을 들고 있는 것이 서버**라는 것이다. DDS는 같은 일을 서버 없이 참가자들이 나눠 한다.
 - 1.04 무렵 (2018년경) PubSub (Part 14)이 더해져 서버 없이 UDP 멀티캐스트나 MQTT 브로커로 값을 내보낼 수 있다 (시기는 [추정]). 다만 DDS의 SEDP처럼 writer와 reader를 자동으로 짝짓는 일반 메커니즘은 아니다 (4절).
 - 두 표준을 잇는 gateway 규격이 OMG에 있다 (DDS-OPCUA 1.0, 2020).
 
@@ -35,7 +35,7 @@
 ## 3. data-centric 관점에서 본 차이
 - 둘 다 "주소가 아니라 데이터에 이름을 붙이고, 미들웨어가 타입과 대상을 알고, 지금 값을 준다"는 점에서 data-centric이다.
 - OPC UA는 이 일을 **서버 한 곳**이 한다. 클라이언트는 서버에 접속해 주소 공간을 탐색하고 필요한 노드를 구독한다. 정보 모델 (어떤 장비에 어떤 값이 어떤 구조로 있는가)이 풍부하고, 탐색 (browse)으로 처음 보는 장비를 이해할 수 있다는 것이 강점이다.
-- DDS는 **global data space를 모두가 나눠 든다**. 서버가 없으니 단일 장애점이 없고, 대신 디스커버리 비용을 낸다 (chapter 00 3절). 정보 모델은 토픽과 타입 수준이고, 장비의 구조를 탐색하는 기능은 없다.
+- DDS는 **global data space를 모두가 나눠 든다**. 서버가 없으니 단일 장애점이 없고, 대신 디스커버리 비용을 낸다 (chapter 0 3절). 정보 모델은 토픽과 타입 수준이고, 장비의 구조를 탐색하는 기능은 없다.
 - 그래서 흔한 구도는 장비와 공장 계층의 정보 모델은 OPC UA, 실시간으로 많은 노드가 데이터를 나누는 부분은 DDS다. 2016년 OPC Foundation과 OMG의 공동 position paper가 이런 역할 나눔과 gateway를 제안했다 [추정, 본문 미확인, R17].
 
 ## 4. PubSub (Part 14)

@@ -1,34 +1,34 @@
-# 03. 첫 DDS 통신 들여다보기
+# 3. 첫 DDS 통신 들여다보기
 
-[목차](../README.md) | 이전: [02 멀티캐스트가 오가는 길](../02-multicast/README.md) | 다음: chapter 04 같은 규격, 다른 구현
+[목차](../README.md) | 이전: [2 멀티캐스트가 오가는 길](../02-multicast/README.md) | 다음: chapter 4 같은 규격, 다른 구현
 
-chapter 02에서 두 컨테이너 사이에 멀티캐스트가 통하는 것을 확인했다. 이제 두 벤더의 shape_main을 실제로 통신시키고 그 패킷을 캡처한다. 이 chapter에서는 메시지의 종류와 순서만 알아본다. 참가자가 서로를 찾고 (SPDP), writer와 reader를 알리고 (SEDP), 데이터를 보내고, 사라지는 흐름이 어떤 패킷으로 보이는지 Wireshark에서 가려내는 것이 목표다. 바이트의 뜻은 chapter 07부터, 각 단계의 동작 원리는 chapter 09, 10, 11에서 다룬다. 두 벤더가 같은 규격을 어떻게 다르게 행동하는지는 chapter 04에서 비교한다.
+chapter 2에서 두 컨테이너 사이에 멀티캐스트가 통하는 것을 확인했다. 이제 두 벤더의 shape_main을 실제로 통신시키고 그 패킷을 캡처한다. 이 chapter에서는 메시지의 종류와 순서만 알아본다. 참가자가 서로를 찾고 (SPDP), writer와 reader를 알리고 (SEDP), 데이터를 보내고, 사라지는 흐름이 어떤 패킷으로 보이는지 Wireshark에서 가려내는 것이 목표다. 바이트의 뜻은 chapter 7부터, 각 단계의 동작 원리는 chapter 9, 10, 11에서 다룬다. 두 벤더가 같은 규격을 어떻게 다르게 행동하는지는 chapter 4에서 비교한다.
 
 ## 1. 왜 필요한가
 
-chapter 00의 3.2절은 DDS의 디스커버리를 그림 하나로 요약했다. 참가자들이 주기적으로 자기를 알리고 (SPDP), 서로를 알게 되면 각자의 writer와 reader를 알리고 (SEDP), 맞는 짝이 생기면 데이터가 writer에서 reader로 바로 간다. 이 chapter는 그 그림을 실제 패킷으로 본다. 두 벤더의 shape_main이 처음 통신하는 약 20초 안에 그 모든 단계가 지나간다.
+chapter 0의 3.2절은 DDS의 디스커버리를 그림 하나로 요약했다. 참가자들이 주기적으로 자기를 알리고 (SPDP), 서로를 알게 되면 각자의 writer와 reader를 알리고 (SEDP), 맞는 짝이 생기면 데이터가 writer에서 reader로 바로 간다. 이 chapter는 그 그림을 실제 패킷으로 본다. 두 벤더의 shape_main이 처음 통신하는 약 20초 안에 그 모든 단계가 지나간다.
 
-이 chapter를 마치면 DDS 통신 캡처를 열어, 어느 프레임이 참가자 디스커버리이고, 어느 것이 엔드포인트 디스커버리이고, 어느 것이 사용자 데이터이고, 어디서 참가자가 사라졌는지를 Wireshark의 Info 열과 필터만으로 가를 수 있다. 그리고 chapter 00의 3.3절이 말한 디스커버리의 대가 (데이터가 없어도 계속 나가는 패킷)를 프레임 수와 바이트로 직접 센다.
+이 chapter를 마치면 DDS 통신 캡처를 열어, 어느 프레임이 참가자 디스커버리이고, 어느 것이 엔드포인트 디스커버리이고, 어느 것이 사용자 데이터이고, 어디서 참가자가 사라졌는지를 Wireshark의 Info 열과 필터만으로 가를 수 있다. 그리고 chapter 0의 3.3절이 말한 디스커버리의 대가 (데이터가 없어도 계속 나가는 패킷)를 프레임 수와 바이트로 직접 센다.
 
-여기서 보는 두 캡처 (`rel-cyclone-pub`, `be-cyclone-pub`)는 이 책 전체의 정답 데이터이기도 하다. chapter 07에서 mdds의 파서가 이 바이트를 맞게 읽는지, chapter 09와 11에서 디스커버리 상태 머신이 같은 순서로 동작하는지를 이 캡처로 검사한다.
+여기서 보는 두 캡처 (`rel-cyclone-pub`, `be-cyclone-pub`)는 이 책 전체의 정답 데이터이기도 하다. chapter 7에서 mdds의 파서가 이 바이트를 맞게 읽는지, chapter 9와 11에서 디스커버리 상태 머신이 같은 순서로 동작하는지를 이 캡처로 검사한다.
 
 ### 1.1 shape_main 실행과 출력 읽기
 
-shape_main이 무엇이고 어떤 옵션이 있는지는 chapter 01에서 보았다 (Lab 1-2). 이 chapter에서 쓰는 옵션은 다음과 같다. 두 shape_main은 같은 옵션을 받는다.
+shape_main이 무엇이고 어떤 옵션이 있는지는 chapter 1에서 보았다 (Lab 1-2). 이 chapter에서 쓰는 옵션은 다음과 같다. 두 shape_main은 같은 옵션을 받는다.
 
 | 옵션 | 뜻과 이 chapter의 값 |
 |---|---|
 | `-P` / `-S` | 발행 / 구독. `-P`는 DataWriter 하나를, `-S`는 DataReader 하나를 만든다. 발행은 cyclone, 구독은 fastdds |
 | `-d 0` | 도메인 번호 |
 | `-t Square` | 토픽 이름 |
-| `-x 1` | 데이터 표현 (1 = XCDR1, 2 = XCDR2. chapter 06, 16). 실행 파일의 기본값에 기대지 않으려고 양쪽에 명시한다 |
-| `-r` / `-b` | RELIABILITY QoS (chapter 00 2.3절). `-r` reliable은 빠진 샘플을 다시 받고, `-b` best-effort는 받은 것만 받는다. 양쪽을 같게 준다. Lab 3-1은 `-r` |
+| `-x 1` | 데이터 표현 (1 = XCDR1, 2 = XCDR2. chapter 6, 16). 실행 파일의 기본값에 기대지 않으려고 양쪽에 명시한다 |
+| `-r` / `-b` | RELIABILITY QoS (chapter 0 2.3절). `-r` reliable은 빠진 샘플을 다시 받고, `-b` best-effort는 받은 것만 받는다. 양쪽을 같게 준다. Lab 3-1은 `-r` |
 | `-c BLUE` | 발행 전용. 샘플의 색. 구독자에게 주면 색으로 거르는 다른 토픽이 되므로 주지 않는다 |
 | `--write-period 100 --num-iterations 100` | 발행 전용. 100ms마다 100개를 쓰고 약 10초 뒤 스스로 끝난다 |
 
 이 chapter에서 발행자와 구독자는 shape_main 프로세스, 곧 참가자 하나를 가리킨다. writer와 reader는 그 안의 엔드포인트다. 발행자 안에 writer 하나, 구독자 안에 reader 하나가 있다. 디스커버리를 위해 참가자가 스스로 갖는 내장 writer와 reader는 따로 있다 (3.1절).
 
-shape_main의 출력 가운데 이 chapter에서 뜻을 알아야 하는 줄은 다음과 같다 (shape_main 소스 `526dc56`의 출력문). 샘플 줄의 형식 (토픽, 색, x, y, [크기])은 chapter 01에서 보았다.
+shape_main의 출력 가운데 이 chapter에서 뜻을 알아야 하는 줄은 다음과 같다 (shape_main 소스 `526dc56`의 출력문). 샘플 줄의 형식 (토픽, 색, x, y, [크기])은 chapter 1에서 보았다.
 
 | 출력 | 누가 | 뜻 |
 |---|---|---|
@@ -53,7 +53,7 @@ fastdds 컨테이너에서 구독자를, cyclone 컨테이너에서 발행자를
 Lab 1-1의 두 컨테이너가 실행 중이어야 한다. 명령은 모두 `docker/`에서 실행한다. 시작하기 전에 이전 실행이 남아 있지 않은지 확인한다. 첫 명령에 두 컨테이너가 `Up`으로 나오고, 나머지 네 명령은 아무것도 출력하지 않아야 정상이다 (`pgrep`은 찾는 것이 없으면 종료 코드 1을 돌려주는데, 그것이 정상이다).
 ```bash
 docker compose ps
-docker ps -q --filter ancestor=mdds/tools             # chapter 02의 mcast-check 컨테이너
+docker ps -q --filter ancestor=mdds/tools             # chapter 2의 mcast-check 컨테이너
 docker compose exec cyclone pgrep -x cyclone_shape
 docker compose exec fastdds pgrep -x fastdds_shape
 docker compose exec fastdds pgrep -x tcpdump
@@ -70,7 +70,7 @@ docker compose exec fastdds pgrep -x tcpdump
 
 시간 간격이 결과에 영향을 준다. 적힌 대로 기다린다.
 
-1. 터미널 A에서 캡처를 시작한다. `listening on eth0`이 출력되면 1초 더 기다린다. 필터는 chapter 02와 달리 UDP 전체다. DDS 패킷은 포트가 여럿이기 때문이다. 같은 이름의 파일이 있으면 말없이 덮어쓴다.
+1. 터미널 A에서 캡처를 시작한다. `listening on eth0`이 출력되면 1초 더 기다린다. 필터는 chapter 2와 달리 UDP 전체다. DDS 패킷은 포트가 여럿이기 때문이다. 같은 이름의 파일이 있으면 말없이 덮어쓴다.
    ```bash
    docker compose exec fastdds tcpdump -i eth0 -U -Z root -w /captures/cyclone-fastdds/my-rel-cyclone-pub.pcap 'udp or igmp'
    ```
@@ -118,9 +118,9 @@ docker compose exec fastdds pgrep -x tcpdump
 
 #### 2.1.6 실패하면
 
-- 터미널 B가 `Create reader`에서 넘어가지 않으면 발행자가 실행 중인지 터미널 C를 본다. 둘 다 실행 중인데 `matched`가 찍히지 않으면 네트워크부터 의심한다 (chapter 02 3.4절).
+- 터미널 B가 `Create reader`에서 넘어가지 않으면 발행자가 실행 중인지 터미널 C를 본다. 둘 다 실행 중인데 `matched`가 찍히지 않으면 네트워크부터 의심한다 (chapter 2 3.4절).
 - 이전 실행의 shape_main이 남아 있으면 (2.1.2절의 `pgrep`에 번호가 나오면) `docker compose exec <컨테이너> pkill -INT -x <벤더>_shape`로 끝낸다. SIGTERM (`pkill`의 기본값)이 아니라 SIGINT를 보내야 정리하고 끝난다. 남은 tcpdump는 `pkill -INT -x tcpdump`로 끝낸다.
-- chapter 02의 `mcast-check recv` 컨테이너가 남아 UDP 7400을 잡고 있으면 fastdds_shape는 오류 없이 시작하지만 7400 소켓을 열지 못한다. 구독자를 시작한 뒤 `docker compose exec fastdds ss -ulpn`을 보면 7400 줄에 `fastdds_shape`가 없다. chapter 02의 2.1.6절대로 그 컨테이너를 끝내고 다시 한다.
+- chapter 2의 `mcast-check recv` 컨테이너가 남아 UDP 7400을 잡고 있으면 fastdds_shape는 오류 없이 시작하지만 7400 소켓을 열지 못한다. 구독자를 시작한 뒤 `docker compose exec fastdds ss -ulpn`을 보면 7400 줄에 `fastdds_shape`가 없다. chapter 2의 2.1.6절대로 그 컨테이너를 끝내고 다시 한다.
 - 캡처가 비어 있거나 패킷 수가 매우 적으면 tcpdump를 구독자보다 늦게 시작했거나 너무 일찍 끝낸 것이다. 1부터 다시 한다.
 - 그 밖의 문제는 [docker-network.md "문제와 대응"](../../docs/environment/docker-network.md#문제와-대응)을 참고한다.
 
@@ -149,11 +149,11 @@ Wireshark가 RTPS 패킷을 보여 주는 방식 세 가지를 알아 둔다.
 
 - **두 가지 이상한 표시는 정상이다.** Fast DDS가 보낸 모든 메시지 끝에는 `Unknown[80]`이 붙는다. Fast DDS가 붙이는 벤더 전용 서브메시지로, Wireshark가 모르는 번호라 이렇게 표시한다 ([용어 정리](../glossary.md#프로토콜)). Cyclone이 보낸 writer 정보는 `DATA(w)`가 아니라 `DATA[Malformed Packet]`로 빨갛게 표시된다. Wireshark 4.6.9가 그 안의 한 항목을 끝까지 해석하지 못해서다. Fast DDS는 이 메시지를 받아 매칭했고 사용자 데이터가 이어졌으므로 통신에는 문제가 없었다.
 
-캡처는 fastdds 쪽에서 했으므로 fastdds가 보낸 멀티캐스트는 나가는 것과 돌아온 것 두 개씩 보인다 (chapter 02 2.1.4절). cyclone이 보낸 것은 한 번씩이다.
+캡처는 fastdds 쪽에서 했으므로 fastdds가 보낸 멀티캐스트는 나가는 것과 돌아온 것 두 개씩 보인다 (chapter 2 2.1.4절). cyclone이 보낸 것은 한 번씩이다.
 
 #### 2.2.3 절차
 
-1. Wireshark로 `captures/cyclone-fastdds/rel-cyclone-pub.pcap`을 열고 표시 필터에 `rtps`를 입력한다. 창 아래 상태 표시줄의 Displayed가 전체 268개 가운데 256개가 된다. 나머지 12개는 chapter 02에서 본 IGMP다 (표에 적힌 IGMP 프레임으로 가려면 필터를 `rtps || igmp`로 바꾼다).
+1. Wireshark로 `captures/cyclone-fastdds/rel-cyclone-pub.pcap`을 열고 표시 필터에 `rtps`를 입력한다. 창 아래 상태 표시줄의 Displayed가 전체 268개 가운데 256개가 된다. 나머지 12개는 chapter 2에서 본 IGMP다 (표에 적힌 IGMP 프레임으로 가려면 필터를 `rtps || igmp`로 바꾼다).
 2. 아래 표의 구간을 차례로 찾는다. 표의 "표지"가 그 구간의 시작과 끝을 알려 주는 프레임이다. 구간마다 적힌 필터를 쓰거나, 필터 `rtps` 상태에서 프레임 번호로 간다 (Go > Go to Packet). 필터의 `||`는 "또는"이다.
 
    | 구간 | 프레임 | 시각 (초) | 표지와 보이는 것 | 필터 |
@@ -164,7 +164,7 @@ Wireshark가 RTPS 패킷을 보여 주는 방식 세 가지를 알아 둔다.
    | 4 사용자 데이터 | 48-253 | 4.21-13.45 | 48 cyclone의 첫 `HEARTBEAT`. 50부터 `INFO_TS, DATA, HEARTBEAT`가 100ms마다, 그때마다 fastdds의 `ACKNACK`. 상세 창의 writerSeqNumber는 12에서 100까지 | `rtps.sm.wrEntityId == 0x00000202` |
    | 5 종료 | 254-268 | 13.55-19.57 | 254 cyclone의 `DATA(w[UD])`. 255 (멀티캐스트)와 256 (유니캐스트) `DATA(p[UD])`. 257-258 IGMP Leave. 259-262 fastdds 혼자 `DATA(p)` 두 번. 구독자를 끝내자 263-264 `DATA(p[UD])`, 265-268 IGMP Leave | `rtps.sm.wrEntityId == 0x000100c2` |
 
-   구간 2와 3은 같은 밀리초에 섞여 있다. 프레임 번호가 아니라 표지 (`DATA(p)` 세 개, writer 정보, reader 정보)로 가른다. 구간 3의 `HEARTBEAT`와 `ACKNACK`의 숫자와 왕복 횟수는 읽지 않는다 (chapter 10, 11). 유니캐스트의 목적지 포트가 양쪽이 다른데 (fastdds 7410과 7411, cyclone 44686), 참가자마다 자기가 받을 포트를 `DATA(p)`에 실어 알리기 때문이다 (3.1절). 구간 2의 `DATA(p)`를 펼치면 상세 창의 `PID_METATRAFFIC_UNICAST_LOCATOR`와 `PID_DEFAULT_UNICAST_LOCATOR`에 그 주소와 포트가 보인다 (Fast DDS의 것에는 종류를 모르는 로케이터도 하나 보이는데, Fast DDS 전용이다. chapter 04).
+   구간 2와 3은 같은 밀리초에 섞여 있다. 프레임 번호가 아니라 표지 (`DATA(p)` 세 개, writer 정보, reader 정보)로 가른다. 구간 3의 `HEARTBEAT`와 `ACKNACK`의 숫자와 왕복 횟수는 읽지 않는다 (chapter 10, 11). 유니캐스트의 목적지 포트가 양쪽이 다른데 (fastdds 7410과 7411, cyclone 44686), 참가자마다 자기가 받을 포트를 `DATA(p)`에 실어 알리기 때문이다 (3.1절). 구간 2의 `DATA(p)`를 펼치면 상세 창의 `PID_METATRAFFIC_UNICAST_LOCATOR`와 `PID_DEFAULT_UNICAST_LOCATOR`에 그 주소와 포트가 보인다 (Fast DDS의 것에는 종류를 모르는 로케이터도 하나 보이는데, Fast DDS 전용이다. chapter 4).
 3. 구간과 상관없이 흐르는 것이 하나 있다. 필터 `rtps.sm.wrEntityId == 0x000100c2`로 보면 `DATA(p)`가 캡처 내내 나간다. fastdds는 약 3초마다 멀티캐스트로 보내면서 아는 참가자 (cyclone)에게 유니캐스트로도 보낸다. cyclone은 약 8초마다 멀티캐스트로 보내고, 상대를 찾은 직후 몇 초 동안은 약 1초마다 유니캐스트로도 보낸다. 이 주기와 방식은 두 벤더의 설정과 동작이다 (3.1절).
 4. 묶음별로 센다. 필터를 입력한 뒤 Statistics > Capture File Properties를 열면 Displayed 열에 프레임 수와 바이트가 나온다 (필터를 바꾸면 창을 다시 연다). 아래 필터를 차례로 센다. 사용자 writer의 entityId 필터 (`0x00000202`)에는 그 writer에게 보낸 `ACKNACK`도 걸린다. ACKNACK 서브메시지 안에도 상대 writer의 entityId가 들어 있기 때문이다. 그래서 보낸 쪽 주소 (`ip.src`)로 나눈다.
    - 내장 엔드포인트 트래픽 전체: `rtps && !(rtps.sm.wrEntityId == 0x00000202)`
@@ -218,7 +218,7 @@ SEDP 행의 24 프레임 가운데 11개에는 참가자 메시지의 `HEARTBEAT
 - **SPDP는 데이터가 없어도 계속 나간다.** 42 프레임 가운데 fastdds 자신의 멀티캐스트는 26개 (`ip.src == 172.28.0.11 && ip.dst == 239.255.0.1`)인데 이것은 같은 패킷이 두 번 보인 13쌍이다. 복사본을 빼면 실제로 나간 SPDP는 29 프레임 (14,006바이트)이다. 발행자가 사라진 뒤에도 fastdds는 3초마다 보냈다.
 - **reliable은 ACKNACK를 더한다.** 사용자 reader가 보낸 94 프레임은 모두 `ACKNACK`다. 샘플 89개를 받는 데 비슷한 수의 패킷을 돌려보냈다.
 
-chapter 00의 3.3절이 말한 "적지 않은 몫"은 이 한 실행에서는 이렇게 나타났다. 다른 조건에서는 비율이 달라지므로 DDS 일반의 값으로 읽지 않는다. 변하지 않는 것은 성격이다. 데이터가 흐르지 않아도 참가자마다 SPDP가 계속 나가고, writer와 reader가 늘면 SEDP도 그만큼 는다.
+chapter 0의 3.3절이 말한 "적지 않은 몫"은 이 한 실행에서는 이렇게 나타났다. 다른 조건에서는 비율이 달라지므로 DDS 일반의 값으로 읽지 않는다. 변하지 않는 것은 성격이다. 데이터가 흐르지 않아도 참가자마다 SPDP가 계속 나가고, writer와 reader가 늘면 SEDP도 그만큼 는다.
 
 직접 만든 캡처에서는 구간 3의 길이, `HEARTBEAT`와 `ACKNACK`의 왕복 횟수, 첫 사용자 seq가 다를 수 있다. 참고 캡처는 구간 3이 1.1초 걸린 경우다. 왜 다른지는 chapter 11에서 본다.
 
@@ -289,11 +289,11 @@ RTPS의 SPDP와 SEDP는 따로 만든 메시지를 쓰지 않는다. 참가자�
 entityId의 마지막 바이트는 종류다 (Sec. 9.3.1.2, 표 9.1). `c2`는 key가 있는 내장 writer, `c7`은 key가 있는 내장 reader, `02`는 key가 있는 사용자 writer, `07`은 key가 있는 사용자 reader이고, key가 없는 종류는 번호가 다르다. Cyclone의 Square writer `0x00000202`에서 `02`가 그것이다. 앞의 세 바이트는 구현이 고르므로 다른 실행이나 다른 벤더에서는 다를 수 있다. 내장 엔드포인트의 entityId는 모든 참가자에서 같으므로, 도메인 안에서 엔드포인트 하나를 가리킬 때는 메시지 헤더에 있는 참가자의 guidPrefix (12바이트)와 entityId를 합친 GUID를 쓴다 (Sec. 8.2.4.1).
 
 세 종류의 내장 writer는 성격이 다르다.
-- **SPDP writer는 best-effort이고 주기적이다.** 참가자 정보 하나를 미리 정한 주소 목록으로 주기적으로 다시 보낸다 (Sec. 8.5.3.1). 받는 이가 있는지는 상관없다. 그래서 구간 1에서 fastdds 혼자 `DATA(p)`를 보냈고, 참가자는 어느 순서로 시작해도 서로를 찾는다. 규격의 기본 주기는 30초이고 (Sec. 9.6.2.4), 두 벤더는 더 짧게 설정되어 있다 (이 캡처에서 Fast DDS 3초, Cyclone 약 8초. chapter 09). 모르는 참가자의 정보를 받으면 바로 한 번 더 보내 시작을 앞당길 수 있는데, 이것은 선택이다 (Sec. 8.5.3.1). 구간 2에서 두 벤더가 서로에게 유니캐스트로 보낸 `DATA(p)`가 이 동작으로 보인다.
+- **SPDP writer는 best-effort이고 주기적이다.** 참가자 정보 하나를 미리 정한 주소 목록으로 주기적으로 다시 보낸다 (Sec. 8.5.3.1). 받는 이가 있는지는 상관없다. 그래서 구간 1에서 fastdds 혼자 `DATA(p)`를 보냈고, 참가자는 어느 순서로 시작해도 서로를 찾는다. 규격의 기본 주기는 30초이고 (Sec. 9.6.2.4), 두 벤더는 더 짧게 설정되어 있다 (이 캡처에서 Fast DDS 3초, Cyclone 약 8초. chapter 9). 모르는 참가자의 정보를 받으면 바로 한 번 더 보내 시작을 앞당길 수 있는데, 이것은 선택이다 (Sec. 8.5.3.1). 구간 2에서 두 벤더가 서로에게 유니캐스트로 보낸 `DATA(p)`가 이 동작으로 보인다.
 - **SEDP writer는 reliable이다.** DDS 규격이 이 내장 엔터티를 reliable로 정하므로 RTPS도 reliable writer와 reader로 대응시킨다 (Sec. 8.5.4.2). 그래서 사용자 QoS가 best-effort여도 SEDP에는 `HEARTBEAT`와 `ACKNACK`가 남는다 (Lab 3-3).
 - **참가자 메시지 writer도 reliable이다.** 참가자가 자기 writer들이 살아 있음을 알리는 데 쓰는 writer이고 (Sec. 8.4.13), 규격이 reliable로 정한다 (Sec. 8.4.13.3). `DATA(m)`과 그 `HEARTBEAT`, `ACKNACK`가 캡처에 섞여 있는 이유다. liveliness는 chapter 14에서 다룬다.
 
-주소와 포트도 이 프로토콜로 알린다. 규격이 고정한 주소는 멀티캐스트 239.255.0.1뿐이고, 모든 참가자가 여기로 보내고 듣는다 (Sec. 9.6.2.4). 포트는 도메인 번호와 참가자 번호로 계산하는 기본 공식이 있지만 기본값일 뿐이다 (Sec. 9.6.2.1-9.6.2.3, chapter 08). 참가자가 실제로 받는 유니캐스트 주소와 포트는 SPDP의 참가자 정보에 로케이터 ([용어 정리](../glossary.md#프로토콜))로 실어 알리고, 엔드포인트가 다른 주소를 쓰면 SEDP의 정보에 실어 알린다 (Sec. 9.6.2.1, 9.6.2.2). 구간 2에서 본 것처럼 Fast DDS는 기본 공식의 7410과 7411을, Cyclone은 다른 포트를 알렸다. 두 벤더의 차이는 chapter 04에서 비교한다.
+주소와 포트도 이 프로토콜로 알린다. 규격이 고정한 주소는 멀티캐스트 239.255.0.1뿐이고, 모든 참가자가 여기로 보내고 듣는다 (Sec. 9.6.2.4). 포트는 도메인 번호와 참가자 번호로 계산하는 기본 공식이 있지만 기본값일 뿐이다 (Sec. 9.6.2.1-9.6.2.3, chapter 8). 참가자가 실제로 받는 유니캐스트 주소와 포트는 SPDP의 참가자 정보에 로케이터 ([용어 정리](../glossary.md#프로토콜))로 실어 알리고, 엔드포인트가 다른 주소를 쓰면 SEDP의 정보에 실어 알린다 (Sec. 9.6.2.1, 9.6.2.2). 구간 2에서 본 것처럼 Fast DDS는 기본 공식의 7410과 7411을, Cyclone은 다른 포트를 알렸다. 두 벤더의 차이는 chapter 4에서 비교한다.
 
 ### 3.2 reliable과 best-effort: HEARTBEAT와 ACKNACK
 
@@ -326,12 +326,12 @@ RTPS는 구현마다 다를 수 있는 동작 가운데 상호운용에 꼭 필�
 
    </details>
 
-3. 참고 캡처의 처음 3초 (구독자 혼자)에는 무엇이 보였는가? 발행자를 끝내 실행하지 않았다면 그 뒤로 무엇이 흘렀겠는가? 그것이 chapter 00의 3.3절과 어떻게 이어지는가?
+3. 참고 캡처의 처음 3초 (구독자 혼자)에는 무엇이 보였는가? 발행자를 끝내 실행하지 않았다면 그 뒤로 무엇이 흘렀겠는가? 그것이 chapter 0의 3.3절과 어떻게 이어지는가?
 
    <details>
    <summary>해설</summary>
 
-   SPDP 참가자 정보 (`DATA(p)`)가 멀티캐스트로 반복해서 나갔다. 발행자가 없어도 이것은 계속된다. SPDP writer는 받는 이가 있든 없든 주기적으로 보내기 때문이다 (Sec. 8.5.3.1). 이 캡처에서 관찰한 것은 처음 3초와 발행자가 사라진 뒤 약 6초뿐이지만, 규격의 동작과 참고 캡처의 3초 주기로 보아 그 뒤로도 같다. 주기는 구현의 설정값이다 (규격 기본 30초). SEDP는 상대가 없으면 나가지 않는다. 이것이 chapter 00의 3.3절이 말한, 데이터가 없어도 참가자마다 계속 드는 디스커버리의 비용이다.
+   SPDP 참가자 정보 (`DATA(p)`)가 멀티캐스트로 반복해서 나갔다. 발행자가 없어도 이것은 계속된다. SPDP writer는 받는 이가 있든 없든 주기적으로 보내기 때문이다 (Sec. 8.5.3.1). 이 캡처에서 관찰한 것은 처음 3초와 발행자가 사라진 뒤 약 6초뿐이지만, 규격의 동작과 참고 캡처의 3초 주기로 보아 그 뒤로도 같다. 주기는 구현의 설정값이다 (규격 기본 30초). SEDP는 상대가 없으면 나가지 않는다. 이것이 chapter 0의 3.3절이 말한, 데이터가 없어도 참가자마다 계속 드는 디스커버리의 비용이다.
 
    </details>
 
@@ -340,7 +340,7 @@ RTPS는 구현마다 다를 수 있는 동작 가운데 상호운용에 꼭 필�
    <details>
    <summary>해설</summary>
 
-   구간 2 (서로 찾기)와 구간 3 (엔드포인트 교환)이 는다. SPDP 공지는 참가자마다 하나씩 주기적으로 나가므로 참가자 수에 비례해 늘고, SEDP는 참가자 쌍마다 서로의 writer와 reader 정보를 주고받으므로 쌍의 수에 비례해 는다 (chapter 00 3.3절의 N x (N - 1) x E). 구간 4의 사용자 데이터가 두 reader에게 어떻게 가는지 (따로 보내는지, 멀티캐스트로 한 번 보내는지)는 이 chapter의 캡처로는 확인하지 못한다. 구간 1과 5는 참가자마다 한 번씩이다.
+   구간 2 (서로 찾기)와 구간 3 (엔드포인트 교환)이 는다. SPDP 공지는 참가자마다 하나씩 주기적으로 나가므로 참가자 수에 비례해 늘고, SEDP는 참가자 쌍마다 서로의 writer와 reader 정보를 주고받으므로 쌍의 수에 비례해 는다 (chapter 0 3.3절의 N x (N - 1) x E). 구간 4의 사용자 데이터가 두 reader에게 어떻게 가는지 (따로 보내는지, 멀티캐스트로 한 번 보내는지)는 이 chapter의 캡처로는 확인하지 못한다. 구간 1과 5는 참가자마다 한 번씩이다.
 
    </details>
 

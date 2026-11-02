@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | chapter: 05 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 5 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - DDS 1.4 Sec. 2.2.1 (개념 모델), Sec. 2.2.2 (엔티티), Sec. 2.2.2.5.1 (샘플/뷰/인스턴스 상태), Sec. 2.2.3 (QoS 22종), Annex A (적합성 프로파일)

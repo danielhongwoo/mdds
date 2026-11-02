@@ -2,7 +2,7 @@
 
 상태: 대기
 
-[roadmap](../roadmap.md) | chapter: 09 ([목차](../../book/README.md#목차))
+[roadmap](../roadmap.md) | chapter: 9 ([목차](../../book/README.md#목차))
 
 ## 읽을 규격
 - RTPS 2.5: 8.5.1 ~ 8.5.3, 9.6.2.4, 9.6.3 (내장 엔드포인트 IDL, PID 표), 9.3.2.12 (BuiltinEndpointSet)

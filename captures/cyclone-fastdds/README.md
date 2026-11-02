@@ -1,6 +1,6 @@
 # Cyclone DDS <-> Fast DDS 캡처
 
-[chapter 03 노트](../../docs-for-agent/notes/03-first-communication.md) | [chapter 04 노트](../../docs-for-agent/notes/04-vendor-differences.md) | [시나리오 표](../../docs-for-agent/notes/03-first-communication.md#시나리오-표) | [docker-network.md](../../docs/environment/docker-network.md)
+[chapter 3 노트](../../docs-for-agent/notes/03-first-communication.md) | [chapter 4 노트](../../docs-for-agent/notes/04-vendor-differences.md) | [시나리오 표](../../docs-for-agent/notes/03-first-communication.md#시나리오-표) | [docker-network.md](../../docs/environment/docker-network.md)
 
 Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다. 이후 chapter에서 파서와 상태 머신을 검증하는 정답 데이터로 쓴다.
 
@@ -14,7 +14,7 @@ Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다
 ## 파일
 | 파일 | 내용 |
 |---|---|
-| [`../mcast-check/`](../mcast-check/) | 네트워크 검증 ([chapter 02 노트](../../docs-for-agent/notes/02-multicast.md)). DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령) |
+| [`../mcast-check/`](../mcast-check/) | 네트워크 검증 ([chapter 2 노트](../../docs-for-agent/notes/02-multicast.md)). DDS 없이 멀티캐스트만. [docker-network.md "검증 명령"](../../docs/environment/docker-network.md#검증-명령) |
 | `rel-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, RELIABLE. 캡처는 fastdds |
 | `rel-fastdds-pub.*` | Fast DDS 발행 -> Cyclone 구독, RELIABLE. 캡처는 cyclone |
 | `be-cyclone-pub.*` | Cyclone 발행 -> Fast DDS 구독, BEST_EFFORT. 캡처는 fastdds |
@@ -441,7 +441,7 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 | 유니캐스트 포트 | 임의 (캡처마다 다름. 33690, 44686, 41822, 48749). 메타트래픽과 사용자 데이터가 같은 포트 | 7410 (메타트래픽), 7411 (사용자 데이터). 규격 기본 공식대로 |
 | SPDP의 멀티캐스트 로케이터 | 메타트래픽 239.255.0.1:7400, 사용자 데이터 239.255.0.1:7401 | 광고하지 않음 |
 | SPDP의 그 밖의 로케이터 | 없음 | kind 0x13 (벤더 전용, 공유 메모리로 추정)의 사용자 데이터 로케이터 |
-| 벤더 전용 PID (SPDP) | 0x8007: 길이 52, 문자열 `cyclone/11.0.1/Linux/Linux`를 포함. 0x8019: 길이 4 | 0x8000: 제품 버전 `03 06 01 00` (3.6.1.0). 0x8007: 길이 4, 값 1 |
+| 벤더 전용 PID (SPDP) | 0x8007: 길이 52, 문자열 `cyclone/11.0.1/Linux/Linux`를 포함. 0x8019: 길이 4 | 0x8000: 제품 버전 `03 6 1 00` (3.6.1.0). 0x8007: 길이 4, 값 1 |
 | 벤더 전용 서브메시지 | 없음 | 모든 메시지 끝에 0x80 (길이 56). 통계 모듈 (`StatisticsSubmessageData`)이 붙인다 |
 | SEDP의 PID_TYPE_INFORMATION | 있음 | 없음 |
 | 사용자 DATA에 HEARTBEAT를 얹는 빈도 | DATA마다 | DATA 두 번에 한 번 |

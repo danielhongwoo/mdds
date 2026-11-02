@@ -1,6 +1,6 @@
 # 조사 노트: Docker로 Cyclone DDS / Fast DDS 실행
 
-[roadmap](../roadmap.md) | [chapter 01 노트](../notes/01-environment.md)
+[roadmap](../roadmap.md) | [chapter 1 노트](../notes/01-environment.md)
 
 - 조사일: 2026-10-28
 - 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 현재 실행 환경은 [environment/docker-network.md](../../docs/environment/docker-network.md)를 본다. GUI 없이 CLI 도구만 사용

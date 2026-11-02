@@ -1,8 +1,8 @@
 # Cyclone DDS / Fast DDS / shape_main 빌드
 
-[roadmap](../../docs-for-agent/roadmap.md) | 사용처: [chapter 01 노트](../../docs-for-agent/notes/01-environment.md) (이후 캡처 추가와 상호운용 시험에도 같은 이미지를 쓴다)
+[roadmap](../../docs-for-agent/roadmap.md) | 사용처: [chapter 1 노트](../../docs-for-agent/notes/01-environment.md) (이후 캡처 추가와 상호운용 시험에도 같은 이미지를 쓴다)
 
-OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 두 벤더의 DDS 라이브러리를 Docker 이미지 안에서 소스로 빌드하는 방법을 정리한다. 실행 호스트와 네트워크는 [docker-network.md](docker-network.md), 시나리오 실행은 [chapter 01 노트](../../docs-for-agent/notes/01-environment.md)에 있다.
+OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 두 벤더의 DDS 라이브러리를 Docker 이미지 안에서 소스로 빌드하는 방법을 정리한다. 실행 호스트와 네트워크는 [docker-network.md](docker-network.md), 시나리오 실행은 [chapter 1 노트](../../docs-for-agent/notes/01-environment.md)에 있다.
 
 ## 소스와 버전
 고정한 버전과 전체 커밋 해시는 [docker/README.md "빌드 소스와 버전"](../../docker/README.md#빌드-소스와-버전)에 있다. 여기에는 그 버전을 고른 근거를 둔다.
@@ -51,7 +51,7 @@ OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 �
 - Fast DDS 원래 실행 파일 이름은 `eprosima_fastdds-3.6.1.0_shape_main_linux`다 (`fastdds_VERSION`이 4자리). OMG 릴리스 자산 이름 `eprosima_fastdds-3.6.1`과 끝자리가 다르다.
 
 ## 빌드 후 확인
-Dockerfile이나 버전을 바꿔 다시 빌드했을 때 한다. 이미지 빌드가 성공해도 실행할 때 문제가 드러날 수 있어서다. [chapter 01 Lab 1-2](../../book/01-environment/README.md#52-lab-1-2-shape_main-확인)의 명령 (`ldd`, `-h`, `fastdds_shape.origname`, Cyclone 이미지 라벨)을 다시 실행하고, 다음을 더 확인한다. 위 "빌드 결과"는 이 확인을 마지막으로 한 결과다.
+Dockerfile이나 버전을 바꿔 다시 빌드했을 때 한다. 이미지 빌드가 성공해도 실행할 때 문제가 드러날 수 있어서다. [chapter 1 Lab 1-2](../../book/01-environment/README.md#52-lab-1-2-shape_main-확인)의 명령 (`ldd`, `-h`, `fastdds_shape.origname`, Cyclone 이미지 라벨)을 다시 실행하고, 다음을 더 확인한다. 위 "빌드 결과"는 이 확인을 마지막으로 한 결과다.
 ```
 docker image inspect mdds/fastdds-shape:3.6.1 --format '{{json .Config.Labels}}'
 docker image ls 'mdds/*'

@@ -15,16 +15,16 @@
 
 | chapter | 제목 | 저자 노트 | 상태 |
 |---|---|---|---|
-| 00 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 완료 |
-| 01 | 실습 환경 (구현 없음) | [01-environment](notes/01-environment.md) | 완료 |
-| 02 | 멀티캐스트 (구현 없음) | [02-multicast](notes/02-multicast.md) | 완료 |
-| 03 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |
-| 04 | 같은 규격, 다른 구현 (구현 없음, 관찰) | [04-vendor-differences](notes/04-vendor-differences.md) | 완료 |
-| 05 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 대기 |
-| 06 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
-| 07 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |
-| 08 | Best-effort 전송 + UDP | [08-best-effort-udp](notes/08-best-effort-udp.md) | 대기 |
-| 09 | SPDP (참가자 디스커버리) | [09-spdp](notes/09-spdp.md) | 대기 |
+| 0 | 들어가며 (구현 없음) | [00-introduction](notes/00-introduction.md) | 완료 |
+| 1 | 실습 환경 (구현 없음) | [01-environment](notes/01-environment.md) | 완료 |
+| 2 | 멀티캐스트 (구현 없음) | [02-multicast](notes/02-multicast.md) | 완료 |
+| 3 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |
+| 4 | 같은 규격, 다른 구현 (구현 없음, 관찰) | [04-vendor-differences](notes/04-vendor-differences.md) | 완료 |
+| 5 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 대기 |
+| 6 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
+| 7 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |
+| 8 | Best-effort 전송 + UDP | [08-best-effort-udp](notes/08-best-effort-udp.md) | 대기 |
+| 9 | SPDP (참가자 디스커버리) | [09-spdp](notes/09-spdp.md) | 대기 |
 | 10 | Reliable 프로토콜 | [10-reliable](notes/10-reliable.md) | 대기 |
 | 11 | SEDP + 매칭 (첫 상호운용) | [11-sedp-matching](notes/11-sedp-matching.md) | 대기 |
 | 12 | ROS 2 상호운용 (권장) | [12-ros2-interop](notes/12-ros2-interop.md) | 대기 |
@@ -51,7 +51,7 @@
 | DDS-XTypes | 1.3 (2020), 1.4 beta 진행 중 | 타입 시스템, XCDR1/XCDR2, TypeObject | 후반 |
 | IDL | 4.2 (2018) | 타입 정의 언어, 어노테이션 | 후반 (초기엔 derive 매크로로 대체) |
 | DDS-Security | 1.2 (formal/25-03-06). 1.1은 2018 | 인증/접근제어/암호화 플러그인 | 선택 |
-| DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter 00) |
+| DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter 0) |
 | DDS-RPC 1.0, DDS-XML 1.0, DDS-TSN, DDS-WEB | - | 부가 규격 | 선택 |
 
 - 로컬 사본: `omg-specs/` (git 제외). PDF와 `pdftotext -layout` 추출본이 있다.

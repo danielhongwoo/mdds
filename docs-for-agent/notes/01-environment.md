@@ -1,8 +1,8 @@
-# 저자 노트: 실습 환경 (chapter 01, 구현 없음)
+# 저자 노트: 실습 환경 (chapter 1, 구현 없음)
 
 상태: 완료
 
-[roadmap](../roadmap.md) | chapter: 01 ([목차](../../book/README.md#목차)) | 다음: [02-multicast](02-multicast.md)
+[roadmap](../roadmap.md) | chapter: 1 ([목차](../../book/README.md#목차)) | 다음: [02-multicast](02-multicast.md)
 
 ## 목표
 규격을 읽기 전에 실제 DDS 트래픽을 볼 수 있는 환경을 만든다. Cyclone DDS와 Fast DDS를 Docker 컨테이너 두 개에 띄우고, 이후 chapter에서 쓸 Rust 워크스페이스 뼈대와 프로젝트 규약을 정한다. 프로토콜 코드는 쓰지 않는다.
@@ -18,8 +18,8 @@
 하지 않는 것
 - Rust 설치와 Rust 언어 설명. 독자가 Rust를 쓸 수 있다고 본다 ([book/README.md](../../book/README.md#누구를-위한-책인가)).
 - 버전 표, 빌드 문제 대응, 검토한 다른 네트워크 방식 같은 세부 사항을 본문에 옮기지 않는다. `docs/environment/`와 `docker/README.md`로 링크한다.
-- 멀티캐스트 동작 확인 (chapter 02), DDS 통신과 캡처 (chapter 03, 04)
-- RTPS / CDR 코드 작성 (chapter 06, 07부터), 규격 정독 (chapter 05부터)
+- 멀티캐스트 동작 확인 (chapter 2), DDS 통신과 캡처 (chapter 3, 4)
+- RTPS / CDR 코드 작성 (chapter 6, 7부터), 규격 정독 (chapter 5부터)
 - ROS 2 환경 (chapter 12)
 - `ddsperf` 등 벤더 고유 도구. 모든 시나리오는 OMG `shape_main` 하나로 만든다.
 
@@ -45,15 +45,15 @@
 - 버린 근거: "가장 널리 쓰인다", "인지도가 가장 높다". 구현별 사용량의 독립 통계가 없다. GitHub 별 (2026-10-30)은 Fast DDS 2940, OpenDDS 1520, Cyclone DDS 1356으로 약한 지표일 뿐이다.
 
 ## 독자가 시작하는 곳
-**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`, 빈 crate 세 개가 있는 워크스페이스를 그대로 쓰고, chapter 06부터 그 crate에 자기 코드를 쓰며 각 chapter의 `code/` 스냅샷과 비교한다.
+**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`, 빈 crate 세 개가 있는 워크스페이스를 그대로 쓰고, chapter 6부터 그 crate에 자기 코드를 쓰며 각 chapter의 `code/` 스냅샷과 비교한다.
 - 왜: 실행 환경은 관찰 도구일 뿐 학습 대상이 아니다. 독자가 처음부터 만들게 하면 DDS와 관계없는 Docker와 Cargo 설정에 시간을 쓴다.
 - 버린 대안: 빈 디렉터리에서 워크스페이스와 Docker 환경을 직접 만들게 하기. 위 이유로 버림.
-- 01 본문은 워크스페이스와 crate를 다루지 않는다. 각 crate는 처음 코드를 쓰는 chapter에서 소개한다: 워크스페이스와 `mdds-cdr`는 06, `mdds-rtps`는 07, `mdds`와 I/O-free core로 나눈 이유는 08. 01에서 독자가 할 일이 없고 (빈 crate를 빌드해 볼 뿐), 역할을 미리 설명하면 쓸 때 다시 설명하게 된다.
+- 1 본문은 워크스페이스와 crate를 다루지 않는다. 각 crate는 처음 코드를 쓰는 chapter에서 소개한다: 워크스페이스와 `mdds-cdr`는 6, `mdds-rtps`는 7, `mdds`와 I/O-free core로 나눈 이유는 08. 1에서 독자가 할 일이 없고 (빈 crate를 빌드해 볼 뿐), 역할을 미리 설명하면 쓸 때 다시 설명하게 된다.
 
 ## 틀
-기능 chapter의 틀을 쓰지 않는다 ([book.md](../conventions/book.md#chapter)). 01에는 아직 캡처가 없고 (03에서 처음 만든다) 읽을 규격도 없어서 "캡처에서 보기", "규격 읽기"가 빈다.
-1. 왜 이런 환경인가: 두 벤더를 같은 프로그램 (shape_main)으로 띄워 비교하고, 패킷을 직접 볼 수 있어야 한다. shape_main으로 하는 통신 (Cyclone 발행, Fast DDS 구독, 디스커버리 뒤 주기적 샘플을 단순한 sequenceDiagram으로. 옵션과 세부는 03에서), Docker가 하는 일 (이미지, 컨테이너)과 compose를 쓰는 이유를 짧게 설명한다
-2. 준비물과 설치: macOS (Docker Desktop)와 Ubuntu 24.04 (Docker Engine) 두 환경을 나란히 쓴다. 2.1 Docker, 2.2 Deno, 2.3 Wireshark, 2.4 프로젝트 받기. clone한 디렉터리는 "프로젝트 디렉터리"라고 부른다 (특정 OS의 경로를 쓰지 않는다). Deno는 짧게 소개한다: TypeScript를 바로 실행하는 런타임이고, 셸 스크립트의 떨어지는 가독성 때문에 시나리오 스크립트에 썼다 ([03 노트](03-first-communication.md)). 시스템 소프트웨어 엔지니어에게 익숙하지 않을 수 있다
+기능 chapter의 틀을 쓰지 않는다 ([book.md](../conventions/book.md#chapter)). 1에는 아직 캡처가 없고 (3에서 처음 만든다) 읽을 규격도 없어서 "캡처에서 보기", "규격 읽기"가 빈다.
+1. 왜 이런 환경인가: 두 벤더를 같은 프로그램 (shape_main)으로 띄워 비교하고, 패킷을 직접 볼 수 있어야 한다. shape_main으로 하는 통신 (Cyclone 발행, Fast DDS 구독, 디스커버리 뒤 주기적 샘플을 단순한 sequenceDiagram으로. 옵션과 세부는 3에서), Docker가 하는 일 (이미지, 컨테이너)과 compose를 쓰는 이유를 짧게 설명한다
+2. 준비물과 설치: macOS (Docker Desktop)와 Ubuntu 24.04 (Docker Engine) 두 환경을 나란히 쓴다. 2.1 Docker, 2.2 Deno, 2.3 Wireshark, 2.4 프로젝트 받기. clone한 디렉터리는 "프로젝트 디렉터리"라고 부른다 (특정 OS의 경로를 쓰지 않는다). Deno는 짧게 소개한다: TypeScript를 바로 실행하는 런타임이고, 셸 스크립트의 떨어지는 가독성 때문에 시나리오 스크립트에 썼다 ([3 노트](03-first-communication.md)). 시스템 소프트웨어 엔지니어에게 익숙하지 않을 수 있다
 3. 벤더 이미지: 3.1 dds-rtps 저장소 (무엇을 위한 저장소인지, 실행 파일이 DDS 라이브러리 + IDL 생성 코드 + shape_main 소스로 만들어진다는 것만. 폴더 구성과 소스 분석은 넣지 않는다: 환경 이해에 도움이 되지 않는다), 3.2 소스에서 빌드하는 이유, 3.3 이미지 구성 (벤더별 이미지, 멀티스테이지, 진단 도구, `sleep infinity`와 `exec`), 3.4 버전 고정
 4. 네트워크: bridge `dds-net`, 고정 주소 (.10 Cyclone, .11 Fast DDS), 호스트는 DDS 통신에 참여하지 않음, `captures/` 바인드 마운트. 구성도는 [docker-network.md](../../docs/environment/docker-network.md#구성도)의 Mermaid
 5. 직접 실행해 보기: Lab 1-1, Lab 1-2 (lab 번호가 소절 번호를 대신한다)
@@ -126,7 +126,7 @@
 - 2026-10-28: 실행 환경 문서를 노트에서 `docs/environment/`로 분리 (이후 chapter에서도 계속 쓰므로)
 - 2026-10-29: 프로젝트 규약을 노트에서 `conventions/` (Rust, TypeScript, Markdown, 캡처)로 분리 (모든 chapter에서 쓰므로). `editcap` 기준 10MB -> [conventions](../conventions/README.md)
 - 2026-10-30: 스스로 확인하기를 둠 (저자 이해도 점검에서 나온 질문) -> [틀](#틀)
-- 2026-10-30: 워크스페이스 절을 01에서 빼고 crate를 처음 쓰는 chapter (06, 07, 08)로 넘김 -> [독자가 시작하는 곳](#독자가-시작하는-곳)
+- 2026-10-30: 워크스페이스 절을 1에서 빼고 crate를 처음 쓰는 chapter (6, 7, 8)로 넘김 -> [독자가 시작하는 곳](#독자가-시작하는-곳)
 - 2026-10-30: 비교 대상 벤더를 고른 근거를 기록 -> [비교 대상 벤더](#비교-대상-벤더)
 - 2026-10-30: 본문 초안. lab 명령을 다시 돌려 출력을 맞추고, 캐시 없는 빌드 시간 (4분 50초)을 반영 -> [book/01-environment](../../book/01-environment/README.md)
 - 2026-10-30: 독자는 저장소를 clone해서 시작하고, 본문은 기능 chapter 틀 대신 위 "틀"을 쓴다 -> [독자가 시작하는 곳](#독자가-시작하는-곳), [틀](#틀)
