@@ -8,7 +8,7 @@ Cyclone DDS와 Fast DDS의 shape_main을 통신시켜 잡은 패킷과 로그다
 - 벤더와 빌드 소스: Cyclone DDS master `f2aaccb4` (11.0.1), Fast DDS 3.6.1, shape_main 소스 omg-dds/dds-rtps `526dc56`. 자세한 버전 표는 [docker/README.md](../../docker/README.md#빌드-소스와-버전).
 - 주소: cyclone 172.28.0.10, fastdds 172.28.0.11 (bridge `dds-net`).
 - 캡처는 구독자 컨테이너의 `eth0`에서 `tcpdump "udp or igmp"`로 한다. 자기가 보낸 멀티캐스트는 loopback 복사본 때문에 두 번씩 잡힌다 ([docker-network.md](../../docs/environment/docker-network.md#멀티캐스트가-컨테이너-사이를-넘어가는-원리)).
-- 다시 만들기: `docker/`에서 `./capture-shape-scenario.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호, 시각, 임의 포트가 바뀌므로 아래 그림도 고친다.
+- 다시 만들기: `docker/`에서 `./capture-shape-scenario.ts <이름>` (기존 파일이 있으면 `--force`). 다시 만들면 프레임 번호, 시각, 임의 포트가 바뀌므로 아래 그림도 고친다. chapter 3과 4의 본문 (표지 표)과 9 / 10 / 11 / 13 노트도 같은 번호를 인용하므로 함께 고친다.
 - Wireshark 4.6.9 기준. 필터 `rtps`.
 
 ## 파일
@@ -432,6 +432,8 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 - 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> chapter 13
 
 ## 두 벤더의 차이 (지금까지 확인한 것)
+독자용 정본은 [chapter 4 Lab 4-1의 기대 결과](../../book/04-vendor-differences/README.md#214-기대-결과-두-벤더의-차이)다. 이 표는 그 원자료이고, 두 표를 함께 고친다.
+
 | 항목 | Cyclone DDS | Fast DDS |
 |---|---|---|
 | vendorId | 0x0110 (Eclipse) | 0x010f (eProsima) |
@@ -440,15 +442,15 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 | SPDP 멀티캐스트 주기 | 시작 때 2번 (0.1초 간격), 이후 8초 | 시작 때 6번 (0.1초 간격), 이후 3초 |
 | 유니캐스트 포트 | 임의 (캡처마다 다름. 33690, 44686, 41822, 48749). 메타트래픽과 사용자 데이터가 같은 포트 | 7410 (메타트래픽), 7411 (사용자 데이터). 규격 기본 공식대로 |
 | SPDP의 멀티캐스트 로케이터 | 메타트래픽 239.255.0.1:7400, 사용자 데이터 239.255.0.1:7401 | 광고하지 않음 |
-| SPDP의 그 밖의 로케이터 | 없음 | kind 0x13 (벤더 전용, 공유 메모리로 추정)의 사용자 데이터 로케이터 |
+| SPDP의 그 밖의 로케이터 | 없음 | kind 0x13의 사용자 데이터 로케이터. Fast DDS의 공유 메모리 전송 (`LOCATOR_KIND_SHM` = 16 + 메이저 버전 3. v3.6.1 `include/fastdds/rtps/common/Locator.hpp`) |
 | 벤더 전용 PID (SPDP) | 0x8007: 길이 52, 문자열 `cyclone/11.0.1/Linux/Linux`를 포함. 0x8019: 길이 4 | 0x8000: 제품 버전 `03 6 1 00` (3.6.1.0). 0x8007: 길이 4, 값 1 |
-| 벤더 전용 서브메시지 | 없음 | 모든 메시지 끝에 0x80 (길이 56). 통계 모듈 (`StatisticsSubmessageData`)이 붙인다 |
+| 벤더 전용 서브메시지 | 없음 | 모든 메시지 끝에 0x80 (헤더 4 + 내용 56). 통계 모듈의 `FASTDDS_STATISTICS_NETWORK_SUBMESSAGE` (v3.6.1 `src/cpp/statistics/rtps/messages/RTPSStatisticsMessages.hpp`. CMake 옵션 `FASTDDS_STATISTICS`의 기본값 ON) |
 | SEDP의 PID_TYPE_INFORMATION | 있음 | 없음 |
 | 사용자 DATA에 HEARTBEAT를 얹는 빈도 | DATA마다 | DATA 두 번에 한 번 |
 | 사용자 DATA 앞의 INFO_DST | 없음 | 있음 |
 | SPDP를 상대 유니캐스트 주소로도 보냄 | 예. 새 참가자를 발견하면 1초 간격으로 4번, 이후 8초 주기에 맞춰 | 예. 3초 주기의 멀티캐스트마다 함께 |
 
 - 같은 벤더 전용 PID 번호가 벤더마다 다른 값을 싣는다. 0x8007이 Cyclone에서는 버전 문자열, Fast DDS에서는 4바이트 값이다. 해석 규칙은 [chapter 7 "규칙"](../../docs-for-agent/notes/07-rtps-messages.md#규칙-rtps-25-원문으로-확인함).
-- Fast DDS의 0x80 서브메시지 근거: Fast DDS 실행 파일에 `StatisticsSubmessageData`, `add_statistics_sent_submessage` 기호가 있다. 내용 배치는 바이트로 본 것이다: 목적지 로케이터 (24), 시각 (8), 메시지 순번 (8), 누적 바이트 수 (8), 0 (8). [필드 이름은 추정]
+- Fast DDS의 0x80 서브메시지는 통계 모듈이 붙인다 (v3.6.1 소스로 확인). 내용은 `StatisticsSubmessageData` 구조체다: 목적지 로케이터 (`Locator_t`, 24바이트), 시각 (`TimeStamp` 초 4 + 분수 4), 순번과 누적 바이트 (`Sequence`: sequence 8, bytes 8, bytes_high 2와 패딩). 합쳐 56바이트. `RTPSMessageGroup`이 메시지를 만들 때 빈 서브메시지를 붙이고 `OutputTrafficManager`가 보낼 때 채운다.
 - Wireshark 4.6.9는 Cyclone의 SEDP DATA를 Malformed로 표시한다 (rel-cyclone-pub 22, rel-fastdds-pub 23). `PID_TYPE_INFORMATION`의 해석에서 깨진다. Fast DDS는 이 SEDP를 받고 정상적으로 사용자 데이터를 주고받았다. -> chapter 16
 - Fast DDS의 RTPS 헤더 버전 2.2는 SPDP의 `PID_PROTOCOL_VERSION`도 2.2다. Cyclone 2.5와 통신에 문제가 없었다.

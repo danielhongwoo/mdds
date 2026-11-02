@@ -44,7 +44,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter 1에서 한다.
 | 1 | [실습 환경: 벤더 DDS 두 개를 컨테이너로](01-environment/README.md) | [01-environment](../docs-for-agent/notes/01-environment.md) |
 | 2 | [멀티캐스트가 오가는 길](02-multicast/README.md) | [02-multicast](../docs-for-agent/notes/02-multicast.md) |
 | 3 | [첫 DDS 통신 들여다보기](03-first-communication/README.md) | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
-| 4 | 같은 규격, 다른 구현 | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
+| 4 | [같은 규격, 다른 구현](04-vendor-differences/README.md) | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
 | 5 | DCPS 개념 모델 | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
 | 6 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
 | 7 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) |
@@ -101,13 +101,11 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: 벤더 차이 (4), 메시지의 바이트 해석 (7), 포트 공식 (8), SPDP의 동작 (9), reliable 동작 원리 (10), 매칭 규칙 (11), 인스턴스 상태와 dispose (13), liveliness (14)
 
 ### 4. 같은 규격, 다른 구현
-- Lab 4-1 방향을 바꾸면: 벤더 ID, 프로토콜 버전, 포트, lease, 벤더 전용 PID
-- Lab 4-2 끝날 때 dispose
-- Lab 4-3 말없이 사라진 참가자
-- Lab 4-4 큰 샘플
-- Lab 4-5 XCDR2
-- 캡처에 남긴 질문: 이후 chapter의 숙제
-- 미루는 것: 각 현상의 규격 근거와 구현. dispose (13), lease (9), 단편화 (15), XCDR2 (16)
+- 1 왜 필요한가: 규격이 값을 정한 것, 기본값만 준 것, 벤더에게 비워 둔 영역, 규격에 없어 구현이 고른 것을 가른다
+- 2 캡처에서 보기: Lab 4-1 두 벤더의 차이 (vendorId와 버전, lease, SPDP 주기, 포트와 로케이터, 벤더 전용 PID와 서브메시지, HEARTBEAT 빈도, INFO_DST, TTL), Lab 4-2 사라지는 두 방법 (dispose와 SIGKILL 뒤의 lease 만료), Lab 4-3 큰 샘플 (DATA_FRAG와 IP 단편화), Lab 4-4 XCDR2 (encapsulation kind와 DHEADER)
+- 3 규격 읽기: 규격이 정하는 것과 구현에 맡기는 것, 사라지는 두 방법 (STATUS_INFO와 lease)
+- 4 스스로 확인하기
+- 미루는 것: 각 현상의 규격 근거와 구현. INFO_DST (7), 포트 공식 (8), 유니캐스트 SPDP와 lease 갱신 (9), HEARTBEAT 빈도 (10), 매칭 시점 (11), 인스턴스 상태와 dispose (13), 단편화 (15), XCDR2와 TypeInformation (16)
 
 ### 5. DCPS 개념 모델
 - 엔티티 계층: DomainParticipant, Publisher / Subscriber, Topic, DataWriter / DataReader

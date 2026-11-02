@@ -22,7 +22,7 @@
 - serde는 쓰지 않는다. serde 데이터 모델로는 정렬, DHEADER, key-only 직렬화를 표현할 수 없다.
 
 ## 완료 기준
-- ShapeType (`@key string color; long x; long y; long shapesize;`) 직렬화 결과가 cyclone-fastdds 캡처 바이트와 일치한다.
+- ShapeType (dds-rtps `526dc56`의 shape.idl: `@appendable struct ShapeType { @key string<128> color; int32 x; int32 y; int32 shapesize; sequence<uint8> additional_payload_size; }`) 직렬화 결과가 cyclone-fastdds 캡처 바이트와 일치한다. 캡처의 사용자 DATA 끝에 있는 `00 00 00 00`은 다섯 번째 멤버 (길이 0의 sequence)다.
 
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

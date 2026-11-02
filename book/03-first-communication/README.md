@@ -1,6 +1,6 @@
 # 3. 첫 DDS 통신 들여다보기
 
-[목차](../README.md) | 이전: [2 멀티캐스트가 오가는 길](../02-multicast/README.md) | 다음: chapter 4 같은 규격, 다른 구현
+[목차](../README.md) | 이전: [2 멀티캐스트가 오가는 길](../02-multicast/README.md) | 다음: [4 같은 규격, 다른 구현](../04-vendor-differences/README.md)
 
 chapter 2에서 두 컨테이너 사이에 멀티캐스트가 통하는 것을 확인했다. 이제 두 벤더의 shape_main을 실제로 통신시키고 그 패킷을 캡처한다. 이 chapter에서는 메시지의 종류와 순서만 알아본다. 참가자가 서로를 찾고 (SPDP), writer와 reader를 알리고 (SEDP), 데이터를 보내고, 사라지는 흐름이 어떤 패킷으로 보이는지 Wireshark에서 가려내는 것이 목표다. 바이트의 뜻은 chapter 7부터, 각 단계의 동작 원리는 chapter 9, 10, 11에서 다룬다. 두 벤더가 같은 규격을 어떻게 다르게 행동하는지는 chapter 4에서 비교한다.
 
