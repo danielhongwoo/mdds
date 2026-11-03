@@ -149,7 +149,7 @@ Wireshark가 RTPS 패킷을 보여 주는 방식 세 가지를 알아 둔다.
 
 - **두 가지 이상한 표시는 정상이다.** Fast DDS가 보낸 모든 메시지 끝에는 `Unknown[80]`이 붙는다. Fast DDS가 붙이는 벤더 전용 서브메시지로, Wireshark가 모르는 번호라 이렇게 표시한다 ([용어 정리](../glossary.md#프로토콜)). Cyclone이 보낸 writer 정보는 `DATA(w)`가 아니라 `DATA[Malformed Packet]`로 빨갛게 표시된다. Wireshark 4.6.9가 그 안의 한 항목을 끝까지 해석하지 못해서다. Fast DDS는 이 메시지를 받아 매칭했고 사용자 데이터가 이어졌으므로 통신에는 문제가 없었다.
 
-캡처는 fastdds 쪽에서 했으므로 fastdds가 보낸 멀티캐스트는 나가는 것과 돌아온 것 두 개씩 보인다 (chapter 2 2.1.4절). cyclone이 보낸 것은 한 번씩이다.
+캡처는 fastdds 쪽에서 했으므로 fastdds가 보낸 멀티캐스트는 나가는 것과 돌아온 것 두 개씩 보인다 (chapter 2 2.1.4절. 복사본이 잡히지 않는 호스트에서 직접 만든 캡처에는 한 번씩만 보인다). cyclone이 보낸 것은 한 번씩이다.
 
 #### 2.2.3 절차
 

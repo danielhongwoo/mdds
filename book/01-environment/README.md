@@ -34,7 +34,7 @@ sequenceDiagram
 
 ## 2. 준비물과 설치
 
-다음 두 환경을 기준으로 설명한다. macOS (Apple Silicon)에서는 Docker Desktop을, Ubuntu (24.04, x86_64 또는 arm64)에서는 Docker Engine을 쓴다. 이미지를 소스에서 빌드하므로 (3.2절) 두 환경 모두 같은 Dockerfile과 compose 파일로 동작한다. 설치가 끝나면 이후의 명령은 두 환경에서 같다. 이 판의 명령과 출력은 macOS에서 실행해 확인했고, Ubuntu 절차는 Docker, Deno 공식 문서와 Ubuntu 24.04 패키지 정보를 근거로 작성했다.
+다음 두 환경을 기준으로 설명한다. macOS (Apple Silicon)에서는 Docker Desktop을, Ubuntu (24.04, x86_64 또는 arm64)에서는 Docker Engine을 쓴다. 이미지를 소스에서 빌드하므로 (3.2절) 두 환경 모두 같은 Dockerfile과 compose 파일로 동작한다. 설치가 끝나면 이후의 명령은 두 환경에서 같다. 이 판의 명령과 출력은 macOS (Apple Silicon)와 Ubuntu 24.04 (x86_64)에서 실행해 확인했다. 두 환경에서 캡처의 패킷 수가 달라지는 곳은 chapter 2에서 설명한다.
 
 ### 2.1 Docker
 
@@ -64,7 +64,7 @@ Ubuntu
 캡처 파일을 분석하는 데만 쓴다. 캡처는 컨테이너 안에서 수행하므로 Wireshark가 네트워크 인터페이스에 접근할 필요는 없다.
 
 - macOS: `brew install --cask wireshark`
-- Ubuntu: `sudo apt install wireshark`. 설치 중에 일반 사용자의 패킷 캡처를 허용할지 묻는데, 이 책에서는 파일만 열므로 어느 쪽을 선택해도 된다.
+- Ubuntu: 24.04의 기본 패키지는 4.2.2로 버전이 낮다. Wireshark 개발팀이 운영하는 PPA ([ppa:wireshark-dev/stable](https://launchpad.net/~wireshark-dev/+archive/ubuntu/stable))를 추가해 설치한다 (`sudo add-apt-repository ppa:wireshark-dev/stable && sudo apt update && sudo apt install wireshark`). 설치 중에 일반 사용자의 패킷 캡처를 허용할지 묻는데, 이 책에서는 파일만 열므로 어느 쪽을 선택해도 된다.
 
 ### 2.4 프로젝트 받기
 

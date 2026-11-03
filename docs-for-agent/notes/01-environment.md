@@ -130,4 +130,5 @@
 - 2026-10-30: 비교 대상 벤더를 고른 근거를 기록 -> [비교 대상 벤더](#비교-대상-벤더)
 - 2026-10-30: 본문 초안. lab 명령을 다시 돌려 출력을 맞추고, 캐시 없는 빌드 시간 (4분 50초)을 반영 -> [book/01-environment](../../book/01-environment/README.md)
 - 2026-10-30: 독자는 저장소를 clone해서 시작하고, 본문은 기능 chapter 틀 대신 위 "틀"을 쓴다 -> [독자가 시작하는 곳](#독자가-시작하는-곳), [틀](#틀)
+- 2026-11-03: Ubuntu 24.04 (x86_64)에서 chapter 0-5의 lab을 실행해 확인. Wireshark는 기본 패키지가 4.2.2라 PPA로 설치하도록 2.3절을 고침. root 소유 pcap은 `sudo` 없이 지울 수 있어 고침 -> [docker-network.md](../../docs/environment/docker-network.md#선택-별도-x86_64-linux-머신)
 - 2026-10-31: 3.1 dds-rtps 저장소 추가. 고정 커밋에 Rust shape_main (srcRs/, RustDDS/)도 있어 "구현은 두 개"였던 용어집 문장을 고침

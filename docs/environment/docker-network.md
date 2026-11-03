@@ -47,10 +47,11 @@ flowchart LR
 - 호스트에서 bridge를 직접 캡처할 수 없다 (VM 안에 있다). 캡처는 항상 컨테이너 안 tcpdump로 한다.
 
 ### 선택: 별도 x86_64 Linux 머신
-Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그대로다. 다른 점만 적는다.
+Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그대로다. 2026-11-03 Ubuntu 24.04 (x86_64, 커널 7.0.0, Docker Engine 29.1.3, compose 2.40.3)에서 chapter 1-5의 lab을 같은 파일로 실행해 확인했다. bridge `dds-net`의 `multicast_snooping`, `multicast_querier`도 1, 0으로 같았다. 다른 점만 적는다.
 - Docker Engine과 compose 플러그인을 설치하고 (`https://docs.docker.com/engine/install/ubuntu/`), 사용자를 `docker` 그룹에 넣는다. 저장소는 원격 git에서 clone하거나 Mac에서 `rsync -a`로 보낸다.
 - ssh로 들어가 `~/work/mdds/docker`에서 같은 명령을 친다. 캡처는 머신에서 커밋하거나 `rsync -av <머신>:~/work/mdds/captures/ captures/`로 Mac에 가져온다. 한 시나리오는 한 곳에서만 커밋한다.
-- pcap 파일은 머신에서 root 소유가 된다 (지울 때 `sudo`).
+- pcap 파일은 머신에서 root 소유가 된다. 디렉터리가 자기 소유이므로 `rm -f`로 지울 수 있다 (`sudo` 불필요).
+- 위 Ubuntu 24.04 (커널 7.0.0)에서는 multicast loopback 복사본이 컨테이너 안 tcpdump에 잡히지 않는다 (아래 "멀티캐스트가 컨테이너 사이를 넘어가는 원리"). 자기가 보낸 멀티캐스트 (IGMP, SPDP)가 캡처에 한 번씩만 보이므로 같은 시나리오라도 참고 캡처보다 프레임 수가 적다.
 - Linux에서는 bridge가 호스트 커널에 바로 있어서, 디버깅 보조로 호스트에서 `br-<id>` 인터페이스를 캡처할 수 있다 (`docker network inspect dds-net`의 Id 앞 12자). 공식 절차는 어느 호스트에서나 "컨테이너 안 tcpdump"로 통일한다.
 - `docker context`로 Mac에서 원격 데몬을 조작하는 방식은 쓰지 않는다. compose가 바인드 마운트 경로를 Mac 쪽 절대 경로로 풀어 보내기 때문이다.
 
@@ -113,7 +114,7 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
     ```
 - querier가 있는 Linux 호스트에서는 가입자가 있는 그룹을 가입자가 있는 스위치 포트 (와 router 포트)로만 보낸다. 가입자가 없는 그룹은 여전히 flooding한다. 물리 스위치는 제품마다 다르다.
 - SPDP 멀티캐스트의 IP TTL은 벤더마다 다르다 (캡처에서 Fast DDS 1, Cyclone DDS 32). 같은 L2 세그먼트라 어느 값이든 문제없다. 장비에 남는 상태는 [discovery-network-state.md](../../docs-for-agent/research/discovery-network-state.md).
-- 자기가 보낸 멀티캐스트 (IGMP report 포함)는 커널의 multicast loopback으로 같은 컨테이너의 수신 방향에도 잡힌다. 그래서 보낸 쪽 캡처에는 같은 패킷이 두 개씩 보인다 (`tcpdump -Q out`과 `-Q in`에 하나씩). 멀티캐스트 패킷 수는 받는 쪽 캡처로 센다.
+- 자기가 보낸 멀티캐스트 (IGMP report 포함)는 커널의 multicast loopback으로 같은 컨테이너의 소켓에도 전달된다. 그 복사본이 캡처에 잡히는지는 호스트 커널에 따라 다르다. Docker Desktop (Mac arm64) VM에서는 수신 방향에도 잡혀 보낸 쪽 캡처에 같은 패킷이 두 개씩 보인다 (`tcpdump -Q out`과 `-Q in`에 하나씩). Ubuntu 24.04 (커널 7.0.0) 호스트에서는 잡히지 않아 한 번씩만 보인다 (2026-11-03. 복사본이 소켓에는 전달되는 것은 한 컨테이너에서 받기와 보내기를 함께 실행해 확인). 원인은 확인하지 못했다. 멀티캐스트 패킷 수는 받는 쪽 캡처로 센다.
 - 다른 bridge 네트워크, 호스트의 물리 NIC 바깥, (Mac의 경우) VM 바깥으로는 넘어가지 않는다. 그래서 캡처는 반드시 같은 네트워크 안에서 한다.
 - 참고 캡처: `captures/mcast-check/` ([README](../../captures/mcast-check/README.md)).
 

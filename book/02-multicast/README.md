@@ -127,7 +127,7 @@ docker compose build tools  # mcast-check를 컴파일해 mdds/tools 이미지�
   	inet  224.0.0.1
   ```
   받기를 끝낸 뒤에는 둘 다 사라진다. 커널이 그룹 목록을 관리한다는 것을 보여 준다.
-- 터미널 A의 tcpdump가 끝나면서 `11 packets captured`를 출력한다. Wireshark로 연 `my-join.pcap`에는 다음 11개의 패킷이 있다. 같은 패킷이 두 번씩 보이는 것은 정상이다 (아래 설명).
+- 터미널 A의 tcpdump가 끝나면서 `11 packets captured`를 출력한다. Wireshark로 연 `my-join.pcap`에는 다음 11개의 패킷이 있다. 같은 패킷이 두 번씩 보이는 것은 정상이다 (아래 설명). 복사본이 잡히지 않는 호스트 (저자의 Ubuntu 24.04, 커널 7.0)에서는 IGMP가 한 번씩만 잡혀 `7 packets captured`다 (아래 설명).
 
   | 프레임 | 시각 (초) | 출발 -> 목적지 | 내용 |
   |---|---|---|---|
@@ -144,8 +144,9 @@ docker compose build tools  # mcast-check를 컴파일해 mdds/tools 이미지�
 - 하나는 `eth0`으로 나가는 패킷이다.
 - 다른 하나는 커널이 같은 패킷을 자기 수신 경로로도 한 부 돌려준 것이다. 이것을 multicast loopback이라고 한다. 같은 호스트에서 같은 그룹에 가입한 다른 프로그램도 받을 수 있게 하는 기능이다.
 - tcpdump는 나가는 패킷과 들어오는 패킷을 모두 잡으므로 둘 다 보인다. tcpdump에 `-Q out`이나 `-Q in`을 주어 방향을 나눠 캡처하면 양쪽에 하나씩 있다.
+- 돌려준 복사본이 tcpdump에 잡히는지는 Docker 호스트의 커널에 따라 다르다. macOS의 Docker Desktop (Linux VM)에서는 잡히고 (참고 캡처), Ubuntu 24.04 (커널 7.0)에서는 잡히지 않았다. 그 커널에서도 복사본은 같은 컨테이너의 소켓에는 전달된다 (fastdds에서 받기와 보내기를 함께 실행하면 자기가 보낸 hello를 받는다). 그래서 그 호스트에서 직접 만든 `my-join.pcap`에는 IGMP가 한 번씩, 모두 7개가 있다. chapter 3부터의 캡처에서도 자기가 보낸 멀티캐스트는 한 번씩만 보인다.
 
-hello는 cyclone이 보냈으므로 fastdds 쪽에서는 한 번씩만 보인다. 보내는 쪽 (cyclone)의 `eth0`에서 캡처하면 반대로 hello가 두 개씩, fastdds가 보낸 IGMP가 하나씩 보인다 (참고 캡처 `captures/mcast-check/join.cyclone.pcap`, 10 프레임). 이 차이는 chapter 3에서 DDS 패킷의 수를 셀 때 필요하다. 멀티캐스트는 받는 쪽 캡처에서 센다.
+hello는 cyclone이 보냈으므로 fastdds 쪽에서는 한 번씩만 보인다. 복사본이 잡히는 호스트에서 보내는 쪽 (cyclone)의 `eth0`에서 캡처하면 반대로 hello가 두 개씩, fastdds가 보낸 IGMP가 하나씩 보인다 (참고 캡처 `captures/mcast-check/join.cyclone.pcap`, 10 프레임). 이 차이는 chapter 3에서 DDS 패킷의 수를 셀 때 필요하다. 멀티캐스트는 받는 쪽 캡처에서 센다.
 
 #### 2.1.5 확인 질문
 
@@ -159,7 +160,7 @@ hello는 cyclone이 보냈으므로 fastdds 쪽에서는 한 번씩만 보인다
 - 받는 쪽이 `bind` 오류 (`Address already in use`)로 끝나면 fastdds 컨테이너의 네트워크를 쓰는 다른 프로세스가 UDP 7400을 쓰고 있다. fastdds 컨테이너 안의 프로세스 (예: shape_main)일 수도 있고, 끝내지 않은 이전 `mcast-check recv`일 수도 있다. 후자는 도구 컨테이너 안에 있어 fastdds 컨테이너의 `ps`에는 보이지 않는다. `docker ps --filter ancestor=mdds/tools`로 찾아 `docker stop <컨테이너 id>`로 끝낸다. 이 상태에서는 `ip maddr show eth0`에 239.255.0.1이 계속 보인다.
 - 그 밖의 문제는 [docker-network.md "문제와 대응"](../../docs/environment/docker-network.md#문제와-대응)을 참고한다.
 
-직접 만든 `my-join.pcap`은 git에 들어가지 않는다 (`.gitignore`). Ubuntu에서는 이 파일이 root 소유로 생성되므로 지울 때 `sudo`가 필요하다.
+직접 만든 `my-join.pcap`은 git에 들어가지 않는다 (`.gitignore`). Ubuntu에서는 이 파일이 root 소유로 생성된다. 디렉터리는 자기 소유이므로 `sudo` 없이 지울 수 있다 (`rm`이 쓰기 금지 파일이라고 확인을 묻는다. `rm -f`는 묻지 않는다).
 
 ### 2.2 Lab 2-2: 가입하지 않으면
 

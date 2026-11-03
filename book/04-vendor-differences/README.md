@@ -40,7 +40,7 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 |---|---|---|---|
 | 참가자 정보 `DATA(p)`의 필드 | 17 (Cyclone), 18 (Fast DDS) | 1 (Cyclone), 9 (Fast DDS) | RTPS 헤더의 `Protocol version`, `vendorId`. 그 아래 `PID_PARTICIPANT_LEASE_DURATION` > `lease_duration`, `PID_METATRAFFIC_UNICAST_LOCATOR`, `PID_DEFAULT_UNICAST_LOCATOR`, `PID_DEFAULT_MULTICAST_LOCATOR`, `Unknown (0x8000)`, `Unknown (0x8007)`, `Unknown (0x8019)`의 `parameterLength`와 `parameterData`. Internet Protocol 아래 `Time to Live` (17과 1-16은 멀티캐스트) |
 | SPDP 멀티캐스트 주기 | Fast DDS 1-16 (0.1초 간격 6번), 그 뒤 3초마다. Cyclone 17, 35 (0.1초 뒤), 204 (8초 뒤) | Cyclone 1-2, 5-6 (0.1초 간격 2번), 그 뒤 8초마다. Fast DDS 9부터 0.1초 간격 6번, 그 뒤 3초마다 | 필터 `rtps.sm.wrEntityId == 0x000100c2 && ip.dst == 239.255.0.1 && frame.time_relative < 12`. 캡처한 쪽 (rel-cyclone-pub은 fastdds, rel-fastdds-pub은 cyclone)이 보낸 것은 같은 시각에 두 개씩 보이므로 한 번으로 센다 |
-| 사용자 DATA에 붙는 HEARTBEAT와 INFO_DST | 50부터 `INFO_TS, DATA, HEARTBEAT` | 32 `INFO_DST, INFO_TS, DATA`, 33 `INFO_DST, INFO_TS, DATA, HEARTBEAT` | 필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone) 또는 `0x00000102` (Fast DDS) |
+| 사용자 DATA에 붙는 HEARTBEAT와 INFO_DST | 50부터 `INFO_TS, DATA, HEARTBEAT` | 32 `INFO_DST, INFO_TS, DATA -> Square, Unknown[80]`, 33 `INFO_DST, INFO_TS, DATA -> Square, HEARTBEAT -> Square, Unknown[80]` | 필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone) 또는 `0x00000102` (Fast DDS) |
 | 벤더 전용 서브메시지와 Wireshark의 Malformed | Fast DDS의 모든 메시지 끝 `Unknown[80]`. 22 Cyclone의 writer 정보 `DATA[Malformed Packet]` | 같음. Cyclone의 reader 정보 23이 `DATA[Malformed Packet]` | Info 열. `Unknown[80]`을 펼치면 `octetsToNextHeader: 56` |
 
 표를 다 채웠으면 한 행을 골라 (예: lease 기간이나 vendorId) 규격 PDF의 해당 절 (3.1절에 적힌 절 번호)에서 규격이 무엇을 정했는지 직접 읽어 본다.

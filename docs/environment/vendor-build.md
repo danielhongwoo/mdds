@@ -42,6 +42,7 @@ OMG 상호운용 테스트 프로그램 shape_main과, 그것이 링크하는 �
 ## 빌드 결과
 2026-10-28, Mac (Apple Silicon 10코어), Docker Desktop 메모리 16 GB, `--build-arg JOBS=6`.
 - 빌드 시간: 약 3분 (일부 apt 단계는 캐시). 2026-10-30 같은 Mac에서 캐시 없이 (`docker compose build --no-cache`, JOBS 기본값) 다시 빌드하면 4분 50초. Cyclone 라이브러리 12초, Fast DDS 라이브러리 91초, Fast-DDS-Gen (Gradle) 27초, 나머지는 apt 설치. 느린 머신에서는 Fast DDS 때문에 수십 분 걸릴 수 있다.
+- 2026-11-03, Ubuntu 24.04 x86_64 (16코어, 메모리 31 GB), Docker Engine 29.1.3, JOBS 기본값: 캐시 없이 빌드 성공. Fast DDS 라이브러리 66초. 이미지 크기는 x86_64에서 134 MB, 150 MB.
 - 메모리 8 GB에서는 빌드 중 Docker 데몬 연결이 끊긴 적이 있다 (`rpc error ... EOF`). 8 GB면 `JOBS=4`, 그래도 죽으면 2로 줄인다.
 - 이미지 크기: `mdds/cyclone-shape:11.0.1-f2aaccb4` 113 MB, `mdds/fastdds-shape:3.6.1` 124 MB.
 - `ldd`: 둘 다 `not found` 없음.
