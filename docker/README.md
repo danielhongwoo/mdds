@@ -69,7 +69,7 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 ```
 brew install deno                         # 처음 한 번. 외부 모듈은 쓰지 않는다
 ./capture-shape-scenario.ts --list                  # 시나리오 이름
-./capture-shape-scenario.ts rel-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
+./capture-shape-scenario.ts reliable-cyclone-pub         # 약 25초. 결과가 이미 있으면 멈춘다 (덮어쓰려면 --force)
 ```
 실행 흐름과 시나리오 표는 [chapter 3 노트](../docs-for-agent/notes/03-first-communication.md#시나리오-실행-흐름-capture-shape-scenariots)에, 캡처별 관찰은 [captures/cyclone-fastdds/README.md](../captures/cyclone-fastdds/README.md)에 있다. 결과는 `../captures/cyclone-fastdds/<이름>.pcap`, `.pub.log`, `.sub.log`로 생긴다 (컨테이너 안에서는 `/captures/cyclone-fastdds/`).
 - 바인드 마운트라 파일이 Mac의 작업 트리에 바로 생긴다. Wireshark로 열고 그대로 커밋한다.

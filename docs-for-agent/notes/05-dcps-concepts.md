@@ -41,7 +41,7 @@
 | 5-1 | 기존 캡처의 SEDP DATA(w) / DATA(r)에서 QoS PID를 읽는다 | 표 (캡처 / 프레임 / 실린 QoS PID). 기본값인 정책은 생략될 수 있고 두 벤더가 생략하는 것이 다르다 |
 | 5-2 | `qos-mismatch`, `partition-mismatch`를 보거나 직접 실행한다 | 사용자 DATA 없음. 양쪽 로그에 `incompatible_qos ... 11 (RELIABILITY)` / 파티션은 로그 없음 |
 | 5-3 | `qos.rs`를 쓴다 | `cargo test -p mdds-rtps` 통과 (테스트 수는 본문에) |
-| 5-4 | 캡처 여섯 개 (rel / be-cyclone-pub, rel-fastdds-pub, xcdr2, qos-mismatch, partition-mismatch)의 QoS 쌍을 테스트로 적는다 | `check_rxo` / `partitions_match`의 판정이 벤더 로그와 같다 |
+| 5-4 | 캡처 여섯 개 (rel / best-effort-cyclone-pub, reliable-fastdds-pub, xcdr2, qos-mismatch, partition-mismatch)의 QoS 쌍을 테스트로 적는다 | `check_rxo` / `partitions_match`의 판정이 벤더 로그와 같다 |
 
 ## 확인한 것 (원문, 2026-11-03)
 - DDS 1.4: RxO 정의 (5274-5280행), DURABILITY 순서와 규칙 (5818-5820), PRESENTATION 세 조건 (5920-5928), DEADLINE (5943), LATENCY_BUDGET (5958), OWNERSHIP (6015), LIVELINESS 두 조건 (6054-6067), RELIABILITY (6150-6152), DESTINATION_ORDER (6199-6201), PARTITION (6100-6118: incompatible이 아니고 listener도 울리지 않음, fnmatch, 두 이름이 모두 와일드카드면 불일치), 빈 파티션 목록 = `""` (5568-5572), RELIABILITY 기본값 (5594-5604), QosPolicyId 1-22 (8078-8100), Annex A (9114-9136), copy_from_topic_qos는 편의 연산이며 Topic QoS가 자동으로 상속되지 않음 (2914-2917).

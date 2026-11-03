@@ -27,7 +27,7 @@
 ## 틀
 관찰 chapter의 틀 ([book.md](../conventions/book.md#chapter))에서 4, 5, 6을 뺐다. 중심 개념은 "규격이 값을 정한 것인가, 기본값만 준 것인가, 벤더에게 비워 둔 영역인가, 규격에 없는 것인가"다 (chapter 0 6절의 약속: 해야 한다와 해도 된다를 구분한다).
 1. 왜 필요한가: 상호운용은 규격의 최소 요구만 같으면 되고 나머지는 구현이 고른다. mdds를 만들 때 "어느 벤더를 따라야 하나"가 아니라 "규격이 정한 것인가"를 묻는다. 뒤 chapter에서 풀 네 문제 (정상 종료를 알리는 법, 말없이 죽은 참가자를 아는 법, 큰 샘플 나르기, 바이트 표현)를 미리 본다.
-2. 캡처에서 보기: Lab 4-1 두 벤더의 차이 (`rel-fastdds-pub`과 `rel-cyclone-pub`), Lab 4-2 사라지는 두 방법 (`dispose-on-exit` 읽기와 SIGKILL을 손으로 하는 `my-lease-expiry`, 참고 `lease-expiry`), Lab 4-3 큰 샘플 (`large-sample`), Lab 4-4 XCDR2 (`xcdr2`). lab마다 프레임 번호는 표지 표에만 두고, 캡처 README의 질문은 "이 chapter에서 답하지 않는 것"으로 둔다.
+2. 캡처에서 보기: Lab 4-1 두 벤더의 차이 (`reliable-fastdds-pub`과 `reliable-cyclone-pub`), Lab 4-2 사라지는 두 방법 (`dispose-on-exit` 읽기와 SIGKILL을 손으로 하는 `my-lease-expiry`, 참고 `lease-expiry`), Lab 4-3 큰 샘플 (`large-sample`), Lab 4-4 XCDR2 (`xcdr2`). lab마다 프레임 번호는 표지 표에만 두고, 캡처 README의 질문은 "이 chapter에서 답하지 않는 것"으로 둔다.
 3. 규격 읽기: 3.1 규격이 정하는 것과 구현에 맡기는 것 (8.4.2의 범위, 8.4.2.1의 조정 가능한 시간과 벤더 확장, 9.6.2.3 / 9.6.2.4의 포트와 멀티캐스트 의무, 8.5.3.2 주기 < lease, 표 9.19의 lease 기본값, 8.3.6.3 버전, 8.3.4.1과 표 9.6의 벤더 영역), 3.2 사라지는 두 방법 (STATUS_INFO의 D / U, DDS 1.4의 인스턴스 상태, lease 만료)
 4. 스스로 확인하기: 질문 세 개
 
@@ -62,7 +62,7 @@
 
 | lab | 제목 | 하는 일 -> 기대 결과 | 쓰는 산출물 |
 |---|---|---|---|
-| Lab 4-1 | 두 벤더의 차이 | `rel-fastdds-pub`과 `rel-cyclone-pub`을 나란히 -> vendorId와 버전, lease, SPDP 주기, 유니캐스트 포트와 로케이터, 벤더 전용 PID와 서브메시지, HEARTBEAT 빈도, INFO_DST, SPDP TTL, 사용자 writer entityId가 다름. 표의 "규격" 열은 3.1절 | `rel-fastdds-pub.*`, `rel-cyclone-pub.*` (`be-fastdds-pub.*`은 본문에서 열지 않는다. 그 캡처의 질문 (seq 2부터, ACKNACK 뒤의 HB, 종료 때 DATA(p[UD]) 없음)은 모두 rel-fastdds-pub의 질문과 같아 Lab 4-1의 "답하지 않는 것"이 함께 가진다) |
+| Lab 4-1 | 두 벤더의 차이 | `reliable-fastdds-pub`과 `reliable-cyclone-pub`을 나란히 -> vendorId와 버전, lease, SPDP 주기, 유니캐스트 포트와 로케이터, 벤더 전용 PID와 서브메시지, HEARTBEAT 빈도, INFO_DST, SPDP TTL, 사용자 writer entityId가 다름. 표의 "규격" 열은 3.1절 | `reliable-fastdds-pub.*`, `reliable-cyclone-pub.*` (`best-effort-fastdds-pub.*`은 본문에서 열지 않는다. 그 캡처의 질문 (seq 2부터, ACKNACK 뒤의 HB, 종료 때 DATA(p[UD]) 없음)은 모두 reliable-fastdds-pub의 질문과 같아 Lab 4-1의 "답하지 않는 것"이 함께 가진다) |
 | Lab 4-2 | 사라지는 두 방법 | `dispose-on-exit`의 끝 (`DATA([_D])`, `DATA(w[UD])`, `NOT_ALIVE_DISPOSED`)을 읽고, 발행자를 `pkill -9`로 끝내는 `my-lease-expiry`를 손으로 만들어 구독자가 약 10초 뒤 `matched writers 0`을 찍는 것을 본다. 참고 `lease-expiry`에서 `[UD]` 없음, IGMP Leave, Fast DDS의 유니캐스트 SPDP가 멈추는 시각 | `dispose-on-exit.*`, `lease-expiry.*` |
 | Lab 4-3 | 큰 샘플 | `large-sample` -> IP 조각 행, 재조립된 프레임의 DATA_FRAG 필드 (fragmentSize 1344, sampleSize 100032, 10조각씩), HEARTBEAT_FRAG, 샘플 하나 = 조각 75개 = 메시지 8개 | `large-sample.*` |
 | Lab 4-4 | XCDR2 | `xcdr2` -> encapsulation kind `D_CDR2_LE` (0x0009), 페이로드 앞의 DHEADER 4바이트, SEDP의 PID_DATA_REPRESENTATION XCDR2 | `xcdr2.*` |

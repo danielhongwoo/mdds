@@ -52,7 +52,7 @@ chapter 3, 4의 캡처에서 writer 정보 (`DATA(w)`)와 reader 정보 (`DATA(r
 
 #### 2.1.2 준비
 
-[`rel-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#rel-cyclone-pub), [`be-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#be-cyclone-pub), [`rel-fastdds-pub.pcap`](../../captures/cyclone-fastdds/README.md#rel-fastdds-pub)을 Wireshark 4.6.9로 연다. 필터 `rtps.sm.wrEntityId == 0x000003c2 || rtps.sm.wrEntityId == 0x000004c2`로 SEDP의 DATA만 남긴다 (0x000003c2는 writer 정보를 보내는 내장 writer, 0x000004c2는 reader 정보를 보내는 내장 writer. chapter 3의 3.1절).
+[`reliable-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#reliable-cyclone-pub), [`best-effort-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#best-effort-cyclone-pub), [`reliable-fastdds-pub.pcap`](../../captures/cyclone-fastdds/README.md#reliable-fastdds-pub)을 Wireshark 4.6.9로 연다. 필터 `rtps.sm.wrEntityId == 0x000003c2 || rtps.sm.wrEntityId == 0x000004c2`로 SEDP의 DATA만 남긴다 (0x000003c2는 writer 정보를 보내는 내장 writer, 0x000004c2는 reader 정보를 보내는 내장 writer. chapter 3의 3.1절).
 
 #### 2.1.3 절차
 
@@ -60,12 +60,12 @@ chapter 3, 4의 캡처에서 writer 정보 (`DATA(w)`)와 reader 정보 (`DATA(r
 
 | 캡처 | 프레임 | 누가 보낸 무엇 | 양쪽 옵션 |
 |---|---|---|---|
-| rel-cyclone-pub | 22 | Cyclone의 writer 정보 | `-r` |
-| rel-cyclone-pub | 47 | Fast DDS의 reader 정보 | `-r` |
-| be-cyclone-pub | 27 | Cyclone의 writer 정보 | `-b` |
-| be-cyclone-pub | 32 | Fast DDS의 reader 정보 | `-b` |
-| rel-fastdds-pub | 17 | Fast DDS의 writer 정보 | `-r` |
-| rel-fastdds-pub | 23 | Cyclone의 reader 정보 | `-r` |
+| reliable-cyclone-pub | 22 | Cyclone의 writer 정보 | `-r` |
+| reliable-cyclone-pub | 47 | Fast DDS의 reader 정보 | `-r` |
+| best-effort-cyclone-pub | 27 | Cyclone의 writer 정보 | `-b` |
+| best-effort-cyclone-pub | 32 | Fast DDS의 reader 정보 | `-b` |
+| reliable-fastdds-pub | 17 | Fast DDS의 writer 정보 | `-r` |
+| reliable-fastdds-pub | 23 | Cyclone의 reader 정보 | `-r` |
 
 Cyclone이 보낸 정보 (22, 27, 23)는 chapter 3에서 본 대로 `Malformed`로 끊긴다. `PID_RELIABILITY`까지는 보이고, 그 뒤 `PID_RESOURCE_LIMIT`, `PID_TYPE_INFORMATION`에서 해석이 멈춘다. 그 뒤에 어떤 PID가 있는지는 화면으로 알 수 없다.
 
@@ -73,12 +73,12 @@ Cyclone이 보낸 정보 (22, 27, 23)는 chapter 3에서 본 대로 `Malformed`�
 
 | 캡처 | 프레임 | 보낸 쪽 | 양쪽 옵션 | 실린 QoS PID와 값 |
 |---|---|---|---|---|
-| rel-cyclone-pub | 22 | Cyclone writer | `-r` | RELIABILITY = RELIABLE |
-| rel-cyclone-pub | 47 | Fast DDS reader | `-r` | DURABILITY = VOLATILE, RELIABILITY = RELIABLE, DATA_REPRESENTATION = [XCDR] |
-| be-cyclone-pub | 27 | Cyclone writer | `-b` | RELIABILITY = BEST_EFFORT |
-| be-cyclone-pub | 32 | Fast DDS reader | `-b` | DURABILITY = VOLATILE, DATA_REPRESENTATION = [XCDR]. RELIABILITY 없음 |
-| rel-fastdds-pub | 17 | Fast DDS writer | `-r` | DURABILITY = VOLATILE, DATA_REPRESENTATION = [XCDR]. RELIABILITY 없음 |
-| rel-fastdds-pub | 23 | Cyclone reader | `-r` | RELIABILITY = RELIABLE |
+| reliable-cyclone-pub | 22 | Cyclone writer | `-r` | RELIABILITY = RELIABLE |
+| reliable-cyclone-pub | 47 | Fast DDS reader | `-r` | DURABILITY = VOLATILE, RELIABILITY = RELIABLE, DATA_REPRESENTATION = [XCDR] |
+| best-effort-cyclone-pub | 27 | Cyclone writer | `-b` | RELIABILITY = BEST_EFFORT |
+| best-effort-cyclone-pub | 32 | Fast DDS reader | `-b` | DURABILITY = VOLATILE, DATA_REPRESENTATION = [XCDR]. RELIABILITY 없음 |
+| reliable-fastdds-pub | 17 | Fast DDS writer | `-r` | DURABILITY = VOLATILE, DATA_REPRESENTATION = [XCDR]. RELIABILITY 없음 |
+| reliable-fastdds-pub | 23 | Cyclone reader | `-r` | RELIABILITY = RELIABLE |
 
 - QoS는 writer 정보와 reader 정보에 PID 하나씩으로 실린다. 어느 PID가 실릴 수 있는지는 RTPS 2.5 표 9.19가 정한다 (3.4절).
 - 기본값인 정책은 생략될 수 있고, 두 벤더가 생략하는 것이 다르다. Fast DDS는 `-r`인 writer (17)에 RELIABILITY를 싣지 않고 `-b`인 reader (32)에도 싣지 않는다. RELIABLE이 writer의 기본값, BEST_EFFORT가 reader의 기본값이기 때문이다 (3.2절). 반면 DURABILITY는 기본값 (VOLATILE)인데도 늘 싣는다. Cyclone은 기본값과 다른 정책만 싣되 (소스 `ddsi_discovery_endpoint.c`로 확인) RELIABILITY는 기본값이어도 싣는다 (이유는 확인하지 못했다). 그래서 Cyclone의 writer 정보에는 DURABILITY와 DATA_REPRESENTATION이 없다. 이것은 화면에서 `Malformed` 뒤라 보이지 않으므로 저자가 바이트를 읽어 확인했다. chapter 7 뒤에는 독자도 읽을 수 있다.
@@ -125,7 +125,7 @@ writer와 reader의 QoS가 호환되지 않을 때, 그리고 파티션이 다�
 | 57 | 13.69 | `DATA(w[UD])`. 발행자가 반복 횟수를 채우고 스스로 끝났다 |
 | 66-67 | 19.03 | `DATA(p[UD])`. 구독자 종료 |
 
-필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone의 Square writer. chapter 4의 Lab 4-1)로 아무것도 남지 않는 것을 확인한다. 이 필터는 그 writer의 DATA와 HEARTBEAT를 모두 잡는다. `rel-cyclone-pub.pcap`에 같은 필터를 걸면 184 프레임 (그 가운데 DATA 89개)이 남는다. 로그에서 `incompatible`을 찾는다.
+필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone의 Square writer. chapter 4의 Lab 4-1)로 아무것도 남지 않는 것을 확인한다. 이 필터는 그 writer의 DATA와 HEARTBEAT를 모두 잡는다. `reliable-cyclone-pub.pcap`에 같은 필터를 걸면 184 프레임 (그 가운데 DATA 89개)이 남는다. 로그에서 `incompatible`을 찾는다.
 ```bash
 grep incompatible ../captures/cyclone-fastdds/qos-mismatch.*.log
 ```
@@ -170,7 +170,7 @@ qos-mismatch.sub.log:on_requested_incompatible_qos() topic: 'Square'  type: 'Sha
 - 터미널 B에 `matched writers 1`과 샘플 줄이 출력되면 이전 실습의 발행자가 남아 있거나 옵션이 틀린 것이다. 터미널 B, C를 Ctrl+C로 끝내고 chapter 3의 2.1.2절 점검부터 다시 한다.
 - `incompatible_qos` 줄이 한쪽에만 출력되면 한쪽이 상대의 정보를 아직 받지 못한 것이다. 몇 초 더 기다린다.
 - 파티션 불일치 실행에서 `matched`가 출력되면 `-p A`가 빠진 것이다.
-- 캡처가 비어 있거나 7400 문제가 있으면 [chapter 3의 2.1.6절](../03-first-communication/README.md#216-실패하면)을 본다.
+- 캡처가 비어 있거나 7400 문제가 있으면 [chapter 3의 2.1.5절](../03-first-communication/README.md#215-실패하면)을 본다.
 
 #### 2.2.7 이 chapter에서 답하지 않는 것
 
@@ -457,9 +457,9 @@ Lab 5-3을 마친 `my-code/crates/mdds-rtps/src/qos.rs`의 테스트 모듈에 �
 
 | 캡처 | writer (offered) | reader (requested) | 기대 판정 | 로그 |
 |---|---|---|---|---|
-| rel-cyclone-pub | 22: RELIABLE | 47: VOLATILE, RELIABLE, [XCDR] | 호환 | matched |
-| be-cyclone-pub | 27: BEST_EFFORT | 32: VOLATILE, [XCDR] | 호환 | matched |
-| rel-fastdds-pub | 17: VOLATILE, [XCDR] | 23: RELIABLE | 호환 | matched |
+| reliable-cyclone-pub | 22: RELIABLE | 47: VOLATILE, RELIABLE, [XCDR] | 호환 | matched |
+| best-effort-cyclone-pub | 27: BEST_EFFORT | 32: VOLATILE, [XCDR] | 호환 | matched |
+| reliable-fastdds-pub | 17: VOLATILE, [XCDR] | 23: RELIABLE | 호환 | matched |
 | xcdr2 | 29: RELIABLE, [XCDR2] | 38: VOLATILE, RELIABLE, [XCDR2] | 호환 | matched |
 | qos-mismatch | 28: BEST_EFFORT | 35: VOLATILE, RELIABLE, [XCDR] | `[Reliability]` | `11 (RELIABILITY)` |
 | partition-mismatch | 23: RELIABLE, 파티션 없음 | 33: VOLATILE, RELIABLE, `["A"]`, [XCDR] | RxO 호환, 파티션 불일치 | 없음 |
@@ -488,7 +488,7 @@ fn capture_qos_mismatch_reports_reliability() {
 
 #### 5.1.4 기대 결과
 
-여섯 테스트가 모두 통과한다. 표의 "기대 판정"이 로그와 일치한다. 특히 rel-fastdds-pub은 writer 정보에 RELIABILITY가 없는데 reader가 RELIABLE을 요구한다. `PublicationQos::default()`의 RELIABLE이 대신 쓰여 호환이 된다. 기본값을 reader의 것 (BEST_EFFORT)으로 잘못 두면 이 테스트가 실패한다.
+여섯 테스트가 모두 통과한다. 표의 "기대 판정"이 로그와 일치한다. 특히 reliable-fastdds-pub은 writer 정보에 RELIABILITY가 없는데 reader가 RELIABLE을 요구한다. `PublicationQos::default()`의 RELIABLE이 대신 쓰여 호환이 된다. 기본값을 reader의 것 (BEST_EFFORT)으로 잘못 두면 이 테스트가 실패한다.
 
 #### 5.1.5 확인 질문
 
@@ -496,7 +496,7 @@ fn capture_qos_mismatch_reports_reliability() {
 
 #### 5.1.6 실패하면
 
-- rel-fastdds-pub 테스트만 실패하면 `PublicationQos`의 기본 RELIABILITY가 BEST_EFFORT로 되어 있는 것이다.
+- reliable-fastdds-pub 테스트만 실패하면 `PublicationQos`의 기본 RELIABILITY가 BEST_EFFORT로 되어 있는 것이다.
 - partition-mismatch 테스트에서 `partitions_match`가 참이면 빈 목록을 `[""]`로 바꾸지 않은 것이다 (빈 목록끼리만 참이 되어야 한다).
 
 ## 6. 두 벤더는 어떻게 하는가
@@ -527,7 +527,7 @@ mdds에 적용하면 이렇다. 두 벤더 모두 kind를 숫자 순서로 비�
    <details>
    <summary>해설</summary>
 
-   파티션 (shape_main의 `-p`)을 먼저 확인한다. RxO 불일치는 양쪽에 `incompatible_qos`가 남지만, 파티션 불일치는 규격이 incompatible QoS로 보지 않고 Listener도 호출하지 않는다고 정했기 때문에 (Sec. 2.2.3.13) 아무 흔적이 없다. 그다음은 토픽 이름과 타입 이름이다 (shape_main의 `-t`. 다르면 아예 같은 토픽이 아니다). 파티션이 같은데도 로그가 없으면 디스커버리 자체를 의심한다 (chapter 3의 2.1.6절).
+   파티션 (shape_main의 `-p`)을 먼저 확인한다. RxO 불일치는 양쪽에 `incompatible_qos`가 남지만, 파티션 불일치는 규격이 incompatible QoS로 보지 않고 Listener도 호출하지 않는다고 정했기 때문에 (Sec. 2.2.3.13) 아무 흔적이 없다. 그다음은 토픽 이름과 타입 이름이다 (shape_main의 `-t`. 다르면 아예 같은 토픽이 아니다). 파티션이 같은데도 로그가 없으면 디스커버리 자체를 의심한다 (chapter 3의 2.1.5절).
 
    </details>
 
@@ -536,7 +536,7 @@ mdds에 적용하면 이렇다. 두 벤더 모두 kind를 숫자 순서로 비�
    <details>
    <summary>해설</summary>
 
-   위반이 아니다. RTPS 2.5 Sec. 8.5.4.4는 정보에 없는 항목을 PSM의 기본값으로 가정할 수 있다고 적었고, DataWriter의 RELIABILITY 기본값이 RELIABLE이므로 (DDS 1.4 Sec. 2.2.3.14) 생략해도 뜻이 같다. mdds도 생략할 수 있다. 다만 받는 쪽에서는 writer 정보와 reader 정보의 기본값이 다르다는 것을 기억해야 한다. 같은 "RELIABILITY 없음"이 writer 정보에서는 RELIABLE, reader 정보에서는 BEST_EFFORT다. `PublicationQos`와 `SubscriptionQos`의 `Default`가 다른 이유이고, Lab 5-4의 rel-fastdds-pub 테스트가 그것을 확인한다.
+   위반이 아니다. RTPS 2.5 Sec. 8.5.4.4는 정보에 없는 항목을 PSM의 기본값으로 가정할 수 있다고 적었고, DataWriter의 RELIABILITY 기본값이 RELIABLE이므로 (DDS 1.4 Sec. 2.2.3.14) 생략해도 뜻이 같다. mdds도 생략할 수 있다. 다만 받는 쪽에서는 writer 정보와 reader 정보의 기본값이 다르다는 것을 기억해야 한다. 같은 "RELIABILITY 없음"이 writer 정보에서는 RELIABLE, reader 정보에서는 BEST_EFFORT다. `PublicationQos`와 `SubscriptionQos`의 `Default`가 다른 이유이고, Lab 5-4의 reliable-fastdds-pub 테스트가 그것을 확인한다.
 
    </details>
 

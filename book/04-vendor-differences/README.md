@@ -24,22 +24,22 @@ Lab 4-1에서 두 벤더의 차이를 모으고, 3.1절에서 규격 원문으�
 
 #### 2.1.1 목표
 
-Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds-pub`을 나란히 열어, 두 구현이 와이어에서 다르게 하는 것을 모은다.
+Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliable-fastdds-pub`을 나란히 열어, 두 구현이 와이어에서 다르게 하는 것을 모은다.
 
 #### 2.1.2 준비
 
-[`rel-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#rel-cyclone-pub)과 [`rel-fastdds-pub.pcap`](../../captures/cyclone-fastdds/README.md#rel-fastdds-pub)을 Wireshark 창 두 개에 하나씩 연다 (macOS에서는 `docker/`에서 `open -n -a Wireshark ../captures/cyclone-fastdds/rel-cyclone-pub.pcap`처럼 두 번, Ubuntu에서는 `wireshark <파일> &`를 두 번. 한 창에서 File > Open으로 번갈아 열어도 된다). 화면 표기는 Wireshark 4.6.9 기준이다.
+[`reliable-cyclone-pub.pcap`](../../captures/cyclone-fastdds/README.md#reliable-cyclone-pub)과 [`reliable-fastdds-pub.pcap`](../../captures/cyclone-fastdds/README.md#reliable-fastdds-pub)을 Wireshark 창 두 개에 하나씩 연다 (macOS에서는 `docker/`에서 `open -n -a Wireshark ../captures/cyclone-fastdds/reliable-cyclone-pub.pcap`처럼 두 번, Ubuntu에서는 `wireshark <파일> &`를 두 번. 한 창에서 File > Open으로 번갈아 열어도 된다). 화면 표기는 Wireshark 4.6.9 기준이다.
 
-두 파일은 캡처한 쪽이 다르다. `rel-fastdds-pub`은 구독자인 cyclone 쪽에서 캡처했으므로 cyclone이 보낸 멀티캐스트가 두 개씩 보이고 Fast DDS가 보낸 것은 한 번씩 보인다. 사용자 writer의 entityId도 다르다. Cyclone의 Square writer는 `0x00000202`, Fast DDS의 Square writer는 `0x00000102`다.
+두 파일은 캡처한 쪽이 다르다. `reliable-fastdds-pub`은 구독자인 cyclone 쪽에서 캡처했으므로 cyclone이 보낸 멀티캐스트가 두 개씩 보이고 Fast DDS가 보낸 것은 한 번씩 보인다. 사용자 writer의 entityId도 다르다. Cyclone의 Square writer는 `0x00000202`, Fast DDS의 Square writer는 `0x00000102`다.
 
 #### 2.1.3 절차
 
 표의 프레임을 펼쳐 두 벤더의 값을 적는다. 괄호는 Wireshark 상세 창의 라벨이다.
 
-| 볼 것 | rel-cyclone-pub | rel-fastdds-pub | 어디서 |
+| 볼 것 | reliable-cyclone-pub | reliable-fastdds-pub | 어디서 |
 |---|---|---|---|
 | 참가자 정보 `DATA(p)`의 필드 | 17 (Cyclone), 18 (Fast DDS) | 1 (Cyclone), 9 (Fast DDS) | RTPS 헤더의 `Protocol version`, `vendorId`. 그 아래 `PID_PARTICIPANT_LEASE_DURATION` > `lease_duration`, `PID_METATRAFFIC_UNICAST_LOCATOR`, `PID_DEFAULT_UNICAST_LOCATOR`, `PID_DEFAULT_MULTICAST_LOCATOR`, `Unknown (0x8000)`, `Unknown (0x8007)`, `Unknown (0x8019)`의 `parameterLength`와 `parameterData`. Internet Protocol 아래 `Time to Live` (17과 1-16은 멀티캐스트) |
-| SPDP 멀티캐스트 주기 | Fast DDS 1-16 (0.1초 간격 6번), 그 뒤 3초마다. Cyclone 17, 35 (0.1초 뒤), 204 (8초 뒤) | Cyclone 1-2, 5-6 (0.1초 간격 2번), 그 뒤 8초마다. Fast DDS 9부터 0.1초 간격 6번, 그 뒤 3초마다 | 필터 `rtps.sm.wrEntityId == 0x000100c2 && ip.dst == 239.255.0.1 && frame.time_relative < 12`. 캡처한 쪽 (rel-cyclone-pub은 fastdds, rel-fastdds-pub은 cyclone)이 보낸 것은 같은 시각에 두 개씩 보이므로 한 번으로 센다 |
+| SPDP 멀티캐스트 주기 | Fast DDS 1-16 (0.1초 간격 6번), 그 뒤 3초마다. Cyclone 17, 35 (0.1초 뒤), 204 (8초 뒤) | Cyclone 1-2, 5-6 (0.1초 간격 2번), 그 뒤 8초마다. Fast DDS 9부터 0.1초 간격 6번, 그 뒤 3초마다 | 필터 `rtps.sm.wrEntityId == 0x000100c2 && ip.dst == 239.255.0.1 && frame.time_relative < 12`. 캡처한 쪽 (reliable-cyclone-pub은 fastdds, reliable-fastdds-pub은 cyclone)이 보낸 것은 같은 시각에 두 개씩 보이므로 한 번으로 센다 |
 | 사용자 DATA에 붙는 HEARTBEAT와 INFO_DST | 50부터 `INFO_TS, DATA, HEARTBEAT` | 32 `INFO_DST, INFO_TS, DATA -> Square, Unknown[80]`, 33 `INFO_DST, INFO_TS, DATA -> Square, HEARTBEAT -> Square, Unknown[80]` | 필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone) 또는 `0x00000102` (Fast DDS) |
 | 벤더 전용 서브메시지와 Wireshark의 Malformed | Fast DDS의 모든 메시지 끝 `Unknown[80]`. 22 Cyclone의 writer 정보 `DATA[Malformed Packet]` | 같음. Cyclone의 reader 정보 23이 `DATA[Malformed Packet]` | Info 열. `Unknown[80]`을 펼치면 `octetsToNextHeader: 56` |
 
@@ -72,7 +72,7 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 
 - 유니캐스트 SPDP를 언제 보내는지, 상대가 없을 때 Cyclone이 종료하면서 `DATA(p[UD])`를 보내지 않는 이유 -> chapter 9
 - 두 캡처에서 SEDP 교환에 걸린 시간이 1.1초와 10ms로 다른 이유 -> chapter 11
-- HEARTBEAT에 적힌 숫자 (`rel-fastdds-pub`의 첫 HEARTBEAT는 2-1이다)와 붙이는 빈도의 기준 -> chapter 10
+- HEARTBEAT에 적힌 숫자 (`reliable-fastdds-pub`의 첫 HEARTBEAT는 2-1이다)와 붙이는 빈도의 기준 -> chapter 10
 - INFO_DST가 받는 쪽의 해석을 어떻게 바꾸는지 -> chapter 7
 - 포트 공식과 participantId, 그리고 Cyclone처럼 임의 포트를 쓰면 유니캐스트만으로 찾을 수 없게 되는 이유 -> chapter 8
 
@@ -103,7 +103,7 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 | 271-272 | 13.42 | `DATA(p[UD])`. 참가자가 사라진다 (chapter 3의 종료와 같다) |
 | 273-274 | 13.42, 14.04 | IGMP Leave |
 
-`dispose-on-exit.sub.log`의 끝은 `matched writers 0`, `NOT_ALIVE_DISPOSED_INSTANCE_STATE`, `Done.`이다. chapter 3의 `rel-cyclone-pub.sub.log`는 같은 자리가 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`였다.
+`dispose-on-exit.sub.log`의 끝은 `matched writers 0`, `NOT_ALIVE_DISPOSED_INSTANCE_STATE`, `Done.`이다. chapter 3의 `reliable-cyclone-pub.sub.log`는 같은 자리가 `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`였다.
 
 다음은 SIGKILL을 직접 한다.
 
@@ -163,7 +163,7 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 - 터미널 B에 `matched writers 1`만 찍히고 샘플 줄이 없거나, SIGKILL 뒤 25초가 지나도 `matched writers 0`이 찍히지 않으면 이전 실습의 발행자가 남아 있는 것이다. 터미널 B를 Ctrl+C로 끝내고 chapter 3의 2.1.2절 점검부터 다시 한다. 남은 발행자는 `docker compose exec cyclone pkill -INT -x cyclone_shape`로 끝낸다.
 - 터미널 D의 `pkill`이 아무것도 찾지 못하면 (종료 코드 1) 발행자가 이미 끝난 것이다. 터미널 C를 본다.
 - 측정값이 5초 미만이거나 15초를 넘으면 시각을 잘못 찍은 것이다. 캡처 (8단계)로 다시 본다.
-- 캡처가 비어 있거나 7400 문제가 있으면 [chapter 3의 2.1.6절](../03-first-communication/README.md#216-실패하면)을 본다. Ubuntu에서 `my-lease-expiry.pcap`은 root 소유로 생긴다.
+- 캡처가 비어 있거나 7400 문제가 있으면 [chapter 3의 2.1.5절](../03-first-communication/README.md#215-실패하면)을 본다. Ubuntu에서 `my-lease-expiry.pcap`은 root 소유로 생긴다.
 
 #### 2.2.7 이 chapter에서 답하지 않는 것
 
@@ -219,19 +219,19 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 
 #### 2.4.2 준비
 
-[`xcdr2.pcap`](../../captures/cyclone-fastdds/README.md#xcdr2)과 chapter 3의 `rel-cyclone-pub.pcap`을 연다. 흐름은 같고 바이트 안의 표현만 다르다. ShapeType은 멤버 다섯 개 (`color`, `x`, `y`, `shapesize`, 그리고 이 캡처에서는 길이 0인 `additional_payload_size`)의 appendable 타입 (뒤에 멤버를 더할 수 있는 타입. chapter 16)이다 ([용어 정리](../glossary.md#도구)의 shape_main).
+[`xcdr2.pcap`](../../captures/cyclone-fastdds/README.md#xcdr2)과 chapter 3의 `reliable-cyclone-pub.pcap`을 연다. 흐름은 같고 바이트 안의 표현만 다르다. ShapeType은 멤버 다섯 개 (`color`, `x`, `y`, `shapesize`, 그리고 이 캡처에서는 길이 0인 `additional_payload_size`)의 appendable 타입 (뒤에 멤버를 더할 수 있는 타입. chapter 16)이다 ([용어 정리](../glossary.md#도구)의 shape_main).
 
 #### 2.4.3 절차
 
 | 파일 | 프레임 | 표지와 보이는 것 |
 |---|---|---|
-| rel-cyclone-pub | 50 | 사용자 DATA의 `serializedData` > `encapsulation kind: CDR_LE (0x0001)` ([용어 정리](../glossary.md#프로토콜)의 RepresentationIdentifier) |
+| reliable-cyclone-pub | 50 | 사용자 DATA의 `serializedData` > `encapsulation kind: CDR_LE (0x0001)` ([용어 정리](../glossary.md#프로토콜)의 RepresentationIdentifier) |
 | xcdr2 | 41 | `encapsulation kind: D_CDR2_LE (0x0009)` |
-| rel-cyclone-pub | 47 | Fast DDS의 reader 정보 `DATA(r)` > `PID_DATA_REPRESENTATION` > `XCDR_DATA_REPRESENTATION (0x0)` |
+| reliable-cyclone-pub | 47 | Fast DDS의 reader 정보 `DATA(r)` > `PID_DATA_REPRESENTATION` > `XCDR_DATA_REPRESENTATION (0x0)` |
 | xcdr2 | 38 | 같은 자리 `XCDR2_DATA_REPRESENTATION (0x2)` |
-| xcdr2 | 29 | Cyclone의 writer 정보. `Malformed`로 끊기기 전에 `PID_DATA_REPRESENTATION` > `XCDR2_DATA_REPRESENTATION (0x2)`가 보인다. `rel-cyclone-pub`의 22에는 이 PID가 없다 |
+| xcdr2 | 29 | Cyclone의 writer 정보. `Malformed`로 끊기기 전에 `PID_DATA_REPRESENTATION` > `XCDR2_DATA_REPRESENTATION (0x2)`가 보인다. `reliable-cyclone-pub`의 22에는 이 PID가 없다 |
 
-1. 두 사용자 DATA의 `serializedData`를 펼쳐 encapsulation kind와 그 아래 바이트 (`serializedData` 리프)를 비교한다. 아래에 맞춰 적었다. 위가 `rel-cyclone-pub` 50, 아래가 `xcdr2` 41이다. x, y 값은 캡처마다 다르다.
+1. 두 사용자 DATA의 `serializedData`를 펼쳐 encapsulation kind와 그 아래 바이트 (`serializedData` 리프)를 비교한다. 아래에 맞춰 적었다. 위가 `reliable-cyclone-pub` 50, 아래가 `xcdr2` 41이다. x, y 값은 캡처마다 다르다.
    ```
                05 00 00 00 42 4c 55 45 00 00 00 00 a1 00 00 00 9c 00 00 00 14 00 00 00 00 00 00 00
    1c 00 00 00 05 00 00 00 42 4c 55 45 00 00 00 00 0f 00 00 00 0c 00 00 00 14 00 00 00 00 00 00 00
@@ -246,7 +246,7 @@ Cyclone DDS가 발행한 `rel-cyclone-pub`과 Fast DDS가 발행한 `rel-fastdds
 
 #### 2.4.5 확인 질문
 
-- chapter 3의 Lab 3-2에서 쓴 필터와 구간 표는 이 캡처에서도 그대로 통한다. 표현이 바뀌어도 바뀌지 않는 것은 무엇인가?
+- chapter 3의 Lab 3-2에서 쓴 필터와 표지 표는 이 캡처에서도 그대로 통한다. 표현이 바뀌어도 바뀌지 않는 것은 무엇인가?
 
 #### 2.4.6 이 chapter에서 답하지 않는 것
 

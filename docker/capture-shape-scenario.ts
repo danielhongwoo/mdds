@@ -2,7 +2,7 @@
 /**
  * shape_main 시나리오 하나를 두 벤더 컨테이너에서 실행하고 캡처와 로그를 captures/cyclone-fastdds/ 에 남긴다.
  *
- *   ./capture-shape-scenario.ts <이름>           예: ./capture-shape-scenario.ts rel-cyclone-pub
+ *   ./capture-shape-scenario.ts <이름>           예: ./capture-shape-scenario.ts reliable-cyclone-pub
  *   ./capture-shape-scenario.ts --list          시나리오 이름 목록
  *   ./capture-shape-scenario.ts --force <이름>  기존 결과를 덮어쓴다
  *
@@ -46,10 +46,10 @@ interface Scenario {
 }
 
 const SCENARIOS: Record<string, Scenario> = {
-  "be-cyclone-pub": { pub: "cyclone", reliability: "-b" },
-  "be-fastdds-pub": { pub: "fastdds", reliability: "-b" },
-  "rel-cyclone-pub": { pub: "cyclone", reliability: "-r" },
-  "rel-fastdds-pub": { pub: "fastdds", reliability: "-r" },
+  "best-effort-cyclone-pub": { pub: "cyclone", reliability: "-b" },
+  "best-effort-fastdds-pub": { pub: "fastdds", reliability: "-b" },
+  "reliable-cyclone-pub": { pub: "cyclone", reliability: "-r" },
+  "reliable-fastdds-pub": { pub: "fastdds", reliability: "-r" },
   "dispose-on-exit": {
     pub: "cyclone",
     reliability: "-r",

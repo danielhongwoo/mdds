@@ -738,7 +738,7 @@ mod tests {
     // SEDP에 없는 PID는 그 엔티티의 기본값이므로 `..Default::default()`로 채운다.
 
     #[test]
-    fn capture_rel_cyclone_pub_is_compatible() {
+    fn capture_reliable_cyclone_pub_is_compatible() {
         // 22: Cyclone writer 정보. PID_RELIABILITY RELIABLE. DURABILITY, DATA_REPRESENTATION 없음
         let w = PublicationQos {
             reliability: ReliabilityKind::Reliable,
@@ -757,7 +757,7 @@ mod tests {
     }
 
     #[test]
-    fn capture_be_cyclone_pub_is_compatible() {
+    fn capture_best_effort_cyclone_pub_is_compatible() {
         // 27: Cyclone writer 정보. PID_RELIABILITY BEST_EFFORT
         let w = PublicationQos {
             reliability: ReliabilityKind::BestEffort,
@@ -773,7 +773,7 @@ mod tests {
     }
 
     #[test]
-    fn capture_rel_fastdds_pub_is_compatible() {
+    fn capture_reliable_fastdds_pub_is_compatible() {
         // 17: Fast DDS writer 정보. DURABILITY VOLATILE, DATA_REPRESENTATION [XCDR]. RELIABILITY 없음
         let w = PublicationQos {
             durability: DurabilityKind::Volatile,

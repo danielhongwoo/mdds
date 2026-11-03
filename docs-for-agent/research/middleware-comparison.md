@@ -22,7 +22,7 @@
 - **내장 디스커버리, 단일 장애점 없음**: RTPS 2.5 Sec. 7.2는 DDS가 이름 서버 없이 publisher와 subscriber를 계속 발견하는 내장 디스커버리를 요구하고, 단일 장애점을 두지 말아야 하므로 중앙 이름 서버나 브로커에 의존하면 안 된다고 적는다. [확인]
 - **QoS 계약**: RTPS 2.5 Sec. 7.2는 DataWriter와 DataReader 사이의 QoS 계약이 정보 흐름을 조절한다고 적는다. [확인]
 - **디스커버리의 한계**: RTPS 2.5 Sec. 8.5.1은 디스커버리를 참가자 (PDP)와 엔드포인트 (EDP) 두 단계로 나누고, 상호운용을 위해 모든 구현이 SPDP와 SEDP를 지원해야 한다고 한다. 그리고 이 둘이 "small to medium scale networks"에 충분하다고 적는다. 큰 네트워크용 프로토콜은 이후 판에 추가될 수 있다고 한다. [확인]
-- **이 저장소의 캡처**: rel-cyclone-pub은 프레임 268개 중 디스커버리가 72개다 ([캡처 README](../../captures/cyclone-fastdds/README.md)). [확인]
+- **이 저장소의 캡처**: reliable-cyclone-pub은 프레임 268개 중 디스커버리가 72개다 ([캡처 README](../../captures/cyclone-fastdds/README.md)). [확인]
 
 ## 2. 공통 기준
 

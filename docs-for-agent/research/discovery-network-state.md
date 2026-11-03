@@ -133,8 +133,8 @@ sequenceDiagram
 |---|---|---|
 | IGMPv3 report 수 | 캡처마다 12개. 시작할 때 참가자마다 "Change To Exclude" (join) 2번, 끝날 때 "Change To Include" (leave) 2번. 2번인 것은 RFC 3376 Robustness Variable 기본값 2 [R3] | [확인] |
 | SIGKILL 뒤 leave | lease-expiry: 마지막 RTPS 패킷 14.26초, Cyclone 쪽 leave report 14.30초와 15.09초 (프레임 272, 273) | [확인], 원인은 [추정] |
-| SPDP 멀티캐스트 TTL | Cyclone (172.28.0.10) 32, Fast DDS (172.28.0.11) 1. rel-cyclone-pub, lease-expiry 같음 | [확인] |
-| 유니캐스트 UDP flow | 참가자 2개 (rel-cyclone-pub)에서 3개: Cyclone -> Fast DDS 7410 (메타 트래픽), Cyclone -> Fast DDS 7411 (사용자 데이터), Fast DDS -> Cyclone 임의 포트 | [확인] |
+| SPDP 멀티캐스트 TTL | Cyclone (172.28.0.10) 32, Fast DDS (172.28.0.11) 1. reliable-cyclone-pub, lease-expiry 같음 | [확인] |
+| 유니캐스트 UDP flow | 참가자 2개 (reliable-cyclone-pub)에서 3개: Cyclone -> Fast DDS 7410 (메타 트래픽), Cyclone -> Fast DDS 7411 (사용자 데이터), Fast DDS -> Cyclone 임의 포트 | [확인] |
 
 - 7410, 7411은 RTPS 2.5 Sec. 9.6.2.1의 기본 포트 공식 (PB 7400 + DG 250 x domainId + d1 10 + PG 2 x participantId, 사용자 데이터는 d3 11)에서 domain 0, participantId 0일 때의 값이다 [R12]. (재확인)
 - SIGKILL 뒤 leave를 누가 보내는지는 캡처 README에 "누가 보내나? -> chapter 8" 질문으로 남아 있다.

@@ -28,7 +28,7 @@
 
 ## 확인할 것
 - 벤더 ID: Cyclone(Eclipse) 0x0110, Fast DDS(eProsima) 0x010F. OMG 벤더 목록에서 다시 확인한다.
-- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고 Cyclone은 붙이지 않는다 ([rel-fastdds-pub](../../captures/cyclone-fastdds/README.md#rel-fastdds-pub)). 수신 측에서 INFO_DST가 바꾸는 상태 (destGuidPrefix)와, 없을 때의 기본값을 확인한다.
+- Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고 Cyclone은 붙이지 않는다 ([reliable-fastdds-pub](../../captures/cyclone-fastdds/README.md#reliable-fastdds-pub)). 수신 측에서 INFO_DST가 바꾸는 상태 (destGuidPrefix)와, 없을 때의 기본값을 확인한다.
 
 ## 완료 기준
 - cyclone-fastdds 캡처 전부를 파싱 -> 재인코딩해 바이트가 같다.

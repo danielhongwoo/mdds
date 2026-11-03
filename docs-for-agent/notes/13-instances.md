@@ -23,7 +23,7 @@
 
 ## 확인할 것
 cyclone-fastdds 캡처에서 나온 관찰과 가설이다. 이 chapter에서 규격으로 확인하고, 맞으면 구현이나 규칙으로 옮기고 지운다.
-- 구독 로그의 샘플 수가 전달된 DATA 수보다 적다 (rel-cyclone-pub 84 / 89). shape_main 구독자의 history (KEEP_LAST)와 읽기 주기 때문으로 보인다 [추정] ([rel-cyclone-pub](../../captures/cyclone-fastdds/README.md#rel-cyclone-pub)).
+- 구독 로그의 샘플 수가 전달된 DATA 수보다 적다 (reliable-cyclone-pub 84 / 89). shape_main 구독자의 history (KEEP_LAST)와 읽기 주기 때문으로 보인다 [추정] ([reliable-cyclone-pub](../../captures/cyclone-fastdds/README.md#reliable-cyclone-pub)).
 - dispose-on-exit 캡처: 마지막 사용자 DATA에 `PID_STATUS_INFO` Disposed와 key만 실린다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`.
 
 ## 완료 기준
