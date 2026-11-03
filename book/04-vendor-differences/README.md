@@ -2,7 +2,7 @@
 
 [목차](../README.md) | 이전: [3 첫 DDS 통신 들여다보기](../03-first-communication/README.md) | 다음: [5 DCPS 개념 모델](../05-dcps-concepts/README.md)
 
-chapter3에서는 두 벤더에 공통인 흐름을 보았다. 이 chapter에서는 같은 규격을 따르는 두 구현이 와이어에서 어떻게 다른지 본다. 그리고 뒤 chapter에서 풀 네 가지 문제, 곧 인스턴스를 거두고 떠나는 법, 말없이 사라진 참가자를 아는 법, 큰 샘플을 나르는 법, 바이트 표현을 바꾸는 법이 와이어에서 어떻게 보이는지 미리 본다. 원리와 구현은 뒤 chapter의 몫이다.
+chapter3에서는 두 벤더에 공통인 흐름을 보았다. 이 chapter에서는 같은 규격을 따르는 두 구현이 와이어에서 어떻게 다른지 보고, 그 차이가 규격의 어느 자리에서 생기는지 가른다. 그리고 뒤 chapter에서 다룰 세 가지 현상, 곧 발행자가 사라지는 두 방식, 전송 한 번에 담기지 않는 큰 샘플, 다른 직렬화 표현 (XCDR2)을 캡처로 미리 본다. 원리와 구현은 뒤 chapter의 몫이다.
 
 ## 1. 왜 필요한가
 
@@ -11,7 +11,7 @@ chapter3에서는 두 벤더에 공통인 흐름을 보았다. 이 chapter에서
 mdds를 만들 때 이 구분이 중요하다. 캡처에서 본 동작을 그대로 따라 하면 "Cyclone처럼" 또는 "Fast DDS처럼" 동작하는 구현이 된다. 물어야 할 것은 "어느 쪽을 따라야 하나"가 아니라 "이것은 규격의 어느 쪽인가"다. 이 chapter는 규격의 문장을 네 가지로 나누어 본다.
 - **값을 정한 것**: 그대로 따라야 한다. 예: 멀티캐스트 주소.
 - **기본값만 준 것**: 기본값으로 시작하되 바꿀 수 있다. 예: 공지 주기.
-- **비워 둔 영역**: 벤더가 채우라고 번호 구간을 남겨 둔 것. 예: 벤더 전용 PID.
+- **비워 둔 영역**: 벤더가 채우라고 번호 구간을 남겨 둔 것. 예: 벤더 전용 PID (ParameterId. 참가자 정보나 writer 정보 같은 DATA 안에서 항목마다 붙는 번호로, chapter3의 상세 창에서 본 `PID_TOPIC_NAME`이 그 하나다).
 - **규격에 없는 것**: 아무 말이 없어 구현이 고른 것. 예: IP TTL.
 
 Lab 4-1에서 두 벤더의 차이를 모으고, 3.1절에서 규격 원문으로 네 가지 가운데 어디인지 가른다. 나머지 세 lab은 미리 보기다. 발행자가 떠나는 두 가지 방식 (Lab 4-2), 전송 한 번에 담기지 않는 샘플 (Lab 4-3), 다른 직렬화 표현 (Lab 4-4)을 캡처 한 개씩으로 본다. 각 현상의 규칙은 chapter13, 9, 15, 16에서 구현하면서 배운다.
@@ -32,18 +32,24 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 
 두 파일은 캡처한 쪽이 다르다. `reliable-fastdds-pub`은 구독자인 cyclone 쪽에서 캡처했으므로 cyclone이 보낸 멀티캐스트가 두 개씩 보이고 Fast DDS가 보낸 것은 한 번씩 보인다. 사용자 writer의 entityId도 다르다. Cyclone의 Square writer는 `0x00000202`, Fast DDS의 Square writer는 `0x00000102`다.
 
+표에 나오는 lease 기간은 참가자가 참가자 정보에 실어 알리는 값으로, "이 시간 안에 내 공지가 다시 오지 않으면 나를 지워도 된다"는 뜻이다 (chapter0 3.2).
+
 #### 2.1.3 절차
 
-표의 프레임을 펼쳐 두 벤더의 값을 적는다. 괄호는 Wireshark 상세 창의 라벨이다.
+두 캡처에서 아래 항목을 하나씩 찾아 두 벤더의 값을 적는다. 프레임 번호는 참가자 정보 `DATA(p)`를 펼칠 프레임이다 (어느 `DATA(p)`를 펼쳐도 같은 값이 나온다). 작은따옴표 없는 이름은 Wireshark 상세 창의 라벨이다.
 
-| 볼 것 | reliable-cyclone-pub | reliable-fastdds-pub | 어디서 |
+| 볼 것 | reliable-cyclone-pub | reliable-fastdds-pub | 펼칠 위치와 읽을 값 |
 |---|---|---|---|
-| 참가자 정보 `DATA(p)`의 필드 | 17 (Cyclone), 18 (Fast DDS) | 1 (Cyclone), 9 (Fast DDS) | RTPS 헤더의 `Protocol version`, `vendorId`. 그 아래 `PID_PARTICIPANT_LEASE_DURATION` > `lease_duration`, `PID_METATRAFFIC_UNICAST_LOCATOR`, `PID_DEFAULT_UNICAST_LOCATOR`, `PID_DEFAULT_MULTICAST_LOCATOR`, `Unknown (0x8000)`, `Unknown (0x8007)`, `Unknown (0x8019)`의 `parameterLength`와 `parameterData`. Internet Protocol 아래 `Time to Live` (17과 1-16은 멀티캐스트) |
-| SPDP 멀티캐스트 주기 | Fast DDS 1-16 (0.1초 간격 6번), 그 뒤 3초마다. Cyclone 17, 35 (0.1초 뒤), 204 (8초 뒤) | Cyclone 1-2, 5-6 (0.1초 간격 2번), 그 뒤 8초마다. Fast DDS 9부터 0.1초 간격 6번, 그 뒤 3초마다 | 필터 `rtps.sm.wrEntityId == 0x000100c2 && ip.dst == 239.255.0.1 && frame.time_relative < 12`. 캡처한 쪽 (reliable-cyclone-pub은 fastdds, reliable-fastdds-pub은 cyclone)이 보낸 것은 같은 시각에 두 개씩 보이므로 한 번으로 센다 |
-| 사용자 DATA에 붙는 HEARTBEAT와 INFO_DST | 50부터 `INFO_TS, DATA, HEARTBEAT` | 32 `INFO_DST, INFO_TS, DATA -> Square, Unknown[80]`, 33 `INFO_DST, INFO_TS, DATA -> Square, HEARTBEAT -> Square, Unknown[80]` | 필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone) 또는 `0x00000102` (Fast DDS) |
+| 프로토콜 버전과 vendorId | 17 (Cyclone), 18 (Fast DDS) | 1 (Cyclone), 9 (Fast DDS) | `Real-Time Publish-Subscribe Wire Protocol` 바로 아래의 `Protocol version`, `vendorId` |
+| lease 기간 | 같은 프레임 | 같은 프레임 | `DATA(p)` > `serializedData` > `PID_PARTICIPANT_LEASE_DURATION` > `lease_duration` |
+| 알리는 주소와 포트 (로케이터) | 같은 프레임 | 같은 프레임 | 같은 자리의 `PID_METATRAFFIC_UNICAST_LOCATOR`, `PID_DEFAULT_UNICAST_LOCATOR`, `PID_DEFAULT_MULTICAST_LOCATOR`. 각각의 `kind`, `address`, `port` |
+| 벤더 전용 PID | 같은 프레임 | 같은 프레임 | 같은 자리의 `Unknown (0x8000)`, `Unknown (0x8007)`, `Unknown (0x8019)`. 각각의 `parameterLength`와 `parameterData` |
+| 멀티캐스트 패킷의 IP TTL | 1 (Fast DDS), 17 (Cyclone) | 1 (Cyclone), 9 (Fast DDS) | `Internet Protocol Version 4` > `Time to Live`. 멀티캐스트 (목적지 239.255.0.1) 프레임에서 본다 |
+| SPDP 멀티캐스트 주기 | Fast DDS 1-16 (0.1초 간격 6번), 그 뒤 3초마다. Cyclone 17, 35 (0.1초 뒤), 204 (8초 뒤) | Cyclone 1-2, 5-6 (0.1초 간격 2번), 그 뒤 8초마다. Fast DDS 9부터 0.1초 간격 6번, 그 뒤 3초마다 | 필터 `rtps.sm.wrEntityId == 0x000100c2 && ip.dst == 239.255.0.1 && frame.time_relative < 12`를 걸고 Time 열의 간격을 본다. 캡처한 쪽이 보낸 것은 같은 시각에 두 개씩 보이므로 한 번으로 센다 |
+| 사용자 DATA에 붙는 HEARTBEAT와 INFO_DST | 50부터 `INFO_TS, DATA, HEARTBEAT` | 32 `INFO_DST, INFO_TS, DATA -> Square, Unknown[80]`, 33 `INFO_DST, INFO_TS, DATA -> Square, HEARTBEAT -> Square, Unknown[80]` | 필터 `rtps.sm.wrEntityId == 0x00000202` (Cyclone) 또는 `0x00000102` (Fast DDS)를 걸고 Info 열을 본다 |
 | 벤더 전용 서브메시지와 Wireshark의 Malformed | Fast DDS의 모든 메시지 끝 `Unknown[80]`. 22 Cyclone의 writer 정보 `DATA[Malformed Packet]` | 같음. Cyclone의 reader 정보 23이 `DATA[Malformed Packet]` | Info 열. `Unknown[80]`을 펼치면 `octetsToNextHeader: 56` |
 
-표를 다 채웠으면 한 행을 골라 (예: lease 기간이나 vendorId) 규격 PDF의 해당 절 (3.1절에 적힌 절 번호)에서 규격이 무엇을 정했는지 직접 읽어 본다.
+적은 값이 2.1.4절의 표와 같으면 된다. 표를 다 채웠으면 한 행을 골라 (예: lease 기간이나 vendorId) 규격 PDF (참고 자료의 링크)에서 3.1절에 적힌 절을 찾아 규격이 무엇을 정했는지 직접 읽어 본다.
 
 #### 2.1.4 기대 결과: 두 벤더의 차이
 
@@ -62,13 +68,9 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 | 사용자 DATA 앞의 INFO_DST | 없음 | 있음 | 해석에 필요할 때 두는 것은 의무이고, 그 밖에는 구현이 고른다 -> chapter7 |
 | SPDP 멀티캐스트의 IP TTL | 32 | 1 | 규격에 없음 |
 
-같은 PID 번호 0x8007이 Cyclone에서는 52바이트 문자열, Fast DDS에서는 4바이트 값이다. 벤더 전용 영역은 vendorId와 함께 읽어야 뜻이 정해진다. 표의 값 가운데 몇 가지는 두 벤더의 설정 기본값이다 (소스와 설정 문서로 확인). Cyclone은 멀티캐스트 디스커버리를 쓸 때 참가자 번호를 쓰지 않는 설정 (`Discovery/ParticipantIndex` = `none`)이 기본이라 유니캐스트 포트를 임의로 고르고, 멀티캐스트 TTL 기본값이 32이며, SPDP 주기 기본값이 lease의 약 80%다. Fast DDS의 0x80 서브메시지는 통계 모듈이 모든 메시지에 붙이는 것이다. Cyclone의 writer / reader 정보가 `Malformed`로 보이는 것은 chapter3에서 본 것과 같은 Wireshark 4.6.9의 한계이고, 그 뒤의 PID는 화면에 나오지 않는다. 그래서 위 표의 "PID_DATA_REPRESENTATION을 싣지 않음"은 화면이 아니라 바이트로 확인한 것이다.
+같은 PID 번호 0x8007이 Cyclone에서는 52바이트 문자열, Fast DDS에서는 4바이트 값이다. 벤더 전용 영역은 vendorId와 함께 읽어야 뜻이 정해진다. 표의 lease 기간, 주기, 포트, TTL은 두 벤더의 설정 기본값이고 설정으로 바꿀 수 있다 (두 벤더의 설정 문서와 소스로 확인). Cyclone의 writer / reader 정보가 `Malformed`로 보이는 것은 chapter3에서 본 것과 같은 Wireshark 4.6.9의 한계이고, 그 뒤의 PID는 화면에 나오지 않는다. 그래서 위 표의 "PID_DATA_REPRESENTATION을 싣지 않음"은 화면이 아니라 바이트로 확인한 것이다.
 
-#### 2.1.5 확인 질문
-
-- 두 벤더가 알리는 lease 기간이 다르다. Cyclone 구독자는 Fast DDS 발행자가 사라졌다고 판단할 때 어느 값을 쓰겠는가?
-
-#### 2.1.6 이 chapter에서 답하지 않는 것
+#### 2.1.5 이 chapter에서 답하지 않는 것
 
 - 유니캐스트 SPDP를 언제 보내는지, 상대가 없을 때 Cyclone이 종료하면서 `DATA(p[UD])`를 보내지 않는 이유 -> chapter9
 - 두 캡처에서 SEDP 교환에 걸린 시간이 1.1초와 10ms로 다른 이유 -> chapter11
@@ -87,7 +89,7 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 [`dispose-on-exit.pcap`](../../captures/cyclone-fastdds/README.md#dispose-on-exit)과 [`lease-expiry.pcap`](../../captures/cyclone-fastdds/README.md#lease-expiry), 그리고 같은 디렉터리의 `dispose-on-exit.sub.log`, `lease-expiry.sub.log`를 쓴다. 직접 하는 부분은 [chapter3 2.1.2](../03-first-communication/README.md#212-준비) 점검과 터미널 A, B, C에 터미널 D를 하나 더한다. 모두 `docker/`에서 연다.
 
 알아 둘 용어가 셋 있다.
-- **dispose와 unregister**는 writer가 인스턴스 (여기서는 색이 BLUE인 Square 하나)에 대해 하는 선언이다. dispose는 그 인스턴스가 더는 유효하지 않다는 뜻, unregister는 이 writer가 더는 그 인스턴스를 갱신하지 않는다는 뜻이다 ([용어 정리](../glossary.md#프로토콜)). chapter3에서 본 `[UD]`가 둘 다 선 것이고, `[_D]`는 dispose만 선 것이다.
+- **dispose와 unregister**는 writer가 인스턴스 (여기서는 색이 BLUE인 Square 하나)에 대해 하는 선언이다. dispose는 그 인스턴스가 더는 유효하지 않다는 뜻, unregister는 이 writer가 더는 그 인스턴스를 갱신하지 않는다는 뜻이다 ([용어 정리](../glossary.md#프로토콜)). chapter3에서 본 `[UD]`가 둘 다 선 것이고, `[_D]`는 dispose만 선 것이다 (U 자리가 비어 있다).
 - **inline QoS**는 DATA 서브메시지 안에 함께 실리는 ParameterId 목록이다. 이 선언은 그 안의 `PID_STATUS_INFO`에 실린다.
 - **Serialized Key**는 DATA의 플래그로, 페이로드에 값 전체가 아니라 key (여기서는 색)만 들어 있다는 표시다.
 
@@ -114,7 +116,7 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 | C | cyclone 컨테이너에서 발행 (끝나지 않는다) |
 | D | 발행자를 SIGKILL로 끝내고 시각을 적는다 |
 
-1. 터미널 A에서 캡처를 시작하고 `listening on eth0` 뒤 1초 기다린다. 같은 이름의 파일이 있으면 말없이 덮어쓴다.
+1. 터미널 A에서 캡처를 시작하고 `listening on eth0` 뒤 1초 기다린다. 같은 이름의 파일이 있으면 경고 없이 덮어쓴다.
    ```bash
    docker compose exec fastdds tcpdump -i eth0 -U -Z root -w /captures/cyclone-fastdds/my-lease-expiry.pcap 'udp or igmp'
    ```
@@ -126,14 +128,14 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
    ```bash
    docker compose exec cyclone cyclone_shape -P -d 0 -t Square -x 1 -r -c BLUE --write-period 100
    ```
-4. 샘플 줄이 10초쯤 흐른 뒤 터미널 D에서 다음 한 줄을 실행한다. 시각을 찍고 발행자를 SIGKILL로 끝낸다. 터미널 C에는 프롬프트가 돌아오고 (터미널 C의 `docker compose exec`가 종료 코드 137로 끝난다), 터미널 B의 샘플 줄이 멈춘다.
+4. 샘플 줄이 약 10초 흐른 뒤 터미널 D에서 다음 한 줄을 실행한다. 시각을 찍고 발행자를 SIGKILL로 끝낸다. 터미널 C에는 프롬프트가 돌아오고, 터미널 B의 샘플 줄이 멈춘다.
    ```bash
    date +%T; docker compose exec cyclone pkill -9 -x cyclone_shape
    ```
-5. 터미널 B를 보다가 `matched writers 0`이 찍히는 순간 터미널 D에서 `date +%T`를 실행한다. 두 시각의 차가 lease 만료까지 걸린 시간이다. 초 단위 시계와 손의 반응이 섞이므로 1-2초의 오차가 있다.
+5. 터미널 B를 보다가 `matched writers 0`이 찍히는 순간 터미널 D에서 `date +%T`를 실행한다. 두 시각의 차가 구독자가 발행자를 지우기까지 걸린 시간이고, 약 10초가 나와야 한다 (2.2.4절). 초 단위 시계와 손의 반응이 섞이므로 1-2초의 오차가 있다.
 6. `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`가 찍힌 뒤 5초 더 기다린다. Fast DDS의 SPDP 주기 (3초)보다 길게 기다려야 "더 보내지 않음"이 캡처에 남는다.
 7. 터미널 B에서 Ctrl+C (`Done.`), 2초 뒤 터미널 A에서 Ctrl+C. chapter3 2.1.2 점검 명령으로 남은 프로세스가 없는지 확인한다.
-8. `my-lease-expiry.pcap`을 열어 같은 것을 캡처 시각으로 본다. 발행자의 마지막 패킷은 필터 `ip.src == 172.28.0.10 && rtps`의 마지막 프레임이다. 구독자가 발행자에게 보낸 유니캐스트 SPDP는 필터 `ip.src == 172.28.0.11 && ip.dst == 172.28.0.10 && rtps.sm.wrEntityId == 0x000100c2`로 보이는데, 발행자의 마지막 패킷 뒤 10초 안쪽에서 끊기고 그 뒤 3초 간격의 프레임이 없다. 벽시계 시각과 캡처 시각은 직접 비교할 수 없으므로 "끊긴 시점이 마지막 패킷 뒤 10초 안쪽인가"만 본다.
+8. `my-lease-expiry.pcap`을 열어 캡처 시각으로 같은 것을 본다. 필터 `ip.src == 172.28.0.10 && rtps`의 마지막 프레임이 발행자의 마지막 패킷이다. 그 시각을 적어 두고, 필터 `ip.src == 172.28.0.11 && ip.dst == 172.28.0.10 && rtps.sm.wrEntityId == 0x000100c2` (구독자가 발행자에게 보낸 유니캐스트 SPDP)로 바꾼다. 마지막 프레임이 적어 둔 시각보다 10초 안쪽이면 된다. 구독자가 발행자를 지운 뒤에는 유니캐스트로 보낼 상대가 없어 이 필터에 더는 프레임이 없다.
 
 #### 2.2.4 기대 결과
 
@@ -149,13 +151,14 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
   | 283부터 | 24.53 | fastdds의 `DATA(p)`는 멀티캐스트로만 나간다 |
   | 293-294 | 39.46 | fastdds의 `DATA(p[UD])` (구독자 Ctrl+C) |
 
-  fastdds는 21.53초에는 cyclone에게 유니캐스트로 보냈고 24.53초에는 보내지 않았다. 그 사이에 cyclone을 지운 것으로 보인다. `lease-expiry.sub.log`의 끝은 `matched writers 0`, `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`, `Done.`으로, 정상 종료 때와 같다.
+  fastdds는 21.53초에는 cyclone에게 유니캐스트로 보냈고 24.53초에는 보내지 않았다. 그 사이에 lease가 만료되어 cyclone을 지운 것이다 (마지막 패킷 14.26초 + 10초 = 24.26초). `lease-expiry.sub.log`의 끝은 `matched writers 0`, `NOT_ALIVE_NO_WRITERS_INSTANCE_STATE`, `Done.`으로, 정상 종료 때와 같다.
 - 두 경우의 차이는 발행자가 보낸 마지막 메시지에 있다. dispose는 `DATA([_D])`, `DATA(w[UD])`, `DATA(p[UD])`로 알리고 사라진다. SIGKILL은 아무것도 알리지 않고, 구독자가 lease로 판단한다. 구독 로그는 두 경우를 `NOT_ALIVE_DISPOSED`와 `NOT_ALIVE_NO_WRITERS`로 구분한다 (3.2절).
 
 선택 실습: Lab 3-1의 발행 명령 끝에 `--final-instance-state d`를 더하면 `dispose-on-exit`과 같은 캡처가 된다.
 
 #### 2.2.5 확인 질문
 
+- 두 벤더가 알리는 lease 기간이 다르다 (Lab 4-1). 반대로 Fast DDS 발행자를 SIGKILL로 끝내면 Cyclone 구독자는 몇 초 뒤에 지우겠는가?
 - SIGKILL 뒤에도 IGMP Leave는 나갔다. 그런데 왜 구독자는 그것으로 발행자가 사라졌음을 알지 못하는가?
 
 #### 2.2.6 실패하면
@@ -193,14 +196,14 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 | 137 | `HEARTBEAT`만. 다음 샘플의 조각을 보내는 도중이다 |
 
 1. 필터 `rtps`로 310개가 남는 것을 확인한다. 전체 2,198개 가운데 1,876개가 IP 조각이고 12개가 IGMP다.
-2. 50을 펼쳐 표의 값을 확인한다. 샘플 100,032바이트를 1,344바이트 조각 75개로 나누고 RTPS 메시지 하나에 10개씩 실었다 (마지막 메시지는 5개). 그 메시지는 약 13.5KB라, 이더넷 프레임 하나에 들어가는 크기 (MTU 1,500바이트)를 넘어 IP 층에서 1,480바이트 9개와 224바이트 1개로 다시 나뉘었다.
+2. 50을 펼쳐 표의 값을 확인한다. 샘플 하나가 와이어에 오르기까지 두 번 나뉜다: 샘플 100,032바이트 -> RTPS가 1,344바이트 조각 75개로 -> 조각 10개씩 RTPS 메시지 8개로 (마지막은 5개) -> 메시지 하나 (약 13.5KB)를 IP가 이더넷 프레임에 맞게 (MTU 1,500바이트) 1,480바이트 9개와 224바이트 1개로.
 3. 필터 `rtps.sm.id == 0x16` (DATA_FRAG)과 `rtps.sm.id == 0x13` (HEARTBEAT_FRAG)으로 둘 다 있는 것을, `rtps.sm.id == 0x12` (NACK_FRAG)로 빠진 조각을 요청한 적이 없는 것을 확인한다.
 
 #### 2.3.4 기대 결과
 
 - 조각내기가 두 층에서 겹쳐 보인다. RTPS는 샘플을 DATA_FRAG 조각 75개로 나누어 메시지 8개에 실었고 ([용어 정리](../glossary.md#프로토콜)), IP는 그 메시지 하나를 다시 10개 (마지막 메시지는 5개)로 나누었다. 샘플 하나가 이더넷 프레임 75개로 갔다.
 - IP 조각은 받는 커널이 합친 뒤에 RTPS에 올라오므로 RTPS 메시지 안에는 드러나지 않는다. RTPS 메시지를 얼마나 크게 만들지는 구현이 정한다.
-- 조각 크기 1,344와 메시지당 10개는 Cyclone의 설정 기본값에서 나온다 (`General/FragmentSize` 1344 B, 그리고 UDP 페이로드 상한 `General/MaxMessageSize` 14720 B에 조각 10개까지 들어간다). 규격은 조각 크기를 writer가 정해 고정하고, 모든 전송이 조각 하나 이상을 담을 수 있어야 하며, 65,536바이트 이하이고, 필요할 때만 조각내라고 요구한다. 메시지 하나에 조각을 최대한 많이 담으라는 것은 권고다 (RTPS 2.5 Sec. 8.4.14.1).
+- 조각 크기 1,344와 메시지당 10개는 Cyclone의 설정 기본값 (조각 크기와 메시지 크기 상한)에서 나온다. 규격이 요구하는 것은 조각 크기를 writer가 정해 고정하고 65,536바이트 이하로 하며 필요할 때만 조각내라는 것이고, 메시지 하나에 조각을 최대한 많이 담으라는 것은 권고다 (RTPS 2.5 Sec. 8.4.14.1).
 
 #### 2.3.5 확인 질문
 
@@ -215,7 +218,7 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 
 #### 2.4.1 목표
 
-같은 샘플을 `-x 2` (XCDR2)로 보냈을 때 와이어에서 무엇이 달라지는지 본다.
+같은 샘플을 `-x 2` (XCDR2)로 보냈을 때 와이어에서 무엇이 달라지는지 본다. XCDR2는 샘플을 바이트로 바꾸는 둘째 규칙이다. 지금까지의 캡처는 첫째 규칙 XCDR1 (`-x 1`)이었고, 둘의 차이는 chapter6과 16에서 다룬다.
 
 #### 2.4.2 준비
 
@@ -231,12 +234,23 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 | xcdr2 | 38 | 같은 자리 `XCDR2_DATA_REPRESENTATION (0x2)` |
 | xcdr2 | 29 | Cyclone의 writer 정보. `Malformed`로 끊기기 전에 `PID_DATA_REPRESENTATION` > `XCDR2_DATA_REPRESENTATION (0x2)`가 보인다. `reliable-cyclone-pub`의 22에는 이 PID가 없다 |
 
-1. 두 사용자 DATA의 `serializedData`를 펼쳐 encapsulation kind와 그 아래 바이트 (`serializedData` 리프)를 비교한다. 아래에 맞춰 적었다. 위가 `reliable-cyclone-pub` 50, 아래가 `xcdr2` 41이다. x, y 값은 캡처마다 다르다.
+1. 두 사용자 DATA의 `serializedData`를 펼쳐 encapsulation kind와 그 아래 바이트 (`serializedData` 리프)를 비교한다. 위가 `reliable-cyclone-pub` 50, 아래가 `xcdr2` 41이고, 같은 멤버가 같은 열에 오도록 맞춰 적었다. x, y 값은 캡처마다 다르다.
    ```
                05 00 00 00 42 4c 55 45 00 00 00 00 a1 00 00 00 9c 00 00 00 14 00 00 00 00 00 00 00
    1c 00 00 00 05 00 00 00 42 4c 55 45 00 00 00 00 0f 00 00 00 0c 00 00 00 14 00 00 00 00 00 00 00
    ```
-   xcdr2 쪽에만 맨 앞에 `1c 00 00 00` (28)이 더 있다. 뒤따르는 내용의 길이를 적은 DHEADER다. 그 뒤는 두 캡처가 같은 배치다 (길이 5의 `BLUE`, x, y, 크기 20, 길이 0의 sequence).
+
+   | 바이트 | 뜻 |
+   |---|---|
+   | `1c 00 00 00` (xcdr2에만) | DHEADER. 뒤따르는 내용의 길이 28 |
+   | `05 00 00 00 42 4c 55 45 00` | `color`: 길이 5 (끝의 0 포함)와 `BLUE` |
+   | `00 00 00` | 다음 멤버를 4바이트 경계에 맞추는 채움 |
+   | `a1 00 00 00` / `0f 00 00 00` | `x`: 161 / 15 |
+   | `9c 00 00 00` / `0c 00 00 00` | `y`: 156 / 12 |
+   | `14 00 00 00` | `shapesize`: 20 |
+   | `00 00 00 00` | `additional_payload_size`: 길이 0 |
+
+   xcdr2 쪽에만 맨 앞에 DHEADER가 더 있고, 그 뒤는 두 캡처가 같은 배치다.
 2. reader 정보와 writer 정보에서 PID_DATA_REPRESENTATION의 값을 비교한다.
 
 #### 2.4.4 기대 결과
@@ -246,7 +260,7 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 
 #### 2.4.5 확인 질문
 
-- chapter3의 Lab 3-2에서 쓴 필터와 표지 표는 이 캡처에서도 그대로 통한다. 표현이 바뀌어도 바뀌지 않는 것은 무엇인가?
+- `xcdr2.pcap`에 chapter3 Lab 3-2의 표지 표를 그대로 적용해 보라. 다섯 단계의 순서, 내장 엔드포인트의 entityId, `HEARTBEAT`와 `ACKNACK`의 왕복 가운데 `-x 2`로 바뀐 것이 있는가? 바뀐 것은 어디에 있는가?
 
 #### 2.4.6 이 chapter에서 답하지 않는 것
 
@@ -260,11 +274,11 @@ Cyclone DDS가 발행한 `reliable-cyclone-pub`과 Fast DDS가 발행한 `reliab
 RTPS가 상호운용을 위해 요구하는 것은 서로 다른 벤더의 구현 사이에 오가는 메시지에 관한 최소 요구로 한정된다 (RTPS 2.5 Sec. 8.4.2). 규격은 구현마다 메모리, 대역폭, 규모의 trade-off가 다를 수 있다고 적고 (Sec. 8.4.1), 상호운용에 필요한 것만 "해야 한다"로 정한다. Lab 4-1 표의 마지막 열은 그 문장들을 1절의 네 가지로 나눈 것이다.
 
 - **값을 정한 것.** vendorId는 OMG가 배정하고 (Sec. 8.3.3.1. 목록은 참고 자료), 규격 적합 구현은 배정받은 값을 써야 한다 (Sec. 9.4.4). 모든 참가자는 멀티캐스트 239.255.0.1 (포트는 도메인 번호와 기본 매개변수로 정해지며 도메인 0이면 7400)로 공지를 보내고 들어야 한다 (Sec. 9.6.2.4). 내장 엔드포인트의 entityId와 사용자 entityId의 마지막 바이트도 규격이 정한다 (chapter3).
-- **기본값만 준 것.** 포트 공식의 매개변수 (PB 7400 등)는 기본값을 써야 별도 설정 없이 서로 찾을 수 있고, 미리 설정한 공지 대상도 이 기본 포트를 쓴다 (Sec. 9.6.2.3, 8.5.3.4). 구현은 이 매개변수를 사용자가 바꿀 수 있게 해야 하고, 기본과 다른 유니캐스트 포트는 로케이터로 알린다 (Sec. 9.6.2.1, 9.6.2.2). 그래서 Cyclone처럼 임의 포트만 쓰면 멀티캐스트 없이 상대의 기본 포트로 찾는 방식으로는 찾을 수 없다. SPDP 공지 주기의 기본값은 30초이고 (Sec. 9.6.2.4), 주기적인 동작과 늦춰도 되는 응답의 시간은 사용자가 조정할 수 있어야 한다 (Sec. 8.4.2.1). lease 기간은 정한 값도 기본값도 없다. 공지에 실어 알리고, 공지 주기를 lease보다 짧게 잡도록 권하며 (Sec. 8.5.3.1, should), 공지에 값이 없으면 받는 쪽이 100초로 본다 (표 9.19).
+- **기본값만 준 것.** 포트는 기본 공식이 있고 (Sec. 9.6.2.3), 구현은 그 매개변수를 사용자가 바꿀 수 있게 해야 하며, 기본과 다른 유니캐스트 포트는 로케이터로 알린다 (Sec. 9.6.2.1, 9.6.2.2). 임의 포트를 쓰는 Cyclone이 멀티캐스트 없이도 찾아지는지는 chapter8에서 본다. SPDP 공지 주기의 기본값은 30초이고 (Sec. 9.6.2.4), 주기적인 동작과 늦춰도 되는 응답의 시간은 사용자가 조정할 수 있어야 한다 (Sec. 8.4.2.1). lease 기간은 정한 값도 기본값도 없다. 공지에 실어 알리고, 공지 주기를 lease보다 짧게 잡도록 권하며 (Sec. 8.5.3.1, should), 공지에 값이 없으면 받는 쪽이 100초로 본다 (표 9.19).
 - **비워 둔 영역.** 벤더는 규격이 마련한 확장 방법으로 메시지를 확장할 수 있고, 그것은 상호운용을 해치지 않는다 (Sec. 8.4.2.1, 8.6). 서브메시지 ID 0x80-0xff와 ParameterId 0x8000-0xffff, 로케이터 종류 0x03-0x01ffffff가 그 자리다 (Sec. 9.4.5.1.1, 9.4.2.11, 9.3.2.4). 해석은 보낸 쪽 vendorId에 따른다. 모르는 vendorId의 서브메시지는 건너뛰고 (Sec. 8.3.4.1), 모르는 ParameterId는 must-understand 비트 (0x4000)가 꺼져 있으면 건너뛰며, 켜져 있으면 그 서브메시지를 버린다 (표 9.6). 이 캡처의 0x8000, 0x8007, 0x8019는 모두 그 비트가 꺼져 있다.
 - **규격에 없는 것.** HEARTBEAT를 DATA에 붙일지는 안내일 뿐이고 (Sec. 8.4.15.4), 주기적 HEARTBEAT 자체만 의무다 (Sec. 8.4.2.2). INFO_DST는 뒤의 서브메시지를 해석하는 데 필요하면 앞에 두어야 하고 (Sec. 8.4.2.1), 없으면 목적지는 받는 참가자 자신이다 (Sec. 8.3.4 표 8.17). 그 밖에 붙일지는 구현이 고른다. IP TTL은 규격에 언급이 없다.
 
-프로토콜 버전은 따로 볼 만하다. 받는 쪽은 버전에 관해서는 헤더의 major가 자기가 지원하는 것보다 클 때만 메시지를 무효로 본다 (Sec. 8.3.6.3). 그래서 2.2를 쓰는 Fast DDS와 2.5를 쓰는 Cyclone이 통신한다. minor 차이로 생기는 모르는 서브메시지, 플래그, ParameterId는 건너뛰는 규칙이 흡수한다 (Sec. 8.3.4.1, 표 9.6). 다만 2.4 미만을 알리는 상대의 메시지에는 받는 쪽이 vendorId와 버전을 보고 달리 해석해야 하는 항목이 있다 (Sec. 9.3.2.3). chapter7에서 본다.
+프로토콜 버전은 따로 볼 만하다. 받는 쪽은 버전에 관해서는 헤더의 major가 자기가 지원하는 것보다 클 때만 메시지를 무효로 본다 (Sec. 8.3.6.3). 그래서 2.2를 쓰는 Fast DDS와 2.5를 쓰는 Cyclone이 통신한다. minor 차이로 생기는 모르는 서브메시지, 플래그, ParameterId는 건너뛰는 규칙이 흡수한다 (Sec. 8.3.4.1, 표 9.6). 버전에 따라 해석이 달라지는 항목은 chapter7에서 본다.
 
 mdds에 적용하면 이렇다. 값을 정한 것은 그대로 따른다. 기본값만 준 것은 기본값으로 시작하되 설정으로 바꿀 수 있게 만든다. 비워 둔 영역과 규격에 없는 것은 어느 벤더도 흉내 내지 않아도 되지만, 받는 쪽은 두 벤더가 보내는 모든 형태를 처리해야 한다. HEARTBEAT가 붙은 DATA와 따로 오는 HEARTBEAT, INFO_DST가 있는 메시지와 없는 메시지, 모르는 서브메시지와 PID가 그것이다.
 
