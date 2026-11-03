@@ -1,6 +1,6 @@
 # 조사 노트: Docker로 Cyclone DDS / Fast DDS 실행
 
-[roadmap](../roadmap.md) | [chapter 1 노트](../notes/01-environment.md)
+[roadmap](../roadmap.md) | [chapter1 노트](../notes/01-environment.md)
 
 - 조사일: 2026-10-28
 - 환경 전제 (조사 당시): Apple Silicon Mac (arm64) + Docker Desktop. 현재 실행 환경은 [environment/docker-network.md](../../docs/environment/docker-network.md)를 본다. GUI 없이 CLI 도구만 사용
@@ -15,7 +15,7 @@
 - 사용법 (README 2026-10-28 확인): -P / -S (발행 / 구독), -d (도메인), -t (토픽), -c (색), -p (파티션), -r / -b (reliable / best-effort), -D [v|l|t|p] (durability), -k (history depth), -x [1|2] (XCDR / XCDR2), -z (도형 크기 값, 페이로드 크기 아님), `--additional-payload-size <bytes>` (샘플에 바이트 추가, 큰 샘플용), `--final-instance-state [u|d]` (종료 전 unregister / dispose), `--num-iterations <n>`, `--write-period <ms>` (기본 33), `--periodic-announcement <ms>`
 - 소스 `srcCxx/shape_main.cxx`는 SIGINT 핸들러만 설치한다. SIGTERM으로는 정리 없이 죽는다 (1회차 검토에서 확인).
 - 실행 파일 이름이 15자를 넘어 `pkill shape_main`이 걸리지 않는다. 15자 이하의 짧은 이름으로 복사하고 `pkill -x`를 쓴다.
-- Fast DDS 실행 파일 의존성: libstdc++ (GLIBCXX_3.4.30), zlib, bzip2, glibc 2.34 이상. Ubuntu 22.04에서 충족된다 (실행은 chapter 1 환경에서 확인).
+- Fast DDS 실행 파일 의존성: libstdc++ (GLIBCXX_3.4.30), zlib, bzip2, glibc 2.34 이상. Ubuntu 22.04에서 충족된다 (실행은 chapter1 환경에서 확인).
 - "eclipse_cyclone-11.0.1"의 버전 번호 의미는 확인하지 못했다 [추정].
 
 ## 2. Cyclone DDS
@@ -54,6 +54,6 @@
   - 버전: Cyclone 11.0.1, Fast DDS v3.6.1 (Fast-CDR v2.3.5, foonathan_memory_vendor v1.4.1, Fast-DDS-Gen v4.3.0. Fast DDS의 `fastdds.repos` 기준)
 0. 실행 호스트는 별도 x86_64 Linux 머신 + Docker Engine이다 (빌드 부하 때문). Mac은 편집, 커밋, Wireshark 용도다. 같은 Dockerfile이 Mac (arm64)에서도 네이티브로 빌드된다.
 1. 모든 시나리오를 shape_main 이미지 하나 (Cyclone, Fast DDS 실행 파일 두 개)로 만든다. 큰 샘플은 `--additional-payload-size`로 만들므로 `ddsperf`와 arm64 이미지는 필요 없다.
-2. ROS 2 (chapter 12): `ros:jazzy-ros-base` + Cyclone RMW
+2. ROS 2 (chapter12): `ros:jazzy-ros-base` + Cyclone RMW
 3. 가장 먼저 확인할 것: 컨테이너 간 멀티캐스트, shape_main 실행에 필요한 라이브러리
 4. 상세 계획: [notes/01-environment.md](../notes/01-environment.md) ~ [notes/04-vendor-differences.md](../notes/04-vendor-differences.md)

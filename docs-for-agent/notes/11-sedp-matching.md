@@ -6,14 +6,14 @@
 
 ## 읽을 규격
 - RTPS 2.5: 8.5.4 ~ 8.5.5, 9.6.3 (DiscoveredWriterData / ReaderData PID)
-- DDS 1.4 Sec. 2.2.3 RxO 규칙과 PARTITION은 chapter 5에서 읽고 `mdds_rtps::qos`로 구현했다 (`check_rxo`, `partitions_match`). 여기서는 그것을 쓴다.
+- DDS 1.4 Sec. 2.2.3 RxO 규칙과 PARTITION은 chapter5에서 읽고 `mdds_rtps::qos`로 구현했다 (`check_rxo`, `partitions_match`). 여기서는 그것을 쓴다.
 
 ## 구현
 - publications / subscriptions (+topics) 내장 엔드포인트: transient-local 이력, 새 매칭 시 재전송
 - PID: ENDPOINT_GUID 0x5a, TOPIC_NAME 0x05, TYPE_NAME 0x07, RELIABILITY 0x1a, DURABILITY 0x1d ...
-- 매칭: 토픽/타입 이름, RxO, 파티션. 토픽 이름 / 타입 / 파티션 / RxO를 묶는 함수와 결과 타입 (어느 조건이 어긋났는지)은 여기서 만든다 (chapter 5는 `check_rxo`와 `partitions_match`만 둔다). 검사 순서는 규격이 정하지 않았고 두 벤더가 다르다: Cyclone (`ddsi_qos_match_mask_p`)은 파티션을 먼저 보고 어긋나면 RxO를 보고하지 않으며, Fast DDS (`EDP::valid_matching`)는 RxO를 먼저 모아 incompatible로 보고한 뒤 파티션을 본다. 또 Fast DDS는 PRESENTATION, LATENCY_BUDGET, DESTINATION_ORDER를 검사하지 않는다. 어느 쪽에 맞출지 여기서 정한다 ([노트 5](05-dcps-concepts.md#확인할-것)).
-- PID -> QoS 변환: `PublicationQos`와 `SubscriptionQos`는 필드가 같으므로 (chapter 5) 공통 필드의 파싱을 내부 struct나 macro로 한 번만 쓴다. 없는 PID는 각 타입의 `Default` (엔티티별 기본값, RTPS 2.5 Sec. 8.5.4.4). kind의 와이어 값 (BEST_EFFORT = 1, RELIABLE = 2)과 `qos::Duration` <-> 와이어 Duration_t 변환도 여기서.
-- 이 chapter의 사용자 API는 최소한으로 둔다. QoS는 chapter 5의 `PublicationQos` / `SubscriptionQos`를 그대로 받는다 (API 쪽 QoS 묶음은 chapter 14) (participant 생성, 토픽 하나의 writer / reader, 샘플 송수신). Square는 키가 있는 토픽이지만 이 chapter에서는 키를 페이로드에만 싣고 인스턴스 관리는 하지 않는다 (chapter 13). 정식 API는 chapter 14에서 만든다.
+- 매칭: 토픽/타입 이름, RxO, 파티션. 토픽 이름 / 타입 / 파티션 / RxO를 묶는 함수와 결과 타입 (어느 조건이 어긋났는지)은 여기서 만든다 (chapter5는 `check_rxo`와 `partitions_match`만 둔다). 검사 순서는 규격이 정하지 않았고 두 벤더가 다르다: Cyclone (`ddsi_qos_match_mask_p`)은 파티션을 먼저 보고 어긋나면 RxO를 보고하지 않으며, Fast DDS (`EDP::valid_matching`)는 RxO를 먼저 모아 incompatible로 보고한 뒤 파티션을 본다. 또 Fast DDS는 PRESENTATION, LATENCY_BUDGET, DESTINATION_ORDER를 검사하지 않는다. 어느 쪽에 맞출지 여기서 정한다 ([노트 5](05-dcps-concepts.md#확인할-것)).
+- PID -> QoS 변환: `PublicationQos`와 `SubscriptionQos`는 필드가 같으므로 (chapter5) 공통 필드의 파싱을 내부 struct나 macro로 한 번만 쓴다. 없는 PID는 각 타입의 `Default` (엔티티별 기본값, RTPS 2.5 Sec. 8.5.4.4). kind의 와이어 값 (BEST_EFFORT = 1, RELIABLE = 2)과 `qos::Duration` <-> 와이어 Duration_t 변환도 여기서.
+- 이 chapter의 사용자 API는 최소한으로 둔다. QoS는 chapter5의 `PublicationQos` / `SubscriptionQos`를 그대로 받는다 (API 쪽 QoS 묶음은 chapter14) (participant 생성, 토픽 하나의 writer / reader, 샘플 송수신). Square는 키가 있는 토픽이지만 이 chapter에서는 키를 페이로드에만 싣고 인스턴스 관리는 하지 않는다 (chapter13). 정식 API는 chapter14에서 만든다.
 - 모르는 벤더 PID와 XTypes PID (예: PID_TYPE_INFORMATION 0x75)를 안전하게 건너뛴다.
 
 ## 확인할 것

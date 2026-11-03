@@ -83,6 +83,11 @@ const BANNED: { pattern: RegExp; message: string; scope: (rel: string) => boolea
     scope: (rel) => rel.startsWith("book/"),
   },
   {
+    pattern: /chapter \d/,
+    message: 'chapter 번호는 띄우지 않는다: "chapter3", "chapter0 3.3" (markdown.md chapter 참조)',
+    scope: () => true,
+  },
+  {
     pattern: /\/Users\/|~\/work\//,
     message: '특정 OS나 개인의 경로 대신 "프로젝트 디렉터리"',
     scope: (rel) => rel.startsWith("book/"),
@@ -190,7 +195,7 @@ function checkReferences(lines: string[], report: Report): void {
 /** 용어 정리는 자기 완결적이다: 책 본문과 저자 문서를 가리키지 않는다 (book.md 용어 정리). */
 function checkGlossary(lines: string[], report: Report): void {
   lines.forEach((line, i) => {
-    if (/docs-for-agent|\]\(\d\d-|chapter \d/.test(line)) {
+    if (/docs-for-agent|\]\(\d\d-|chapter ?\d/.test(line)) {
       report.errors.push({
         line: i + 1,
         message: "용어 정리에서 chapter나 저자 문서를 가리킨다. 규격만 인용한다",

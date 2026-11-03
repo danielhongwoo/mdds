@@ -1,6 +1,6 @@
 # 조사 노트: DDS 디스커버리의 비용과 대안
 
-[roadmap](../roadmap.md) | 사용처: [chapter 0 노트](../notes/00-introduction.md), 이후 [chapter 9](../notes/09-spdp.md), [chapter 11](../notes/11-sedp-matching.md) | 함께 보기: [middleware-comparison.md](middleware-comparison.md)
+[roadmap](../roadmap.md) | 사용처: [chapter0 노트](../notes/00-introduction.md), 이후 [chapter9](../notes/09-spdp.md), [chapter11](../notes/11-sedp-matching.md) | 함께 보기: [middleware-comparison.md](middleware-comparison.md)
 
 확인일: 2026-10-30. 표기는 [middleware-comparison.md](middleware-comparison.md)와 같다: [확인] / [추정] / [벤더 주장] / [3rd] / (재확인). 여기에 [추론]을 더한다: 규격의 동작에서 저자가 이끌어 낸 것으로, 출처가 아니라 논리가 근거다.
 
@@ -42,7 +42,7 @@
 | xcdr2 | 58,944 | 42 / 20,796 | 12 / 2,352 | 17 / 2,170 | 199 / 32,978 | 39.3% |
 
 - 바이트의 대부분은 SPDP다 (SPDP 한 패킷이 462~550 bytes로 사용자 DATA보다 크다). SEDP는 endpoint가 2개뿐이라 작다. 3절에 따르면 참가자와 endpoint가 늘수록 SEDP 몫이 커진다.
-- large-sample은 사용자 데이터가 커서 비중이 작다. 비중은 데이터 크기와 실행 시간에 크게 좌우되므로, chapter 3에서 쓸 때도 "작은 시스템에서도 디스커버리가 눈에 띄는 양"이라는 정도로 쓴다.
+- large-sample은 사용자 데이터가 커서 비중이 작다. 비중은 데이터 크기와 실행 시간에 크게 좌우되므로, chapter3에서 쓸 때도 "작은 시스템에서도 디스커버리가 눈에 띄는 양"이라는 정도로 쓴다.
 - reliable-cyclone-pub의 72프레임 (SPDP 42 + SEDP 24 + WLP 6)은 캡처 README의 "디스커버리 72개"와 같다.
 - 다시 세는 명령 (캡처 디렉터리에서):
   ```
@@ -72,11 +72,11 @@
 - OMG 이슈 DDSIRTP26-37 "Specify how a discovery service could be used to bootstrap discovery": RTI가 2023-06-07에 올렸고 상태는 Open이다. 멀티캐스트가 없는 환경을 주로 겨냥하며, 디스커버리 서비스의 동작과 상호운용을 규격에 적자는 내용이다. (재확인) https://issues.omg.org/issues/DDSIRTP26-37
 - 따라서 지금 5절의 대안은 벤더마다 다르고 서로 호환되지 않는다. 표준 SPDP / SEDP만이 벤더 사이의 공통분모다.
 
-## 7. chapter 0에 쓸 이야기
+## 7. chapter0에 쓸 이야기
 - 브로커 없이 서로를 찾는 것이 DDS의 장점 (단일 장애점 없음, 아무 순서로나 참여)이다.
 - 그 대가로 모든 참가자가 모든 참가자에게 알려야 하고, 규격도 소~중규모용이라고 인정한다.
-- 주기 공지 때문에 작은 시스템에서도 디스커버리가 트래픽의 적지 않은 몫이라는 것은 규격의 동작으로 설명한다. chapter 0을 읽는 독자는 아직 실험 환경이 없어 4절의 수치를 언급할 상황이 아니다. 실험 방법은 chapter 1 ~ 3에서 소개하고, 수치는 chapter 3에서 독자가 직접 본다.
-- 현장은 중앙 서버, 정적 설정, 범위 제한, 또는 다른 미들웨어 (Zenoh)로 대응하고, 이는 표준 밖이다. 이 책은 표준 SPDP / SEDP를 직접 구현하면서 (chapter 9, 11) 그 비용이 어디서 오는지 본다.
+- 주기 공지 때문에 작은 시스템에서도 디스커버리가 트래픽의 적지 않은 몫이라는 것은 규격의 동작으로 설명한다. chapter0을 읽는 독자는 아직 실험 환경이 없어 4절의 수치를 언급할 상황이 아니다. 실험 방법은 chapter1 ~ 3에서 소개하고, 수치는 chapter3에서 독자가 직접 본다.
+- 현장은 중앙 서버, 정적 설정, 범위 제한, 또는 다른 미들웨어 (Zenoh)로 대응하고, 이는 표준 밖이다. 이 책은 표준 SPDP / SEDP를 직접 구현하면서 (chapter9, 11) 그 비용이 어디서 오는지 본다.
 
 ## 8. 확인하지 못한 것
 - 참가자 수를 바꿔 가며 디스커버리 트래픽을 잰 독립 측정 수치. 찾은 논문 (Park 2012, DGIST "Discovery Storm", arXiv 2608.02242 등)은 본문을 읽지 못했다. 이 저장소에서 참가자 수를 늘려 직접 재는 시나리오를 더하는 것도 방법이다.

@@ -1,4 +1,4 @@
-# 저자 노트: UDP 멀티캐스트 밖으로, TCP와 WAN 전송 (chapter 20)
+# 저자 노트: UDP 멀티캐스트 밖으로, TCP와 WAN 전송 (chapter20)
 
 상태: 대기
 
@@ -16,10 +16,10 @@ RTPS 규격이 정한 전송은 UDP/IP뿐이다 (RTPS 2.5 Sec. 9). 멀티캐스�
 - NAT와 conntrack이 디스커버리에 주는 영향. [research/discovery-network-state.md](../research/discovery-network-state.md)의 conntrack 내용을 여기서 쓴다
 
 하지 않는 것
-- 중앙 디스커버리 서버 (chapter 19). 다만 WAN 구성에서 함께 쓰는 경우는 그 chapter를 링크한다
-- 다른 네트워크를 중계로 잇는 방식 (chapter 21)
-- 공유 메모리 전송 (chapter 22 후보)
-- DDS-Security와 TLS의 관계 상세 (chapter 18)
+- 중앙 디스커버리 서버 (chapter19). 다만 WAN 구성에서 함께 쓰는 경우는 그 chapter를 링크한다
+- 다른 네트워크를 중계로 잇는 방식 (chapter21)
+- 공유 메모리 전송 (chapter22 후보)
+- DDS-Security와 TLS의 관계 상세 (chapter18)
 
 ## 읽을 규격과 문서
 - RTPS 2.5 Sec. 9.6 (UDP/IP PSM), Sec. 9.3 Locator_t의 kind 값. TCP kind가 예약되어 있는지

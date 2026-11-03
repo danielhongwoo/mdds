@@ -2,7 +2,7 @@
 
 [roadmap](../../docs-for-agent/roadmap.md) | 사용법: [docker/README.md](../../docker/README.md) | 이미지 빌드: [vendor-build.md](vendor-build.md)
 
-Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환경의 설계와 원리를 정리한다. chapter 1에서 만들었고, 이후 캡처를 더 만들 때 (chapter 7, chapter 13), mdds를 세 번째 참가자로 붙여 상호운용을 시험할 때 (chapter 9, chapter 11, chapter 14 이후) 계속 쓴다. 명령어 위주의 사용법은 `docker/README.md`에 있다.
+Cyclone DDS와 Fast DDS를 컨테이너로 띄우고 서로 통신시키는 환경의 설계와 원리를 정리한다. chapter1에서 만들었고, 이후 캡처를 더 만들 때 (chapter7, chapter13), mdds를 세 번째 참가자로 붙여 상호운용을 시험할 때 (chapter9, chapter11, chapter14 이후) 계속 쓴다. 명령어 위주의 사용법은 `docker/README.md`에 있다.
 
 ## 실행 호스트: Mac (Docker Desktop)
 
@@ -47,7 +47,7 @@ flowchart LR
 - 호스트에서 bridge를 직접 캡처할 수 없다 (VM 안에 있다). 캡처는 항상 컨테이너 안 tcpdump로 한다.
 
 ### 선택: 별도 x86_64 Linux 머신
-Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그대로다. 2026-11-03 Ubuntu 24.04 (x86_64, 커널 7.0.0, Docker Engine 29.1.3, compose 2.40.3)에서 chapter 1-5의 lab을 같은 파일로 실행해 확인했다. bridge `dds-net`의 `multicast_snooping`, `multicast_querier`도 1, 0으로 같았다. 다른 점만 적는다.
+Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그대로다. 2026-11-03 Ubuntu 24.04 (x86_64, 커널 7.0.0, Docker Engine 29.1.3, compose 2.40.3)에서 chapter1-5의 lab을 같은 파일로 실행해 확인했다. bridge `dds-net`의 `multicast_snooping`, `multicast_querier`도 1, 0으로 같았다. 다른 점만 적는다.
 - Docker Engine과 compose 플러그인을 설치하고 (`https://docs.docker.com/engine/install/ubuntu/`), 사용자를 `docker` 그룹에 넣는다. 저장소는 원격 git에서 clone하거나 Mac에서 `rsync -a`로 보낸다.
 - ssh로 들어가 `~/work/mdds/docker`에서 같은 명령을 친다. 캡처는 머신에서 커밋하거나 `rsync -av <머신>:~/work/mdds/captures/ captures/`로 Mac에 가져온다. 한 시나리오는 한 곳에서만 커밋한다.
 - pcap 파일은 머신에서 root 소유가 된다. 디렉터리가 자기 소유이므로 `rm -f`로 지울 수 있다 (`sudo` 불필요).
@@ -64,8 +64,8 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 | gateway | 172.28.0.1 | VM 안. DDS 참가자 아님 |
 | `cyclone` | 172.28.0.10 | 유니캐스트 포트는 임의 (아래 참고) |
 | `fastdds` | 172.28.0.11 | 유니캐스트 7410 / 7411 |
-| 벤더 컨테이너 추가분 | 172.28.0.12 - .19 | 예: ROS 2 이미지 (chapter 12) |
-| mdds 컨테이너 | 172.28.0.20 부터 | chapter 9에서 처음 붙인다 (예정) |
+| 벤더 컨테이너 추가분 | 172.28.0.12 - .19 | 예: ROS 2 이미지 (chapter12) |
+| mdds 컨테이너 | 172.28.0.20 부터 | chapter9에서 처음 붙인다 (예정) |
 | 멀티캐스트 | 239.255.0.1:7400 | SPDP (도메인 0). bridge 안에서만 |
 
 캡처를 읽을 때 주소만 보고 어느 구현인지 알 수 있게 고정한다. 컨테이너를 다시 만들어도 주소가 같아서 캡처끼리 비교하기 쉽다.
@@ -104,9 +104,9 @@ Mac 대신 Linux 머신의 Docker Engine을 써도 Dockerfile과 compose는 그�
 - 컨테이너는 이미지의 `CMD ["sleep", "infinity"]`로 떠 있고, 실제 명령은 `docker compose exec`로 실행한다. 그래야 **캡처를 먼저 켜고 나서 DDS를 시작**할 수 있어 첫 IGMP 가입과 첫 SPDP 패킷부터 잡힌다. 발행자 프로세스만 죽이고 컨테이너는 살려 둘 수도 있다.
 
 ## 멀티캐스트가 컨테이너 사이를 넘어가는 원리
-원리와 캡처 읽는 법은 [chapter 2](../../book/02-multicast/README.md)에 있다. 여기에는 이 환경의 사실만 둔다.
+원리와 캡처 읽는 법은 [chapter2](../../book/02-multicast/README.md)에 있다. 여기에는 이 환경의 사실만 둔다.
 - 사용자 정의 bridge 네트워크는 Docker 호스트 커널 (Mac이면 Docker Desktop VM 안)의 Linux bridge다. 각 컨테이너의 `eth0`은 veth 쌍으로 이 bridge의 포트에 꽂혀 있다.
-- **이 환경의 bridge는 가입과 무관하게 멀티캐스트를 모든 스위치 포트로 flooding한다.** `dds-net`의 bridge는 `multicast_snooping=1`, `multicast_querier=0`이다 (2026-10-31, Docker Desktop Mac arm64). Linux bridge는 querier가 없으면 가입 기록을 전달에 쓰지 않는다. 그래서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 원리는 [chapter 2의 3.3절](../../book/02-multicast/README.md#33-스위치가-멀티캐스트를-전달하는-방식).
+- **이 환경의 bridge는 가입과 무관하게 멀티캐스트를 모든 스위치 포트로 flooding한다.** `dds-net`의 bridge는 `multicast_snooping=1`, `multicast_querier=0`이다 (2026-10-31, Docker Desktop Mac arm64). Linux bridge는 querier가 없으면 가입 기록을 전달에 쓰지 않는다. 그래서 전달 여부는 bridge가 아니라 받는 쪽 커널의 가입 여부로 갈린다. 원리는 [chapter2 3.3](../../book/02-multicast/README.md#33-스위치가-멀티캐스트를-전달하는-방식).
   - 읽는 명령 (`docker/`에서). 첫 줄은 bridge 이름 (`br-` 뒤에 네트워크 id 앞 12자)을 구한다. bridge의 설정 파일은 Docker 호스트 (Mac이면 Docker Desktop VM)에 있으므로, `--network host` 컨테이너로 읽는다. Linux 호스트에서는 컨테이너 없이 `cat`으로 읽어도 된다.
     ```bash
     BR=br-$(docker network inspect dds-net -f '{{.Id}}' | cut -c1-12)
@@ -145,7 +145,7 @@ docker compose exec fastdds ip maddr show eth0          # 239.255.0.1 이 보여
 ```
 터미널 1에 `26 bytes from 172.28.0.10:<포트>: hello 1/3 from 172.28.0.10`이 세 번 찍히면 bridge가 멀티캐스트를 전달하는 것이다.
 
-캡처까지 함께 확인하는 절차는 [chapter 2 Lab 2-1](../../book/02-multicast/README.md#21-lab-2-1-멀티캐스트-보내고-받기)에 있다. 참고 캡처는 `docker/capture-mcast-check.ts join` (또는 `nojoin`)으로 다시 만든다.
+캡처까지 함께 확인하는 절차는 [chapter2 Lab 2-1](../../book/02-multicast/README.md#21-lab-2-1-멀티캐스트-보내고-받기)에 있다. 참고 캡처는 `docker/capture-mcast-check.ts join` (또는 `nojoin`)으로 다시 만든다.
 
 ### 도구를 벤더 컨테이너 밖에서 돌리는 방법
 `mcast-check.sh`는 `docker run --network container:<벤더 컨테이너 id>`로 도구 컨테이너를 띄운다. 도구 컨테이너는 따로 있지만 벤더 컨테이너의 네트워크 네임스페이스를 빌려 쓰므로 같은 `eth0`, 같은 IP에서 돈다 (위 "검토한 다른 방식"의 네임스페이스 공유).

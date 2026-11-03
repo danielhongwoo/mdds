@@ -1,11 +1,11 @@
-# 저자 노트: 들어가며 (chapter 0, 구현 없음)
+# 저자 노트: 들어가며 (chapter0, 구현 없음)
 
 상태: 완료
 
 [roadmap](../roadmap.md) | chapter: 0 ([목차](../../book/README.md#목차))
 
 ## 목표
-DDS를 처음 보는 독자가 맥락을 잡고 chapter 1로 넘어가게 한다. 세부 사항을 외우게 하는 것이 아니라 다음을 이해하게 한다.
+DDS를 처음 보는 독자가 맥락을 잡고 chapter1로 넘어가게 한다. 세부 사항을 외우게 하는 것이 아니라 다음을 이해하게 한다.
 - DDS가 어떤 문제를 푸는가, data-centric이 무엇인가 (그 일을 응용이 아니라 미들웨어가 한다)
 - 브로커 없이 서로를 찾는 디스커버리가 DDS의 핵심이자 비용이라는 것
 - 다른 기술과 비교해 DDS가 맞는 곳과 다른 선택이 나은 곳
@@ -21,9 +21,9 @@ DDS를 처음 보는 독자가 맥락을 잡고 chapter 1로 넘어가게 한다
 
 하지 않는 것
 - `book/README.md`의 내용 (누구를 위한 책인가, 이 책의 방식, 준비물)을 되풀이하지 않는다. 예외 두 가지: 객관성 원칙은 첫 문단에서 짧게 밝힌다 (이 chapter의 비교가 그 원칙을 가장 직접 보여 주므로). 대상 독자는 6절 끝에서 한 문단으로 밝힌다 (왜 직접 만드는가에 이어, 누가 그 길을 따라올지).
-- 엔티티 계층, QoS 정책 전체와 매칭 규칙 (chapter 5, 11), OWNERSHIP의 자세한 규칙 (chapter 14), 와이어 형식 (chapter 7 이후)
-- 디스커버리 비용을 줄이는 벤더 기능의 동작 (chapter 19 ~ 21). 여기서는 이름과 대가만
-- 코드와 lab, 캡처의 수치. 독자는 아직 실험 환경이 없고, 캡처는 chapter 3에서 처음 만든다.
+- 엔티티 계층, QoS 정책 전체와 매칭 규칙 (chapter5, 11), OWNERSHIP의 자세한 규칙 (chapter14), 와이어 형식 (chapter7 이후)
+- 디스커버리 비용을 줄이는 벤더 기능의 동작 (chapter19 ~ 21). 여기서는 이름과 대가만
+- 코드와 lab, 캡처의 수치. 독자는 아직 실험 환경이 없고, 캡처는 chapter3에서 처음 만든다.
 
 ## 틀
 기능 chapter의 틀을 쓰지 않는다 ([book.md](../conventions/book.md#chapter)). 소절에 번호를 붙인다 (2.1, 2.2 ...).
@@ -86,7 +86,7 @@ DDS를 처음 보는 독자가 맥락을 잡고 chapter 1로 넘어가게 한다
 - 스스로 확인하기의 질문을 이 chapter만 읽고 풀 수 있다.
 
 ## 진행 기록
-- 2026-10-30: chapter 0은 기능 chapter 틀을 쓰지 않고 위 "틀"의 절을 쓴다 -> [book.md](../conventions/book.md#chapter)
+- 2026-10-30: chapter0은 기능 chapter 틀을 쓰지 않고 위 "틀"의 절을 쓴다 -> [book.md](../conventions/book.md#chapter)
 - 2026-10-30: 비교 대상과 기준, 분야 이름을 "MCU"로 좁힘 -> [비교 대상과 기준](#비교-대상과-기준)
 - 2026-10-30: 비교 조사와 디스커버리 비용 조사를 마침 -> [middleware-comparison.md](../research/middleware-comparison.md), [discovery-scaling.md](../research/discovery-scaling.md)
 - 2026-10-30: 본문 초안 작성, 저자 리뷰로 구성을 다시 잡음 (OWNERSHIP을 4.2로, 캡처 수치 제외, 비교 그림, 스스로 확인하기, 소절 번호)

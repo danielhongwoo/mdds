@@ -10,8 +10,8 @@
 - DDS-RPC
 - 공유 메모리 전송
 
-규모를 키우는 디스커버리 (중앙 서버, 정적 디스커버리)는 chapter 19 ([19-discovery-extensions](19-discovery-extensions.md))로 옮겼다.
+규모를 키우는 디스커버리 (중앙 서버, 정적 디스커버리)는 chapter19 ([19-discovery-extensions](19-discovery-extensions.md))로 옮겼다.
 
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")
-- 2026-10-30: chapter 19 -> 22로 번호를 바꿈 (벤더 확장 chapter 19-21이 앞에 들어옴)
+- 2026-10-30: chapter19 -> 22로 번호를 바꿈 (벤더 확장 chapter19-21이 앞에 들어옴)

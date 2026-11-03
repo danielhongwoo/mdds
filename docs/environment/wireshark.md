@@ -2,7 +2,7 @@
 
 [roadmap](../../docs-for-agent/roadmap.md) | 캡처 파일: [captures/cyclone-fastdds/README.md](../../captures/cyclone-fastdds/README.md) | 네트워크: [docker-network.md](docker-network.md)
 
-이 책의 캡처 (`captures/`)를 Wireshark로 열 때 알아 둘 표시 방식과 자주 쓰는 조작을 정리한다. chapter 3에서 처음 쓰고, 캡처를 읽는 모든 chapter가 같은 방법을 쓴다. 화면과 문구는 Wireshark 4.6.9 기준이고, 버전이 다르면 Info 열의 문구가 조금 다를 수 있다.
+이 책의 캡처 (`captures/`)를 Wireshark로 열 때 알아 둘 표시 방식과 자주 쓰는 조작을 정리한다. chapter3에서 처음 쓰고, 캡처를 읽는 모든 chapter가 같은 방법을 쓴다. 화면과 문구는 Wireshark 4.6.9 기준이고, 버전이 다르면 Info 열의 문구가 조금 다를 수 있다.
 
 ## 패킷 목록: Info 열은 서브메시지 목록이다
 
@@ -10,7 +10,7 @@ RTPS 메시지 하나는 헤더 뒤에 서브메시지 여러 개가 이어진 �
 
 ![Wireshark 패킷 목록. fastdds (172.28.0.11)의 DATA(p)와 IGMP Join이 이어지고, 약 3.1초부터 cyclone (172.28.0.10)과 주고받는 프레임이 나온다](wireshark-packet-list.png)
 
-서브메시지의 역할은 다음과 같다. 번호와 플래그의 뜻은 chapter 7과 10에서 다룬다.
+서브메시지의 역할은 다음과 같다. 번호와 플래그의 뜻은 chapter7과 10에서 다룬다.
 
 | 서브메시지 | 보내는 쪽 | 역할 |
 |---|---|---|

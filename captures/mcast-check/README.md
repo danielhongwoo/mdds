@@ -1,6 +1,6 @@
 # mcast-check 캡처
 
-DDS 없이 `mcast-check`로 두 벤더 컨테이너 사이에 멀티캐스트를 주고받은 참고 캡처다. chapter 2의 lab에서 독자가 직접 만든 캡처와 비교한다.
+DDS 없이 `mcast-check`로 두 벤더 컨테이너 사이에 멀티캐스트를 주고받은 참고 캡처다. chapter2의 lab에서 독자가 직접 만든 캡처와 비교한다.
 
 ## 공통 조건
 - 2026-11-02, Docker Desktop (Mac arm64). bridge `dds-net`: `multicast_snooping=1`, `multicast_querier=0`.
@@ -10,7 +10,7 @@ DDS 없이 `mcast-check`로 두 벤더 컨테이너 사이에 멀티캐스트를
 - 다시 만드는 명령 (`docker/`에서): `./capture-mcast-check.ts --force join`, `./capture-mcast-check.ts --force nojoin`
 
 ## 만든 순서
-`docker/capture-mcast-check.ts`가 아래 순서와 간격으로 명령을 실행한다. chapter 2 Lab 2-1의 절차 1-5를 정해진 간격으로 자동 실행하는 것과 같다. 시각은 스크립트가 첫 명령을 실행한 때를 0초로 한 대략의 값이다 (docker 명령 자체에 걸리는 시간은 빼었다). pcap의 시각은 첫 패킷을 0초로 하므로 이 표의 시각과 다르다.
+`docker/capture-mcast-check.ts`가 아래 순서와 간격으로 명령을 실행한다. chapter2 Lab 2-1의 절차 1-5를 정해진 간격으로 자동 실행하는 것과 같다. 시각은 스크립트가 첫 명령을 실행한 때를 0초로 한 대략의 값이다 (docker 명령 자체에 걸리는 시간은 빼었다). pcap의 시각은 첫 패킷을 0초로 하므로 이 표의 시각과 다르다.
 
 `join`
 | 시각 | 절차 (Lab 2-1) | 스크립트가 실행하는 명령 | 캡처에 남는 것 |
@@ -54,9 +54,9 @@ sequenceDiagram
 Wireshark 필터: `igmp or udp.port == 7400`. 목적지 MAC은 UDP가 `01:00:5e:7f:00:01`, IGMP가 `01:00:5e:00:00:16`이고, TTL은 모두 1이다.
 
 질문
-- DDS 참가자가 보내는 멀티캐스트 (SPDP)도 보낸 쪽 캡처에 두 개씩 보이는가 -> chapter 3
-- 벤더 DDS가 SPDP에 쓰는 TTL도 1인가 -> chapter 4
-- 같은 컨테이너에서 여러 참가자가 7400 포트를 함께 쓸 수 있는가 -> chapter 8
+- DDS 참가자가 보내는 멀티캐스트 (SPDP)도 보낸 쪽 캡처에 두 개씩 보이는가 -> chapter3
+- 벤더 DDS가 SPDP에 쓰는 TTL도 1인가 -> chapter4
+- 같은 컨테이너에서 여러 참가자가 7400 포트를 함께 쓸 수 있는가 -> chapter8
 
 ## nojoin
 흐름 (`nojoin.fastdds.pcap`, 3 프레임): UDP 3개. IGMP는 없다. fastdds는 그룹에 가입하지 않았지만 패킷이 `eth0`까지 왔다.
@@ -71,4 +71,4 @@ sequenceDiagram
 ```
 
 질문
-- 물리 스위치 (snooping과 querier가 있는 장비)에서도 가입자 없는 그룹이 모든 포트로 가는가 -> chapter 20
+- 물리 스위치 (snooping과 querier가 있는 장비)에서도 가입자 없는 그룹이 모든 포트로 가는가 -> chapter20

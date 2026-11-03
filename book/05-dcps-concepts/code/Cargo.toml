@@ -1,4 +1,4 @@
-# chapter 5가 끝난 시점의 코드 스냅샷. 루트 워크스페이스와 같은 구조이고 crate만 그 시점의 것이다.
+# chapter5가 끝난 시점의 코드 스냅샷. 루트 워크스페이스와 같은 구조이고 crate만 그 시점의 것이다.
 # 독자는 `cd book/05-dcps-concepts/code && cargo test --workspace`로 돌리고
 # `diff -r crates book/05-dcps-concepts/code/crates`로 자기 코드와 비교한다.
 [workspace]

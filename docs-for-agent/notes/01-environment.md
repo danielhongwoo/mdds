@@ -1,4 +1,4 @@
-# 저자 노트: 실습 환경 (chapter 1, 구현 없음)
+# 저자 노트: 실습 환경 (chapter1, 구현 없음)
 
 상태: 완료
 
@@ -18,9 +18,9 @@
 하지 않는 것
 - Rust 설치와 Rust 언어 설명. 독자가 Rust를 쓸 수 있다고 본다 ([book/README.md](../../book/README.md#누구를-위한-책인가)).
 - 버전 표, 빌드 문제 대응, 검토한 다른 네트워크 방식 같은 세부 사항을 본문에 옮기지 않는다. `docs/environment/`와 `docker/README.md`로 링크한다.
-- 멀티캐스트 동작 확인 (chapter 2), DDS 통신과 캡처 (chapter 3, 4)
-- mdds 코드 작성과 규격 정독 (chapter 5부터)
-- ROS 2 환경 (chapter 12)
+- 멀티캐스트 동작 확인 (chapter2), DDS 통신과 캡처 (chapter3, 4)
+- mdds 코드 작성과 규격 정독 (chapter5부터)
+- ROS 2 환경 (chapter12)
 - `ddsperf` 등 벤더 고유 도구. 모든 시나리오는 OMG `shape_main` 하나로 만든다.
 
 ## 산출물
@@ -45,7 +45,7 @@
 - 버린 근거: "가장 널리 쓰인다", "인지도가 가장 높다". 구현별 사용량의 독립 통계가 없다. GitHub 별 (2026-10-30)은 Fast DDS 2940, OpenDDS 1520, Cyclone DDS 1356으로 약한 지표일 뿐이다.
 
 ## 독자가 시작하는 곳
-**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`를 그대로 쓴다. `crates/`에는 저자의 코드 (마지막 chapter까지)가 들어 있으므로 독자는 그것을 고치지 않고, chapter 5부터 이전 chapter의 `code/` 스냅샷을 복사한 자기 작업 디렉터리 (`my-code/`, git이 무시)에서 코드를 쓰며 각 chapter의 `code/`와 비교한다 ([book.md "코드 스냅샷"](../conventions/book.md#코드-스냅샷)).
+**결정: 독자는 이 저장소를 clone해서 시작한다.** `docker/`, `captures/`를 그대로 쓴다. `crates/`에는 저자의 코드 (마지막 chapter까지)가 들어 있으므로 독자는 그것을 고치지 않고, chapter5부터 이전 chapter의 `code/` 스냅샷을 복사한 자기 작업 디렉터리 (`my-code/`, git이 무시)에서 코드를 쓰며 각 chapter의 `code/`와 비교한다 ([book.md "코드 스냅샷"](../conventions/book.md#코드-스냅샷)).
 - 왜: 실행 환경은 관찰 도구일 뿐 학습 대상이 아니다. 독자가 처음부터 만들게 하면 DDS와 관계없는 Docker와 Cargo 설정에 시간을 쓴다.
 - 버린 대안: 빈 디렉터리에서 워크스페이스와 Docker 환경을 직접 만들게 하기. 위 이유로 버림.
 - 1 본문은 워크스페이스와 crate를 다루지 않는다. 각 crate는 처음 코드를 쓰는 chapter에서 소개한다: 워크스페이스와 `mdds-cdr`는 6, `mdds-rtps`는 7, `mdds`와 I/O-free core로 나눈 이유는 08. 1에서 독자가 할 일이 없고 (빈 crate를 빌드해 볼 뿐), 역할을 미리 설명하면 쓸 때 다시 설명하게 된다.
@@ -130,5 +130,5 @@
 - 2026-10-30: 비교 대상 벤더를 고른 근거를 기록 -> [비교 대상 벤더](#비교-대상-벤더)
 - 2026-10-30: 본문 초안. lab 명령을 다시 돌려 출력을 맞추고, 캐시 없는 빌드 시간 (4분 50초)을 반영 -> [book/01-environment](../../book/01-environment/README.md)
 - 2026-10-30: 독자는 저장소를 clone해서 시작하고, 본문은 기능 chapter 틀 대신 위 "틀"을 쓴다 -> [독자가 시작하는 곳](#독자가-시작하는-곳), [틀](#틀)
-- 2026-11-03: Ubuntu 24.04 (x86_64)에서 chapter 0-5의 lab을 실행해 확인. Wireshark는 기본 패키지가 4.2.2라 PPA로 설치하도록 2.3절을 고침. root 소유 pcap은 `sudo` 없이 지울 수 있어 고침 -> [docker-network.md](../../docs/environment/docker-network.md#선택-별도-x86_64-linux-머신)
+- 2026-11-03: Ubuntu 24.04 (x86_64)에서 chapter0-5의 lab을 실행해 확인. Wireshark는 기본 패키지가 4.2.2라 PPA로 설치하도록 2.3절을 고침. root 소유 pcap은 `sudo` 없이 지울 수 있어 고침 -> [docker-network.md](../../docs/environment/docker-network.md#선택-별도-x86_64-linux-머신)
 - 2026-10-31: 3.1 dds-rtps 저장소 추가. 고정 커밋에 Rust shape_main (srcRs/, RustDDS/)도 있어 "구현은 두 개"였던 용어집 문장을 고침

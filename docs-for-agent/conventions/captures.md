@@ -18,7 +18,7 @@
 - 버린 대안: `fixtures`. 테스트 준비 코드 (pytest fixture, rstest `#[fixture]`)와 이름이 겹쳐 헷갈린다.
 
 **결정: 캡처는 저장소 루트의 `captures/`에 둔다.**
-- 왜: 테스트 코드가 아니라 기록한 관찰 자료다. 같은 캡처를 여러 lab과 chapter가 함께 쓴다 (`reliable-cyclone-pub`은 Lab 3-2, 4-1과 chapter 7, 10, 11의 정답 바이트 테스트).
+- 왜: 테스트 코드가 아니라 기록한 관찰 자료다. 같은 캡처를 여러 lab과 chapter가 함께 쓴다 (`reliable-cyclone-pub`은 Lab 3-2, 4-1과 chapter7, 10, 11의 정답 바이트 테스트).
 - 버린 대안: `tests/captures/`. 관찰 자료가 테스트 디렉터리 아래에 있어 어색하다. `labs/<lab 이름>/`. 캡처와 lab이 일대일이 아니라 어느 lab에 둘지 정할 수 없고, lab 구성이 바뀔 때마다 캡처와 테스트 경로를 옮겨야 한다.
 
 ## 크기
@@ -32,7 +32,7 @@
 - 시나리오마다:
   - 실행 명령 (양쪽).
   - 흐름: 프레임 묶음별 개수 (사용자 데이터, 디스커버리, IGMP 등)와 Mermaid 시퀀스 다이어그램 ([markdown.md](markdown.md#다이어그램)).
-  - 질문: 캡처에서 보이지만 답하지 않은 것. 줄 끝에 답을 찾을 chapter를 붙인다 (`-> chapter 10`).
+  - 질문: 캡처에서 보이지만 답하지 않은 것. 줄 끝에 답을 찾을 chapter를 붙인다 (`-> chapter10`).
   - 필요하면 요약 표 (seq 범위, 로그 샘플 수)와 Wireshark 필터.
 - 벤더 차이 표: 캡처에서 확인한 두 벤더의 다른 점.
 

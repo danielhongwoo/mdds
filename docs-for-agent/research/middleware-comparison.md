@@ -1,15 +1,15 @@
 # 조사 노트: DDS와 비슷한 미들웨어 비교
 
-[roadmap](../roadmap.md) | 사용처: [chapter 0 노트](../notes/00-introduction.md#비교-대상과-기준)
+[roadmap](../roadmap.md) | 사용처: [chapter0 노트](../notes/00-introduction.md#비교-대상과-기준)
 
-확인일: 2026-10-30. 대상과 기준을 고른 이유는 [chapter 0 노트 "비교 대상과 기준"](../notes/00-introduction.md#비교-대상과-기준)에 있다.
+확인일: 2026-10-30. 대상과 기준을 고른 이유는 [chapter0 노트 "비교 대상과 기준"](../notes/00-introduction.md#비교-대상과-기준)에 있다.
 
 표기
 - [확인]: 원문 (규격 PDF, 공식 문서, 공식 저장소)을 읽고 확인했다.
 - [추정]: 원문에서 찾지 못했거나 구조에서 추론했다. 교재에 쓰기 전에 다시 확인한다.
 - [벤더 주장]: 만든 회사나 재단의 주장이다. 교재에서는 주장으로 쓴다.
 - [3rd]: 제3자 출처다.
-- (재확인): 조사 결과를 저자가 원문으로 한 번 더 확인한 항목이다. chapter 0에서 근거로 쓸 것은 모두 재확인한다.
+- (재확인): 조사 결과를 저자가 원문으로 한 번 더 확인한 항목이다. chapter0에서 근거로 쓸 것은 모두 재확인한다.
 
 ---
 
@@ -43,7 +43,7 @@ DDS-XRCE는 "DDS for eXtremely Resource Constrained Environments"의 줄임으�
 ## 3. 분야별 기준
 
 ### MCU (펌웨어 / RTOS)
-Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범위는 [chapter 0 노트](../notes/00-introduction.md#비교-대상과-기준)에 있다.
+Linux가 도는 edge 기기 (Jetson Orin NX 등)는 포함하지 않는다. 범위는 [chapter0 노트](../notes/00-introduction.md#비교-대상과-기준)에 있다.
 
 
 DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구현 (MCU, 안전 인증)".
@@ -92,7 +92,7 @@ DDS 열은 규격이 아니라 구현의 성질이다. 근거는 6절 "DDS 구�
 | 큰 데이터 | 단편화 (DATA_FRAG), 구현별 공유 메모리 | 공유 메모리 없음 | 공유 메모리 (rmw_zenoh 기본 임계값 512 bytes) | 전용 기능 없음 | UDP 1400 bytes 권장, TCP 또는 SOME/IP-TP | 제약 기기용이라 해당 없음 |
 | 다수 로봇 / 무선 | 디스커버리 트래픽이 문제로 지적됨 (4절) | 해당 기능 없음 | 디스커버리 트래픽 감소를 설계 목표로 함 (4절) | broker 부하 | 차량 안 수십 ECU 가정 [추정] | Agent가 DDS 쪽을 맡음 |
 
-## 4. 디스커버리 관점 (chapter 0의 핵심 근거)
+## 4. 디스커버리 관점 (chapter0의 핵심 근거)
 - DDS는 내장 디스커버리를 규격으로 요구한다. 브로커와 이름 서버 없이, 새 참가자가 언제든 들어오고 나간다 (RTPS 2.5 Sec. 7.2). 다른 대상과 비교하면 이것이 DDS의 특징이다. ZeroMQ와 MQTT에는 디스커버리가 없고, SOME/IP-SD는 서비스 단위의 단순한 offer / find이며, XRCE는 Agent에게 맡긴다.
 - 대가: SPDP / SEDP는 모든 참가자가 모든 엔드포인트 정보를 교환한다. 규격도 이것이 소~중규모용이라고 적는다 (RTPS 2.5 Sec. 8.5.1).
 - Zenoh 블로그 (2021-03-23)는 DDS 디스커버리 트래픽이 n*(n-1)*(r+w)로 는다고 쓴다 (n: 참가자 수, r / w: 참가자당 reader / writer 수). (재확인) [벤더 주장]

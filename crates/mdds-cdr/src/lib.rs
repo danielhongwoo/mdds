@@ -1,1 +1,1 @@
-//! CDR / XCDR 직렬화 (chapter 6부터)
+//! CDR / XCDR 직렬화 (chapter6부터)

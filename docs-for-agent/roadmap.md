@@ -51,7 +51,7 @@
 | DDS-XTypes | 1.3 (2020), 1.4 beta 진행 중 | 타입 시스템, XCDR1/XCDR2, TypeObject | 후반 |
 | IDL | 4.2 (2018) | 타입 정의 언어, 어노테이션 | 후반 (초기엔 derive 매크로로 대체) |
 | DDS-Security | 1.2 (formal/25-03-06). 1.1은 2018 | 인증/접근제어/암호화 플러그인 | 선택 |
-| DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter 0) |
+| DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter0) |
 | DDS-RPC 1.0, DDS-XML 1.0, DDS-TSN, DDS-WEB | - | 부가 규격 | 선택 |
 
 - 로컬 사본: `omg-specs/` (git 제외). PDF와 `pdftotext -layout` 추출본이 있다.
@@ -69,7 +69,7 @@ IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 chapter (17)
 - 공식 Rust PSM은 없다. OMG에서 "IDL4 -> Rust 언어 매핑" RFP(mars/2026-3-6)가 나와 있다. 참여 의향서(LoI) 마감은 2026-06-18, 1차 제안서 마감은 2026-08-17이었다. **아직 채택된 표준이 아니다.**
   - RFP는 "이런 표준을 만들 테니 제안해 달라"는 공모다. 이후 제안서 제출 -> 투표로 채택(beta) -> 확정 태스크포스(FTF) -> formal 순서로 진행되며, 보통 몇 년이 걸린다.
   - 범위는 IDL 4.2의 모든 구문을 Rust로 매핑하는 것(타입 매핑 중심)이다. RFP 문서에 DDS나 CORBA 언급은 없다. 즉 DDS의 Rust API(DCPS PSM) 자체를 정하는 규격이 아니다. 비슷한 선례로 IDL4 -> C++ 매핑, IDL4 -> Java 매핑이 있다.
-- 이 프로젝트에서는 **API 설계를 자유롭게** 하되 DCPS PIM 개념은 그대로 따른다. chapter 17 IDL 컴파일러를 만들 때 RFP 진행 상황을 다시 확인한다.
+- 이 프로젝트에서는 **API 설계를 자유롭게** 하되 DCPS PIM 개념은 그대로 따른다. chapter17 IDL 컴파일러를 만들 때 RFP 진행 상황을 다시 확인한다.
 
 ---
 
@@ -84,7 +84,7 @@ IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 chapter (17)
   - ddsfs (DDS from scratch): 이름 끝의 fs가 file system (sshfs, s3fs, procfs)으로 읽힌다.
   - ddsfg (DDS from ground): "from ground"는 영어로 어색하다 (굳어진 표현은 "from the ground up").
 
-### 처음 구성 (chapter 1-12)
+### 처음 구성 (chapter1-12)
 경계를 모르는 상태에서 crate를 미리 잘게 나누면 의존 정리에 시간이 든다. 세 개로 시작하고, 경계가 분명해지면 나눈다.
 
 ```
@@ -94,10 +94,10 @@ mdds/
     mdds-rtps       # RTPS 타입, 메시지 파서/인코더, Writer/Reader 상태 머신, 디스커버리 - I/O-free core
     mdds            # 사용자 API + UDP transport (드라이버)
   tools/
-    mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (chapter 2)
-    shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (chapter 14)
+    mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (chapter2)
+    shape_main      # OMG 상호운용 테스트용 ShapeType 앱 (chapter14)
   captures/         # 캡처한 pcap과 로그 (관찰 자료이자 테스트의 정답 바이트). <누가-누구>/ 로 나눔 (cyclone-fastdds, mcast-check)
-  docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (chapter 1에서 만들고 이후 계속 사용)
+  docker/           # Cyclone DDS / Fast DDS 실행 환경과 캡처 스크립트 (chapter1에서 만들고 이후 계속 사용)
   docs/             # 독자도 보는 공용 참고
     environment/    # 실행 환경 문서 (벤더 빌드, Docker 실행 호스트와 네트워크)
   docs-for-agent/   # 저자와 agent용
@@ -111,9 +111,9 @@ mdds/
 ```
 
 ### 나중에 나눌 후보
-- `mdds-derive`: derive 매크로 (proc-macro crate는 별도여야 하므로 chapter 6에서 바로 생길 수 있다)
+- `mdds-derive`: derive 매크로 (proc-macro crate는 별도여야 하므로 chapter6에서 바로 생길 수 있다)
 - `mdds-discovery`, `mdds-transport`: mdds-rtps / mdds가 커지면 분리
-- `mdds-xtypes` (chapter 16), `mdds-idl` (chapter 17), `mdds-security` (chapter 18)
+- `mdds-xtypes` (chapter16), `mdds-idl` (chapter17), `mdds-security` (chapter18)
 
 ## 4. 설계 원칙
 - **I/O-free core** (I/O 없는 프로토콜 코어): 프로토콜 상태 머신이 소켓, 시계, 스레드, async 런타임을 직접 쓰지 않는다. 입력(받은 바이트, 현재 시각, 사용자 요청)을 받아 상태를 바꾸고, 출력(보낼 패킷과 목적지, 다음 타이머 시각, 이벤트)을 돌려주기만 한다. 실제 송수신과 대기는 바깥의 얇은 드라이버(tokio, mio, 테스트 하네스 등)가 맡는다.

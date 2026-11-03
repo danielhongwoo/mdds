@@ -12,7 +12,7 @@
 - 섹션 지도: [research/xtypes-cdr-idl-security.md](../research/xtypes-cdr-idl-security.md)
 
 ## 구현
-- 본문: 워크스페이스와 crate 세 개의 역할은 chapter 5의 1.1절이 소개했다. 이 chapter는 `mdds-cdr`를 처음 쓴다.
+- 본문: 워크스페이스와 crate 세 개의 역할은 chapter5 1.1이 소개했다. 이 chapter는 `mdds-cdr`를 처음 쓴다.
 - `CdrWriter` / `CdrReader`
   - BE/LE
   - 원시 타입 크기 기준 정렬, 기준점은 4바이트 캡슐화 헤더 직후

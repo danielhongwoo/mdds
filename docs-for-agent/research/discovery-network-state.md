@@ -71,7 +71,7 @@ gantt
     MAC table 300s              :0, 300
 ```
 
-- 근거: DDS lease는 [chapter 3 노트의 시나리오 표](../notes/03-first-communication.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
+- 근거: DDS lease는 [chapter3 노트의 시나리오 표](../notes/03-first-communication.md#시나리오-표), neighbor는 [R5], conntrack은 [R6], IGMP는 [R3] [R4], MAC table은 [R1].
 - IGMP의 2초는 leave를 받은 뒤 querier가 group-specific query를 1초 간격으로 2번 보내고 정리할 때다 [R4]. leave 없이 사라지면 260초 쪽이다.
 
 ### 2.3 요약 표
@@ -137,7 +137,7 @@ sequenceDiagram
 | 유니캐스트 UDP flow | 참가자 2개 (reliable-cyclone-pub)에서 3개: Cyclone -> Fast DDS 7410 (메타 트래픽), Cyclone -> Fast DDS 7411 (사용자 데이터), Fast DDS -> Cyclone 임의 포트 | [확인] |
 
 - 7410, 7411은 RTPS 2.5 Sec. 9.6.2.1의 기본 포트 공식 (PB 7400 + DG 250 x domainId + d1 10 + PG 2 x participantId, 사용자 데이터는 d3 11)에서 domain 0, participantId 0일 때의 값이다 [R12]. (재확인)
-- SIGKILL 뒤 leave를 누가 보내는지는 캡처 README에 "누가 보내나? -> chapter 8" 질문으로 남아 있다.
+- SIGKILL 뒤 leave를 누가 보내는지는 캡처 README에 "누가 보내나? -> chapter8" 질문으로 남아 있다.
 
 ## 5. 장비별 상세
 각 장비는 2.3절 표와 같은 네 줄 (남는 상태, 만드는 DDS 트래픽, 수명, 참가자가 사라지면)로 시작하고, 그 아래에 근거를 둔다.
@@ -205,9 +205,9 @@ sequenceDiagram
   - 소켓 하나가 가입할 수 있는 그룹 수 상한 `igmp_max_memberships` 기본 20 [R5]. [확인, 조사 결과]
 
 ## 6. book에 넣는다면 (결정은 나중에)
-- chapter 2 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾는 것, querier가 없는 Docker bridge가 모든 포트로 flooding하는 것 (`captures/mcast-check/nojoin.fastdds.pcap`)은 chapter 2 Lab 2-1, 2-2에 반영했다. SIGKILL 뒤에도 leave가 나가는 것은 반영하지 않았다 (DDS 프로세스를 다루는 chapter 4나 9의 후보).
-- chapter 4 (같은 규격 다른 구현): SPDP 멀티캐스트 TTL이 벤더마다 다르다 (32 / 1).
-- chapter 9 (SPDP): lease와 네트워크 장비 timeout의 수명 차이 (2.2절과 3절 그림).
+- chapter2 (멀티캐스트)의 lab: IGMP join과 leave report를 캡처에서 찾는 것, querier가 없는 Docker bridge가 모든 포트로 flooding하는 것 (`captures/mcast-check/nojoin.fastdds.pcap`)은 chapter2 Lab 2-1, 2-2에 반영했다. SIGKILL 뒤에도 leave가 나가는 것은 반영하지 않았다 (DDS 프로세스를 다루는 chapter4나 9의 후보).
+- chapter4 (같은 규격 다른 구현): SPDP 멀티캐스트 TTL이 벤더마다 다르다 (32 / 1).
+- chapter9 (SPDP): lease와 네트워크 장비 timeout의 수명 차이 (2.2절과 3절 그림).
 
 ## 7. 확인하지 못한 것
 - 프로세스가 죽을 때 커널이 leave report를 보내는 경로 (Linux 소스나 man page로 확인).
