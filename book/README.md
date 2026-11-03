@@ -20,7 +20,7 @@ chapter마다 같은 순서로 간다.
 4. **구현**: mdds에 그 기능을 넣는다. chapter가 끝난 시점의 코드가 `code/`에 있다.
 5. **벤더와 맞춰 보기**: Cyclone DDS, Fast DDS와 실제로 통신시켜 확인한다.
 6. **두 벤더는 어떻게 하는가**: 같은 기능을 두 벤더가 어떻게 구현했는지 소스와 동작을 살핀다.
-7. **연습 문제**: 캡처에서 보이지만 본문이 다루지 않은 것들.
+7. **스스로 확인하기 또는 연습 문제**: 본문의 개념으로 답하는 질문 (해설 포함), 또는 캡처에서 보이지만 본문이 다루지 않은 열린 질문.
 
 직접 실행해 보는 부분은 **lab**으로 나눈다. Lab 1-1은 chapter1의 첫 번째 lab이다. lab마다 목표, 준비, 절차, 기대 결과가 있어서 무엇이 보이면 성공인지 알 수 있다.
 
@@ -46,7 +46,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter1에서 한다.
 | 3 | [첫 DDS 통신 들여다보기](03-first-communication/README.md) | [03-first-communication](../docs-for-agent/notes/03-first-communication.md) |
 | 4 | [같은 규격, 다른 구현](04-vendor-differences/README.md) | [04-vendor-differences](../docs-for-agent/notes/04-vendor-differences.md) |
 | 5 | [DCPS 개념 모델](05-dcps-concepts/README.md) | [05-dcps-concepts](../docs-for-agent/notes/05-dcps-concepts.md) |
-| 6 | CDR 직렬화 | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
+| 6 | [CDR 직렬화](06-cdr/README.md) | [06-cdr](../docs-for-agent/notes/06-cdr.md) |
 | 7 | RTPS 메시지 | [07-rtps-messages](../docs-for-agent/notes/07-rtps-messages.md) |
 | 8 | Best-effort 전송과 UDP | [08-best-effort-udp](../docs-for-agent/notes/08-best-effort-udp.md) |
 | 9 | 참가자 디스커버리 (SPDP) | [09-spdp](../docs-for-agent/notes/09-spdp.md) |
@@ -65,7 +65,7 @@ Rust를 뺀 나머지의 설치와 설정은 chapter1에서 한다.
 | 22 | 그 밖의 것 (선택) | [22-extras](../docs-for-agent/notes/22-extras.md) |
 
 ## chapter별 내용
-chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다. 앞 chapter에서 뒤의 내용을 깊이 다루면 같은 설명을 두 번 하게 되므로, 각 chapter는 "미루는 것"을 넘지 않는다. 계획이므로 집필하면서 바뀔 수 있다. 기능 chapter (5 이후)는 모두 같은 틀 (왜 필요한가 / 캡처에서 보기 / 규격 읽기 / 구현 / 벤더와 맞춰 보기 / 두 벤더는 어떻게 하는가 / 연습 문제)을 따르고, 아래 소제목은 그 안에서 다루는 주제다.
+chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다. 앞 chapter에서 뒤의 내용을 깊이 다루면 같은 설명을 두 번 하게 되므로, 각 chapter는 "미루는 것"을 넘지 않는다. 계획이므로 집필하면서 바뀔 수 있다. 기능 chapter (5 이후)는 모두 같은 틀 (왜 필요한가 / 캡처에서 보기 / 규격 읽기 / 구현 / 벤더와 맞춰 보기 / 두 벤더는 어떻게 하는가 / 스스로 확인하기 또는 연습 문제)을 따르고, 아래 소제목은 그 안에서 다루는 주제다.
 
 ### 0. 들어가며: DDS란 무엇이고 왜 직접 만드는가
 - 1 DDS가 푸는 문제
@@ -118,13 +118,14 @@ chapter마다 다루는 소제목과, 뒤 chapter로 미루는 것을 적는다.
 - 미루는 것: 토픽 / 타입 / 파티션 / RxO를 묶는 매칭 함수와 검사 순서 (11), 인스턴스 수명주기와 SampleInfo (13), 상태와 Listener, API 쪽 QoS 타입, 파티션 와일드카드 `[...]` (14), 타입 호환 (16)
 
 ### 6. CDR 직렬화
-- `mdds-cdr` crate
-- CDR의 정렬 규칙과 엔디안
-- 캡슐화 헤더 (CDR_BE / CDR_LE, PL_CDR)
-- 원시 타입, string, sequence, array, enum, union
-- `CdrWriter` / `CdrReader`와 derive 매크로 (serde를 쓰지 않는 이유)
-- 캡처의 ShapeType 바이트와 맞춰 보기
-- 미루는 것: ParameterList 해석 (7, 9), XCDR2와 appendable / mutable 타입 (16)
+- 1 왜 필요한가: RTPS는 페이로드를 해석하지 않는다, 메모리를 그대로 보내지 않는 이유, CDR의 비용
+- 2 캡처에서 보기: Lab 6-1 ShapeType 바이트를 손으로 읽기 (프레임 50, 32, 그리고 key만 실린 268의 끝 패딩)
+- 3 규격 읽기: 세 규격의 역할, 정렬 (기준점은 헤더 뒤, 상한 8), 엔디안, 캡슐화 헤더 (식별자 4개와 options의 패딩 비트), 타입별 규칙 표 (원시 타입, string, sequence, array, enum, union, struct, appendable = final in XCDR1)
+- 4 구현: `mdds-cdr` crate의 설계 (헤더는 writer 밖, XCDR 버전과 정렬 상한, 쓰기도 `Result`, 길이 필드 불신), Lab 6-2 `CdrWriter` / `CdrReader` / trait / `encapsulation`, 설계 메모 (serde와 derive 매크로를 쓰지 않는 이유)
+- 5 벤더와 맞춰 보기: Lab 6-3 캡처의 바이트를 골든 테스트로 (손으로 쓴 ShapeType 구현)
+- 6 두 벤더는 어떻게 하는가: 정렬 기준점, options 패딩 비트, 모르는 식별자, 타입 기술 방식 (opcode 해석과 생성 코드), 길이 검사
+- 7 스스로 확인하기
+- 미루는 것: PL_CDR과 ParameterList 해석 (7, 9), key만 실린 DATA와 KeyHash (13), XCDR2 (DHEADER, EMHEADER, 정렬 상한 4)와 @optional (16), IDL에서 코드 생성 (17), wchar / wstring, map, bitmask, union의 구현 (쓰는 타입이 나올 때)
 
 ### 7. RTPS 메시지
 - `mdds-rtps`의 메시지 모듈. I/O-free core 원칙 (소켓, 시계, 스레드 없이 바이트만 다룬다)

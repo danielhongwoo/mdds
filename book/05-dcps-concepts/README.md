@@ -1,6 +1,6 @@
 # 5. DCPS 개념 모델
 
-[목차](../README.md) | 이전: [4 같은 규격, 다른 구현](../04-vendor-differences/README.md) | 다음: 6 CDR 직렬화
+[목차](../README.md) | 이전: [4 같은 규격, 다른 구현](../04-vendor-differences/README.md) | 다음: [6 CDR 직렬화](../06-cdr/README.md)
 
 chapter3과 4에서 writer 정보와 reader 정보가 토픽, 타입, QoS를 나르고, 양쪽 로그에 `matched`가 출력되는 것을 보았다. 응용이 쓰는 API 수준의 DDS 규격을 [DCPS](../glossary.md#모델) (Data-Centric Publish-Subscribe)라고 부르고, 이 책에서 writer와 reader는 DCPS의 DataWriter와 DataReader를 줄인 말이다. 이 chapter는 그 반대쪽, 곧 무엇이 맞지 않으면 매칭되지 않는지를 본다. DCPS 규격 (DDS 1.4)이 정한 개념 모델에서 와이어에 실리는 것과 로컬에만 있는 것을 가르고, QoS 정책 가운데 매칭 여부를 정하는 규칙 ([RxO](../glossary.md#기본-개념))을 읽은 뒤, 그 규칙을 이 책의 첫 Rust 코드로 옮긴다.
 

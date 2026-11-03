@@ -19,7 +19,7 @@
 - OMG "IDL4 -> Rust 언어 매핑" RFP (mars/2026-3-6) 진행 상황. 공개된 제안서가 있으면 Rust 타입 매핑을 맞춘다 ([roadmap](../roadmap.md) 참고).
 
 ## 완료 기준
-- ShapeType.idl과 ROS 2 IDL 몇 개로 생성한 코드가 derive 매크로 결과와 같은 바이트를 낸다.
+- ShapeType.idl과 ROS 2 IDL 몇 개로 생성한 코드가 chapter6의 손으로 쓴 구현과 같은 바이트 (캡처의 골든 바이트)를 낸다.
 
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

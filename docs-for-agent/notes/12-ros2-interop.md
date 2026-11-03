@@ -11,6 +11,9 @@
 - ROS 2 기본 QoS: RELIABLE, VOLATILE, KEEP_LAST(10)
 - ROS 2 공식 Docker 이미지로 Fast DDS (기본 RMW)와 Cyclone DDS (`RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`) 양쪽을 시험한다.
 
+## 확인할 것
+- float64 멤버가 있는 ROS 2 메시지로 CDR 정렬 기준점 (헤더 뒤. chapter6 3.2절)과 8바이트 정렬을 상호운용으로 확인한다. ShapeType에는 8바이트 값이 없어 chapter6에서는 확인하지 못했다.
+
 ## 완료 기준
 - `ros2 run demo_nodes_cpp talker` -> mdds listener, mdds talker -> `ros2 run demo_nodes_cpp listener`
 - RMW를 Fast DDS, Cyclone DDS로 바꿔 각각 확인한다.

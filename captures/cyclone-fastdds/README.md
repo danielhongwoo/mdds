@@ -336,7 +336,7 @@ sequenceDiagram
 ```
 
 ### 질문
-- 마지막 사용자 DATA (268)는 seq 101을 쓰고, 페이로드 대신 키만 싣고 `PID_STATUS_INFO` 0x1을 단다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`다. reliable-cyclone-pub의 끝 (`NOT_ALIVE_NO_WRITERS`)과 무엇이 다른가? -> chapter13
+- 마지막 사용자 DATA (268)는 seq 101을 쓰고, 페이로드 대신 key만 싣고 `PID_STATUS_INFO` 0x1을 단다. 구독 로그 끝은 `NOT_ALIVE_DISPOSED_INSTANCE_STATE`다. reliable-cyclone-pub의 끝 (`NOT_ALIVE_NO_WRITERS`)과 무엇이 다른가? -> chapter13
 - dispose 뒤에 오는 `DATA(w[UD])` (270)는 reliable-cyclone-pub의 끝과 같다. 두 상태는 어떻게 함께 정해지나? -> chapter11, chapter13
 - 구독 로그 샘플 92건, 캡처된 사용자 DATA 99건 (dispose 포함). -> chapter13
 
@@ -446,7 +446,7 @@ cyclone: cyclone_shape -P -d 0 -t Square -x 2 -r -c BLUE --write-period 100 --nu
 | Cyclone SEDP DATA(w)의 PID_DATA_REPRESENTATION | Wireshark가 Malformed로 끊겨 보이지 않음 | XCDR2 (2) |
 
 ### 질문
-- `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나 (예: DHEADER)? -> chapter6, chapter16
+- `-x 2`로 바뀐 것은 encapsulation kind와 SEDP의 PID_DATA_REPRESENTATION이다. 페이로드 바이트는 어떻게 달라졌나? XCDR1에서 appendable이 final과 같은 바이트인 이유 -> chapter6. DHEADER -> chapter16
 - 양쪽의 PID_DATA_REPRESENTATION이 다르면 매칭되나? -> chapter16
 - 구독 로그 샘플 97건, 캡처된 사용자 DATA 98건. -> chapter13
 

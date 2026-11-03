@@ -28,6 +28,10 @@
 - memberId 기본값은 `@autoid(SEQUENTIAL)`(선언 순서)다 (Sec. 7.3.1.2.1.1에서 확인). 이름 해시는 `@autoid(HASH)` / `@hashid`일 때만 쓴다.
 
 ## 확인할 것
+- TypeObject 계열 타입 (수십 개, union과 appendable / mutable이 섞임)의 `CdrSerialize` 구현을 어떻게 만들지. chapter6은 손으로 썼다 (노트 6 결정). 후보: 의존 없는 `macro_rules!`, Annex B IDL을 chapter17에서 생성. proc-macro (`syn`, `quote`)는 독자 부담 때문에 마지막 후보.
+- XCDR1 appendable 타입에 멤버를 덧붙인 새 버전의 샘플을 옛 reader가 받을 수 있는지 (chapter6의 `from_payload`가 남은 바이트를 오류로 보지 않는 근거). 할당 가능성 (Sec. 7.2.4)으로 확인.
+- 스트림 origin 표기: Sec. 7.4.3.5.3 규칙 (1)의 `PUSH(ORIGIN = 0)`이 options 앞에 있어 글자 그대로면 헤더 앞이 기준이다. chapter6은 RTPS 2.5 Sec. 10.2 (헤더 뒤)를 따랐고 두 벤더도 같다. XCDR2 (상한 4)에서는 차이가 없다.
+- DHEADER는 앞자리를 고쳐 쓰지 않아도 된다. V2의 정렬 상한이 4이고 DHEADER가 4의 배수 위치에 놓이므로, 내용을 기준 0인 새 writer로 쓴 뒤 길이를 앞에 붙여도 같은 바이트다. 고쳐 쓰기 (backpatch)는 복사를 줄이는 최적화다. chapter6의 "부분 슬라이스 위의 새 reader / writer" 방식이 그대로 통한다.
 - Cyclone / Fast DDS가 기본으로 고르는 데이터 표현(XCDR1/2) 규칙. 캡처로 확인한 것 (chapter4): Fast DDS는 SEDP에 PID_DATA_REPRESENTATION을 늘 싣고, Cyclone은 기본값 (XCDR)이면 생략하고 `-x 2`일 때만 싣는다 (XTypes 1.3 Sec. 7.6.3.1.1: 비어 있으면 XCDR).
 - RepresentationIdentifier 값의 불일치. RTPS 2.5 표 10.3은 CDR2_LE {0x00, 0x11}, D_CDR_LE {0x00, 0x15}를 적고 (열 머리는 XTypes 표 60을 가리킨다), XTypes 1.3의 7.4.3.4 표 39도 0x10-0x15를 쓰는데, XTypes 1.3의 7.6.3.1.2 표 60은 CDR2 0x06 / 0x07, D_CDR2 0x08 / 0x09, PL_CDR2 0x0a / 0x0b를 적는다. 캡처의 Cyclone (`-x 2`)과 Wireshark 4.6.9는 표 60의 D_CDR2_LE 0x0009를 쓴다. 7.6.3.1.2는 RTPS DATA의 식별자를 표 60대로 두라고 쓰므로 와이어에서는 표 60이 규범으로 보인다 [추정]. OMG issue 번호는 확인하지 못했다. mdds는 표 60을 따른다.
 - Wireshark 4.6.9는 Cyclone의 SEDP writer 정보를 PID_TYPE_INFORMATION (0x0075)에서 Malformed로 표시한다. Cyclone의 TypeInformation 바이트 (앞부분 DHEADER 0x60, EMHEADER 0x40001001)가 XTypes 1.3에 맞는지 확인한다. PID_TYPE_INFORMATION은 @optional이고 (XTypes 1.3 Sec. 7.6.3.2.2), 없으면 타입 이름으로만 매칭한다. Fast DDS 3.6.1은 싣지 않는다.

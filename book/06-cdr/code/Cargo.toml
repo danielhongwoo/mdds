@@ -1,0 +1,17 @@
+# chapter6이 끝난 시점의 코드 스냅샷. 루트 워크스페이스와 같은 구조이고 crate만 그 시점의 것이다.
+# 독자는 `cd book/06-cdr/code && cargo test --workspace`로 돌리고
+# `diff -r my-code/crates book/06-cdr/code/crates`로 자기 코드와 견주어 읽는다.
+[workspace]
+resolver = "3"
+members = [
+    "crates/mdds-cdr",
+    "crates/mdds-rtps",
+    "crates/mdds",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+license = "MIT OR Apache-2.0"
+publish = false

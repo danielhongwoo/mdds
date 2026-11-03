@@ -21,7 +21,7 @@
 | 3 | 첫 DDS 통신 (구현 없음, 관찰) | [03-first-communication](notes/03-first-communication.md) | 완료 |
 | 4 | 같은 규격, 다른 구현 (구현 없음, 관찰) | [04-vendor-differences](notes/04-vendor-differences.md) | 완료 |
 | 5 | DCPS 개념 모델 | [05-dcps-concepts](notes/05-dcps-concepts.md) | 완료 |
-| 6 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 대기 |
+| 6 | CDR 직렬화 (XCDR1) | [06-cdr](notes/06-cdr.md) | 완료 |
 | 7 | RTPS 메시지 계층 | [07-rtps-messages](notes/07-rtps-messages.md) | 대기 |
 | 8 | Best-effort 전송 + UDP | [08-best-effort-udp](notes/08-best-effort-udp.md) | 대기 |
 | 9 | SPDP (참가자 디스커버리) | [09-spdp](notes/09-spdp.md) | 대기 |
@@ -49,7 +49,7 @@
 | DDSI-RTPS | 2.5 (2022) | 와이어 프로토콜, 디스커버리, UDP 매핑 | 핵심 |
 | CORBA CDR (CORBA 3.3 Part 2 Sec. 9.3) | 3.3 (2012) | 기본 직렬화 규칙 | 핵심 (XCDR1의 기반) |
 | DDS-XTypes | 1.3 (2020), 1.4 beta 진행 중 | 타입 시스템, XCDR1/XCDR2, TypeObject | 후반 |
-| IDL | 4.2 (2018) | 타입 정의 언어, 어노테이션 | 후반 (초기엔 derive 매크로로 대체) |
+| IDL | 4.2 (2018) | 타입 정의 언어, 어노테이션 | 후반 (초기엔 손으로 쓴 trait 구현으로 대체) |
 | DDS-Security | 1.2 (formal/25-03-06). 1.1은 2018 | 인증/접근제어/암호화 플러그인 | 선택 |
 | DDS-XRCE | 1.0 (2020, formal/20-02-01) | 자원이 극히 제한된 기기를 Agent를 거쳐 DDS에 붙이는 프로토콜 | 비교 대상 (chapter0) |
 | DDS-RPC 1.0, DDS-XML 1.0, DDS-TSN, DDS-WEB | - | 부가 규격 | 선택 |
@@ -90,8 +90,8 @@ IDL 4.2 (기본 타입, @key 정도만 먼저) --> IDL 컴파일러 chapter (17)
 ```
 mdds/
   crates/
-    mdds-cdr        # CDR / XCDR 직렬화. 자체 trait (serde 사용 안 함: 정렬 / DHEADER / key-only 표현 불가)
-    mdds-rtps       # RTPS 타입, 메시지 파서/인코더, Writer/Reader 상태 머신, 디스커버리 - I/O-free core
+    mdds-cdr        # CDR / XCDR 직렬화. 자체 trait (serde 사용 안 함: XTypes의 멤버 정보와 key-only view를 serde 데이터 모델로 표현할 수 없고, 바이트를 직접 쓰는 것이 학습 목적)
+    mdds-rtps       # RTPS 타입, 메시지 파서/인코더, Writer/Reader 상태 머신, 디스커버리 - I/O-free core. mdds-cdr에 의존 (chapter7부터)
     mdds            # 사용자 API + UDP transport (드라이버)
   tools/
     mcast-check     # 컨테이너 사이 멀티캐스트 전달 확인 도구 (chapter2)
@@ -111,7 +111,7 @@ mdds/
 ```
 
 ### 나중에 나눌 후보
-- `mdds-derive`: derive 매크로 (proc-macro crate는 별도여야 하므로 chapter6에서 바로 생길 수 있다)
+- `mdds-derive`: derive 매크로. chapter6은 손으로 쓴 trait 구현으로 두었다 (노트 6 결정). 타입이 많아지는 chapter16에서 의존 없는 `macro_rules!`나 chapter17의 코드 생성으로 대신할지 정한다
 - `mdds-discovery`, `mdds-transport`: mdds-rtps / mdds가 커지면 분리
 - `mdds-xtypes` (chapter16), `mdds-idl` (chapter17), `mdds-security` (chapter18)
 

@@ -29,10 +29,12 @@
 ## 확인할 것
 - 벤더 ID: Cyclone(Eclipse) 0x0110, Fast DDS(eProsima) 0x010F. OMG 벤더 목록에서 다시 확인한다.
 - Fast DDS는 사용자 DATA 앞에 INFO_DST를 붙이고 Cyclone은 붙이지 않는다 ([reliable-fastdds-pub](../../captures/cyclone-fastdds/README.md#reliable-fastdds-pub)). 수신 측에서 INFO_DST가 바꾸는 상태 (destGuidPrefix)와, 없을 때의 기본값을 확인한다.
+- mdds-cdr 후보 기능 (chapter6 검토에서 나옴): ParameterList 값마다 새 `CdrReader`를 만들면 오류 `offset`이 그 값 슬라이스 기준이 된다. 페이로드 기준 위치가 필요하면 기준 오프셋을 받는 생성자 (예: `with_base`)를 둔다. octet 배열 (GuidPrefix 12, EntityId 4, Locator 주소 16)은 `read_bytes(N)?.try_into()`를 감싼 `read_array::<N>()`이 있으면 편하다.
 
 ## 완료 기준
 - cyclone-fastdds 캡처 전부를 파싱 -> 재인코딩해 바이트가 같다.
 - 파서 fuzz 1시간 동안 패닉이 없다.
+- 캡처의 사용자 DATA `serializedData`를 mdds-cdr의 `from_payload`로 역직렬화해 chapter6 Lab 6-3의 값과 같다 (end-to-end 테스트. Lab 6-3의 hex 리터럴은 바꾸지 않는다).
 
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")

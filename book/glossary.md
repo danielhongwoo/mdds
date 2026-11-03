@@ -42,16 +42,17 @@
 - **dispose, unregister, 인스턴스 상태**: writer가 인스턴스 (key 값 하나)에 대해 하는 두 가지 선언. dispose는 그 인스턴스가 더는 유효하지 않다는 선언이고, unregister는 이 writer가 그 인스턴스를 더는 갱신하지 않는다는 선언이다. 와이어에서는 DATA의 inline QoS에 PID_STATUS_INFO의 D, U 비트로 실린다 (RTPS 2.5 Sec. 9.6.4.9). reader가 보는 인스턴스 상태는 ALIVE, NOT_ALIVE_DISPOSED (writer가 dispose함), NOT_ALIVE_NO_WRITERS (살아 있는 writer가 없음을 reader가 감지함)다 (DDS 1.4 Sec. 2.2.2.5.1.3).
 - **inline QoS**: DATA 서브메시지 안에 함께 실리는 ParameterId 목록. 샘플에 붙는 정보 (PID_STATUS_INFO의 dispose / unregister 비트, key hash 등)를 나른다. DATA 헤더의 InlineQosFlag가 있고 없음을 나타낸다 (RTPS 2.5 Sec. 8.3.8.2, 9.6.4).
 - **DATA_FRAG, HEARTBEAT_FRAG, NACK_FRAG**: 전송 한 번에 담을 수 없는 큰 샘플을 writer가 조각 (fragment)으로 나누어 보내는 서브메시지와, 그 조각의 범위를 알리고 빠진 조각을 요청하는 서브메시지 (RTPS 2.5 Sec. 8.3.8.3, 8.3.8.7, 8.3.8.12). RTPS의 조각은 IP 층의 단편화 (IP fragmentation)와 다른 층이다. 조각 크기는 writer가 정한다 (Sec. 8.4.14.1).
-- **RepresentationIdentifier (encapsulation kind)**: 직렬화된 페이로드 맨 앞 2바이트로, 데이터가 어떤 표현으로 직렬화되었는지 알린다 (RTPS 2.5 Sec. 10.2). 예: CDR_LE 0x0001 (XCDR1, 리틀 엔디언), D_CDR2_LE 0x0009 (XCDR2의 appendable 타입, 리틀 엔디언. DDS-XTypes 1.3 표 60). 그 뒤 2바이트는 옵션이고, XTypes는 그 하위 2비트에 끝의 패딩 바이트 수를 싣는다 (DDS-XTypes 1.3 Sec. 7.6.3.1.2).
+- **RepresentationIdentifier (encapsulation kind)**: 직렬화된 페이로드 맨 앞 2바이트로, 데이터가 어떤 표현으로 직렬화되었는지 알린다 (RTPS 2.5 Sec. 10.2). 예: CDR_LE 0x0001 (XCDR1, 리틀 엔디언), D_CDR2_LE 0x0009 (XCDR2의 appendable 타입, 리틀 엔디언. DDS-XTypes 1.3 표 60). 그 뒤 2바이트는 options이고, XTypes는 그 둘째 바이트의 하위 2비트에 끝 패딩 바이트 수를 싣는다 (DDS-XTypes 1.3 Sec. 7.6.3.1.2).
 - **데이터 표현 (PID_DATA_REPRESENTATION)**: writer와 reader가 SEDP의 정보에 실어 알리는, 자기가 쓰거나 받을 수 있는 표현 (XCDR, XCDR2)의 목록. 비어 있으면 XCDR로 본다 (DDS-XTypes 1.3 Sec. 7.6.3.1.1).
 - **pre-emptive ACKNACK**: reader가 HEARTBEAT를 받기 전에 보내는 ACKNACK. 평소 reader는 HEARTBEAT에 답할 때만 ACKNACK를 보내지만, writer를 처음 찾았을 때는 최적화로 먼저 보낼 수 있다. writer가 여기에 답할 의무는 없다 (RTPS 2.5 Sec. 8.4.2.3).
 - **HEARTBEAT piggyback**: writer가 DATA 서브메시지 바로 뒤에 HEARTBEAT를 같은 메시지에 넣어 보내는 것 (RTPS 2.5 Sec. 8.4.15.4).
 - **ContentFilteredTopic**: 기존 토픽에 SQL 비슷한 조건식 (예: `color = %0`)을 붙여 조건에 맞는 샘플만 받는 DCPS 토픽. 구독자가 SEDP에 `PID_CONTENT_FILTER_PROPERTY`로 조건을 알리므로 발행자 쪽에서 미리 거를 수도 있다. shape_main은 구독자에게 `-c`를 주면 이것을 만든다.
 
 ## 직렬화
-- **CDR**(Common Data Representation): CORBA에서 온 바이너리 직렬화 규칙. 각 값을 자기 크기만큼 정렬(4바이트 int는 4의 배수 위치)하고, 길이 태그 없이 선언 순서대로 이어 붙인다.
-- **XCDR1**(XTypes의 Extended CDR 버전 1): 고전 CDR 그대로(최대 정렬 8)에, 필드 추가/순서 변경이 가능한 mutable 타입용 "파라미터 리스트(PL_CDR, 멤버마다 ID+길이)" 형식을 더한 것. ROS 2가 쓰는 방식이다.
-- **XCDR2**(Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더(DHEADER)와 멤버별 헤더(EMHEADER)를 도입한 개선판. 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
+- **CDR** (Common Data Representation): CORBA에서 온 바이너리 직렬화 규칙 (CORBA 3.3 Part 2 Sec. 9.3). 원시 값을 자기 크기의 배수 위치에 놓고 (4바이트 int는 기준점에서 4의 배수 위치. 기준점은 RTPS 페이로드에서는 헤더 4바이트 뒤이고, 정렬의 상한은 XCDR1이 8, XCDR2가 4), struct의 멤버를 타입 정보 없이 선언 순서대로 이어 붙인다. string과 sequence는 앞에 4바이트 길이 (원소 수)가 붙고, array는 붙지 않는다. 정수는 헤더가 알리는 엔디안으로 쓴다.
+- **정렬 틈과 끝 패딩**: 정렬 틈 (alignment gap)은 다음 값을 자기 크기의 배수 위치에 놓으려고 멤버 사이에 두는 바이트이고, 값은 규격이 정하지 않았다 (두 벤더와 mdds는 0). 끝 패딩은 페이로드 길이를 4의 배수로 맞추려고 끝에 붙이는 0 바이트이고, 그 수를 캡슐화 헤더 options의 하위 2비트에 적는다 (DDS-XTypes 1.3 Sec. 7.4.1.1, 7.6.3.1.2).
+- **XCDR1** (XTypes의 Extended CDR 버전 1): 고전 CDR 그대로 (최대 정렬 8)인 PLAIN_CDR (final과 appendable 타입. optional 멤버, bitmask, map의 규칙을 더했다)과, 멤버 추가와 순서 변경이 가능한 mutable 타입용 PL_CDR (ParameterList. 멤버마다 ID와 길이)의 두 형식 (DDS-XTypes 1.3 Sec. 7.4.1). ROS 2가 쓰는 방식이다.
+- **XCDR2** (Extended CDR 버전 2): 최대 정렬을 4로 줄이고, 타입 진화를 위해 본문 길이 헤더 (DHEADER)와 멤버별 헤더 (EMHEADER)를 도입한 개선판 (DDS-XTypes 1.3 Sec. 7.4.2). 구조가 바뀐 타입끼리도 안전하게 통신하기 위한 형식이다.
 
 ## 도구
 - **shape_main**: OMG DDS 상호운용 작업반이 만든 작은 테스트 프로그램. 토픽 하나(ShapeType: `@appendable struct { @key string<128> color; int32 x; int32 y; int32 shapesize; sequence<uint8> additional_payload_size; }`)를 QoS 옵션에 따라 발행하거나 구독하고, 받은 샘플을 정해진 형식으로 stdout에 찍는다. 구현은 `omg-dds/dds-rtps` 저장소에 언어별로 있다: Cyclone DDS용 C 언어 구현 (`srcC/shape_main.c`), Connext, Fast DDS, OpenDDS 등이 함께 쓰는 C++ 언어 구현 (`srcCxx/shape_main.cxx`, 벤더별 분기는 `#if defined(...)`), Rust로 만든 DDS 구현 (Dust DDS, HDDS, RustDDS)용 Rust 구현 (`srcRs/`, `RustDDS/`). 코드는 다르지만 명령행 옵션, 동작, 출력 형식이 같도록 맞춰져 있다. 각 벤더가 자기 DDS 라이브러리로 빌드한 실행 파일을 릴리스에 올린다. OMG 상호운용 테스트(`interoperability_report.py`)는 이 실행 파일들을 짝지어 돌리고 stdout을 비교해 합격 여부를 판정한다. 벤더가 올린 실행 파일은 x86-64 Linux용뿐이지만 소스 자체는 아키텍처 제한이 없다.

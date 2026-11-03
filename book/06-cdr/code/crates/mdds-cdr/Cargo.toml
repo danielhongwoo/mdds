@@ -1,0 +1,8 @@
+[package]
+name = "mdds-cdr"
+description = "CDR / XCDR 직렬화 (chapter6부터)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true

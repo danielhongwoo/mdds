@@ -18,5 +18,8 @@
 ## 완료 기준
 - 피어 로케이터를 하드코딩한 mdds 프로세스 두 개가 DATA를 주고받는다.
 
+## 확인할 것
+- `ShapeType`의 위치. chapter6은 `crates/mdds-cdr/tests/shape_type.rs`에만 두었다. 첫 전송의 예제가 쓰려면 예제 crate나 `tools/shape_main` (chapter14) 쪽으로 옮긴다.
+
 ## 진행 기록
 - (날짜, 결정이나 막힌 점 한 줄, 근거 문서 링크. 규칙은 CLAUDE.md "문서 갱신 규칙")
